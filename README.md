@@ -112,7 +112,9 @@ Every package ships with a `.minisig` signature, and the release carries
 `SHA256SUMS`. Once installed, Studio updates itself in place.
 
 The same release also carries the 2.x `reasonix` CLI as archives for
-`darwin|linux|windows × amd64|arm64`.
+`darwin|linux|windows × amd64|arm64`. Termux on Android (`arm64`, `armv7`) is
+built as a CI artifact rather than published in a release:
+[docs/TERMUX.md](./docs/TERMUX.md).
 
 ### Reasonix 1.x (stable)
 

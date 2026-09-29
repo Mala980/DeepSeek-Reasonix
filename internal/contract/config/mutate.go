@@ -283,10 +283,14 @@ func configEditLockRegistryDir() (string, error) {
 	}
 	digest := sha256.Sum256([]byte(identity))
 	if runtime.GOOS != "windows" {
-		// The OS-wide temporary root is invariant across process-specific TMPDIR
-		// overrides. The per-user directory is verified and forced to mode 0700
-		// before the advisory lock file is opened.
-		return filepath.Join(string(filepath.Separator), "tmp", fmt.Sprintf("reasonix-config-locks-%x", digest[:8])), nil
+		// The registry root is a host invariant, never this process's TMPDIR,
+		// or two processes would lock different files. The per-user directory
+		// is verified and forced to 0700 before the advisory lock is opened.
+		root := sharedTempRoot()
+		if root == "" {
+			return "", fmt.Errorf("lock config edits: no writable temporary root")
+		}
+		return filepath.Join(root, fmt.Sprintf("reasonix-config-locks-%x", digest[:8])), nil
 	}
 	home := strings.TrimSpace(current.HomeDir)
 	if home == "" {

@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"reasonix/internal/base/fileutil"
 	fileencoding "reasonix/internal/base/fileutil/encoding"
 	"reasonix/internal/contract/provider"
 	"reasonix/internal/state/store"
@@ -650,8 +651,8 @@ func dirExists(path string) bool {
 
 // publishFileNoReplace atomically publishes a completed sibling temp file
 // without replacing a destination another startup/import writer created.
-// The temp and destination share a directory, so a hard link is atomic and
-// portable across the filesystems Reasonix supports.
+// The temp and destination share a directory, so the publish is a hard link
+// where the volume allows one and an exclusive copy where it does not.
 func publishFileNoReplace(tmp, dst string) error {
 	if err := linkFileNoReplace(tmp, dst); err != nil {
 		return err
@@ -660,13 +661,11 @@ func publishFileNoReplace(tmp, dst string) error {
 }
 
 func linkFileNoReplace(src, dst string) error {
-	if err := os.Link(src, dst); err != nil {
-		if os.IsExist(err) {
-			return os.ErrExist
-		}
-		return err
+	err := fileutil.LinkNoReplace(src, dst)
+	if os.IsExist(err) {
+		return os.ErrExist
 	}
-	return nil
+	return err
 }
 
 // recordImportedTitle stores the legacy summary as the session's display title

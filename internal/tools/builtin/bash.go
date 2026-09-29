@@ -691,24 +691,6 @@ func defaultBashShellPATH(ctx context.Context) string {
 	return ""
 }
 
-func loginShell() string {
-	if shell := strings.TrimSpace(os.Getenv("SHELL")); shell != "" {
-		if hasPathSeparator(shell) {
-			if isExecutableFile(shell) {
-				return shell
-			}
-		} else if p, err := exec.LookPath(shell); err == nil {
-			return p
-		}
-	}
-	for _, shell := range []string{"/bin/zsh", "/bin/bash", "/bin/sh"} {
-		if isExecutableFile(shell) {
-			return shell
-		}
-	}
-	return ""
-}
-
 func runShellPATHCommand(parent context.Context, shell string, args []string) []byte {
 	ctx, cancel := context.WithTimeout(parent, 2*time.Second)
 	defer cancel()
@@ -730,18 +712,6 @@ func parseShellPATH(out []byte, marker string) string {
 		}
 	}
 	return ""
-}
-
-func hasPathSeparator(s string) bool {
-	return strings.ContainsAny(s, `/\`)
-}
-
-func isExecutableFile(path string) bool {
-	info, err := os.Stat(path)
-	if err != nil || info.IsDir() {
-		return false
-	}
-	return info.Mode().Perm()&0o111 != 0
 }
 
 func setEnvValue(env []string, key, value string) []string {

@@ -6,8 +6,9 @@ package cli
 import (
 	"fmt"
 	"os/exec"
-	"runtime"
 	"strings"
+
+	"reasonix/internal/platform/openwith"
 )
 
 func mcpOpenCommand(target string) (*exec.Cmd, error) {
@@ -15,12 +16,5 @@ func mcpOpenCommand(target string) (*exec.Cmd, error) {
 	if target == "" {
 		return nil, fmt.Errorf("empty target")
 	}
-	switch runtime.GOOS {
-	case "darwin":
-		return exec.Command("open", target), nil
-	case "windows":
-		return exec.Command("rundll32", "url.dll,FileProtocolHandler", target), nil
-	default:
-		return exec.Command("xdg-open", target), nil
-	}
+	return openwith.URL(target), nil
 }

@@ -120,7 +120,7 @@ func AtomicCreateFile(path string, data []byte, perm os.FileMode) error {
 		return err
 	}
 	defer os.Remove(tmpPath)
-	if err := os.Link(tmpPath, path); err != nil {
+	if err := LinkNoReplace(tmpPath, path); err != nil {
 		return fmt.Errorf("publish new file %s: %w", path, err)
 	}
 	return nil

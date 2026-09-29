@@ -43,6 +43,7 @@ var leaves = []string{
 	"internal/contract/mcpdiag",
 	"internal/base/neterr",
 	"internal/base/nilutil",
+	"internal/platform/openwith",
 	"internal/platform/packagegrant",
 	"internal/contract/planmode",
 	"internal/base/proc",

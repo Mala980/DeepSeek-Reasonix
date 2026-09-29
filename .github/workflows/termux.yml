@@ -1,0 +1,126 @@
+name: Termux
+
+# Termux is a Linux userspace on an Android kernel, and the binaries it needs are
+# ones no other job here builds: GOOS=android, cgo, linked with the NDK's clang.
+# android is what makes the result PIE, what lets the armv7 binary link at all,
+# and what makes DNS go through libc instead of an /etc/resolv.conf Termux does
+# not have — so both architectures are built the same way and checked as ELF
+# rather than executed. A bionic-linked binary cannot run on the runner: the NDK
+# sysroot has no /system/bin/linker to hand it.
+#
+# Artifacts only. Publishing stays in the release pipeline, which is signed.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main-v2, studio]
+    tags: ['v*', 'studio-v*']
+  pull_request:
+    branches: [main-v2, studio]
+    # Nothing here is a required status check, so skipping a docs-only pull
+    # request leaves no check pending: there is simply no Termux run to wait on.
+    paths-ignore:
+      - 'docs/**'
+      - 'release-notes/**'
+      - 'desktop/**'
+      - 'workers/**'
+      - 'npm/**'
+      - 'benchmarks/**'
+      - '**/*.md'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: termux-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: android/${{ matrix.arch }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            goarch: arm64
+            machine: AArch64
+            interpreter: /system/bin/linker64
+          - arch: armv7
+            goarch: arm
+            machine: ARM
+            interpreter: /system/bin/linker
+    env:
+      # Termux's own floor. Below it, Termux needs its patched Go rather than
+      # upstream Go, because a kernel without futex_time64 is a kernel upstream
+      # Go 1.26 already falls back on at runtime.
+      API_LEVEL: 24
+      TERMUX_API_LEVEL: 24
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # The version stamped into the binary comes from git describe.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      # The runner image ships several NDKs. ANDROID_NDK_HOME points at the one
+      # the image considers current; the wrapper names are versioned by API
+      # level, so a missing level-24 wrapper is a hard failure rather than a
+      # silent fallback to whatever clang happens to be first.
+      - name: Check the NDK can target Android ${{ env.API_LEVEL }}
+        run: |
+          set -euo pipefail
+          ndk="${ANDROID_NDK_HOME:-}"
+          if [ -z "$ndk" ]; then
+            ndk=$(echo "$ANDROID_HOME"/ndk/* | tr ' ' '\n' | sort -V | tail -1)
+          fi
+          bin=$(echo "$ndk"/toolchains/llvm/prebuilt/*/bin)
+          for name in aarch64-linux-android"$API_LEVEL"-clang armv7a-linux-androideabi"$API_LEVEL"-clang; do
+            [ -x "$bin/$name" ] || { echo "missing $bin/$name" >&2; exit 1; }
+          done
+          "$bin/clang" --version | head -1
+
+      # The script picks the NDK wrapper for this architecture out of
+      # ANDROID_NDK_HOME and stamps the git-describe version into the binary.
+      - name: Build
+        env:
+          TERMUX_TARGETS: android/${{ matrix.goarch }}
+        run: make termux
+
+      - name: Check the ELF is one Android will exec
+        run: |
+          set -euo pipefail
+          bin="dist/reasonix-android-${{ matrix.arch }}"
+          file "$bin"
+          # ET_DYN is a PIE binary as far as readelf is concerned, and Android
+          # refuses to exec a non-PIE one.
+          readelf -h "$bin" | grep -q "Type:[[:space:]]*DYN"
+          readelf -h "$bin" | grep -qi "Machine:[[:space:]]*${{ matrix.machine }}"
+          readelf -l "$bin" | grep -q "interpreter: ${{ matrix.interpreter }}"
+          # cgo is what this target is for: a Go binary that resolves names
+          # through libc. No libc dependency means the build quietly went pure
+          # Go, which on android/arm cannot link at all and on arm64 cannot
+          # resolve DNS.
+          readelf -d "$bin" | grep -q "Shared library: \[libc.so\]"
+
+      - name: Package
+        run: |
+          set -euo pipefail
+          cd dist
+          tar -czf "reasonix-android-${{ matrix.arch }}.tar.gz" "reasonix-android-${{ matrix.arch }}"
+          sha256sum "reasonix-android-${{ matrix.arch }}.tar.gz" | tee "reasonix-android-${{ matrix.arch }}.tar.gz.sha256"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reasonix-android-${{ matrix.arch }}
+          path: |
+            dist/reasonix-android-${{ matrix.arch }}.tar.gz
+            dist/reasonix-android-${{ matrix.arch }}.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 14

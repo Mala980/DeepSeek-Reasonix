@@ -62,7 +62,11 @@ make vet            # go vet ./...
 make fmt            # gofmt -w .
 make hooks          # install git hooks (pre-push: go vet)
 make cross          # cross-compile for all 6 targets
+make termux         # Termux binaries for android/arm64 and android/armv7
 ```
+
+`make termux` runs inside Termux as well as against an Android NDK; see
+[docs/TERMUX.md](docs/TERMUX.md).
 
 ### Isolated development environment
 
