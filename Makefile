@@ -9,11 +9,21 @@ GOEXE := $(shell go env GOEXE)
 # One pin for the Makefile and the CI lint job; see .github/workflows/ci.yml.
 GOLANGCI_VERSION := $(shell cat .golangci-version)
 
-.PHONY: build vet fmt lint lint-go lint-install lint-cross lint-update coverage-gate coverage-gate-update pricecheck check test studio-test sdk-test sdk-test-race hooks cross clean studio
+.PHONY: build vet fmt lint lint-go lint-install lint-cross lint-update coverage-gate coverage-gate-update pricecheck check test studio-test sdk-test sdk-test-race hooks cross clean studio termux
+
+# android is the one GOOS that cannot be built without cgo: armv7 has no
+# internal linker there, and the libc resolver is what makes DNS work. So the
+# default stays 0 and android gets 1.
+CGO := $(if $(filter android,$(GOOS)),1,$(or $(CGO_ENABLED),0))
 
 build:
-	CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o bin/reasonix$(GOEXE) ./cmd/reasonix
-	CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o bin/reasonix-plugin-example$(GOEXE) ./cmd/reasonix-plugin-example
+	CGO_ENABLED=$(CGO) go build -ldflags "$(LDFLAGS)" -o bin/reasonix$(GOEXE) ./cmd/reasonix
+	CGO_ENABLED=$(CGO) go build -ldflags "$(LDFLAGS)" -o bin/reasonix-plugin-example$(GOEXE) ./cmd/reasonix-plugin-example
+
+# Termux binaries for the Android architectures Termux ships on. Runs on the
+# device (its own clang, its own architecture) or against an NDK.
+termux:
+	bash scripts/build-termux.sh
 
 vet:
 	go vet ./...

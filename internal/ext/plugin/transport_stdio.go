@@ -444,12 +444,20 @@ func defaultStdioShellPATH(ctx context.Context) string {
 }
 
 func stdioShell() string {
+	env := secrets.ProcessEnv()
 	if shell := strings.TrimSpace(os.Getenv("SHELL")); shell != "" {
 		if hasPathSeparator(shell) {
 			if isExecutableFile(shell) {
 				return shell
 			}
-		} else if exe, ok := lookPathInEnv(shell, secrets.ProcessEnv()); ok {
+		} else if exe, ok := lookPathInEnv(shell, env); ok {
+			return exe
+		}
+	}
+	// PATH before the absolute /bin names: Termux keeps its shells in
+	// $PREFIX/bin and has no /bin to stat.
+	for _, name := range []string{"zsh", "bash", "sh"} {
+		if exe, ok := lookPathInEnv(name, env); ok {
 			return exe
 		}
 	}

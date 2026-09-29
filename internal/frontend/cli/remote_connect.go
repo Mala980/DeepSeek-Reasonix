@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"os/exec"
 	"os/signal"
 	"path"
 	"path/filepath"
@@ -20,6 +19,7 @@ import (
 	"reasonix/internal/base/i18n"
 	"reasonix/internal/base/netclient"
 	"reasonix/internal/contract/config"
+	"reasonix/internal/platform/openwith"
 	"reasonix/internal/platform/releaseasset"
 	"reasonix/internal/platform/remote"
 	"reasonix/internal/platform/remote/attach"
@@ -705,17 +705,7 @@ func remoteFSPut(args []string) int {
 }
 
 func openInBrowser(url string) error {
-	var cmd string
-	var args []string
-	switch runtime.GOOS {
-	case "darwin":
-		cmd, args = "open", []string{url}
-	case "windows":
-		cmd, args = "rundll32", []string{"url.dll,FileProtocolHandler", url}
-	default:
-		cmd, args = "xdg-open", []string{url}
-	}
-	c := exec.Command(cmd, args...)
+	c := openwith.URL(url)
 	if err := c.Start(); err != nil {
 		return err
 	}

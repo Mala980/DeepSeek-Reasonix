@@ -7,10 +7,9 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path/filepath"
-	"runtime"
 
 	"reasonix/internal/ext/theme"
+	"reasonix/internal/platform/openwith"
 )
 
 // A pack is a manifest and two images of at most 8 MiB each, carried as
@@ -93,23 +92,7 @@ var revealFolder = func(dir string) error {
 	return nil
 }
 
-// folderCommand names explorer.exe by its %SystemRoot% path: a launch
-// environment can hand Studio a PATH without that directory.
-func folderCommand(dir string) *exec.Cmd {
-	switch runtime.GOOS {
-	case "windows":
-		explorer := "explorer.exe"
-		root := os.Getenv("SystemRoot")
-		if root == "" {
-			root = os.Getenv("windir")
-		}
-		if root != "" {
-			explorer = filepath.Join(root, "explorer.exe")
-		}
-		return exec.Command(explorer, dir)
-	case "darwin":
-		return exec.Command("open", dir)
-	default:
-		return exec.Command("xdg-open", dir)
-	}
-}
+// folderCommand asks openwith for this host's file manager, which on Windows
+// names explorer.exe by its %SystemRoot% path: a launch environment can hand
+// Studio a PATH without that directory.
+func folderCommand(dir string) *exec.Cmd { return openwith.Folder(dir) }

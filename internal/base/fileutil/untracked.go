@@ -33,10 +33,10 @@ func MarkUntracked(dir string) error {
 	if err := os.Chmod(tmp.Name(), 0o644); err != nil {
 		return err
 	}
-	// Link publishes only a complete marker and, like O_EXCL, refuses to
-	// replace or follow whatever already sits at the target: an empty marker
-	// left by a failed write would read as present and never be repaired.
-	err = os.Link(tmp.Name(), filepath.Join(dir, ".gitignore"))
+	// Publish only a complete marker, refusing to replace whatever already sits
+	// at the target: an empty marker from a failed write would read as present
+	// and never be repaired. A volume without hard links gets an exclusive copy.
+	err = LinkNoReplace(tmp.Name(), filepath.Join(dir, ".gitignore"))
 	if errors.Is(err, fs.ErrExist) {
 		return nil
 	}
