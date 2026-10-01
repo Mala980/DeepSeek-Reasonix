@@ -36,7 +36,7 @@ export async function repliesFor(env: Env, receipts: string[], limit: number): P
   return out;
 }
 
-async function replyCounts(env: Env, receipts: string[]): Promise<Map<string, number>> {
+export async function replyCounts(env: Env, receipts: string[]): Promise<Map<string, number>> {
   const out = new Map<string, number>();
   if (receipts.length === 0) return out;
   const marks = receipts.map(() => "?").join(",");
