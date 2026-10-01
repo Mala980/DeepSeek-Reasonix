@@ -103,7 +103,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os == 'windows-latest' && needs.changes.outputs.trusted == 'true' && fromJSON('["win-gpu"]') || matrix.os }}
+    # The Windows leg moves to the self-hosted box only once the repository
+    # variable WIN_GPU_TEST is 'true': the runner's service account must be
+    # able to create symlinks (internal/platform/repair tests need it).
+    runs-on: ${{ matrix.os == 'windows-latest' && needs.changes.outputs.trusted == 'true' && vars.WIN_GPU_TEST == 'true' && fromJSON('["win-gpu"]') || matrix.os }}
     timeout-minutes: 45
     env:
       RUN_STEPS: ${{ github.event_name != 'pull_request' || needs.changes.outputs.code != 'false' }}
@@ -133,7 +136,7 @@ jobs:
       # persists between runs, so a retry resumes where it stopped.
       - name: go mod download (retry)
         if: env.RUN_STEPS == 'true' && runner.environment == 'self-hosted'
-        run: for i in 1 2 3 4 5; do go mod download && exit 0; sleep 5; done; exit 1
+        run: for _ in 1 2 3 4 5; do go mod download && exit 0; sleep 5; done; exit 1
 
       - name: Install and verify Linux sandbox backend
         if: env.RUN_STEPS == 'true' && runner.os == 'Linux'
@@ -259,7 +262,7 @@ jobs:
 
       - name: Clean workspace
         if: always() && runner.environment == 'self-hosted'
-        run: rm -rf "$GITHUB_WORKSPACE"/* "$GITHUB_WORKSPACE"/.[!.]* 2>/dev/null || true
+        run: rm -rf "${GITHUB_WORKSPACE:?}"/* "${GITHUB_WORKSPACE:?}"/.[!.]* 2>/dev/null || true
 
   race:
     needs: changes
@@ -314,24 +317,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os == 'windows-latest' && needs.changes.outputs.trusted == 'true' && fromJSON('["win-gpu"]') || matrix.os }}
-    timeout-minutes: 45
+    runs-on: ${{ matrix.os }}
     env:
       RUN_STEPS: ${{ github.event_name != 'pull_request' || needs.changes.outputs.sdk != 'false' }}
     defaults:
       run:
-        shell: bash
         working-directory: sdk/go
     steps:
-      # On the self-hosted box PATH finds WSL's bash before Git's and its
-      # execution policy refuses powershell steps, so Windows legs use Git
-      # Bash for every run step.
-      - name: Put Git Bash first on PATH
-        if: runner.os == 'Windows' && runner.environment == 'self-hosted'
-        shell: cmd
-        working-directory: ${{ github.workspace }}
-        run: '>>"%GITHUB_PATH%" echo C:\Program Files\Git\bin'
-
       - if: env.RUN_STEPS == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -372,11 +364,6 @@ jobs:
       - name: test -race
         if: github.event_name != 'pull_request' && env.RUN_STEPS == 'true'
         run: go test -race ./...
-
-      - name: Clean workspace
-        if: always() && runner.environment == 'self-hosted'
-        working-directory: ${{ github.workspace }}
-        run: rm -rf ./* ./.[!.]* 2>/dev/null || true
 
   desktop:
     needs: changes
@@ -466,22 +453,12 @@ jobs:
   desktop-windows:
     needs: changes
     if: always() && (github.event_name != 'pull_request' || needs.changes.outputs.desktop != 'false')
-    runs-on: ${{ needs.changes.outputs.trusted == 'true' && fromJSON('["win-gpu"]') || 'windows-latest' }}
-    timeout-minutes: 30
+    runs-on: windows-latest
     defaults:
       run:
         shell: bash
         working-directory: desktop
     steps:
-      # On the self-hosted box PATH finds WSL's bash before Git's and its
-      # execution policy refuses powershell steps, so Windows legs use Git
-      # Bash for every run step.
-      - name: Put Git Bash first on PATH
-        if: runner.os == 'Windows' && runner.environment == 'self-hosted'
-        shell: cmd
-        working-directory: ${{ github.workspace }}
-        run: '>>"%GITHUB_PATH%" echo C:\Program Files\Git\bin'
-
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
@@ -493,11 +470,6 @@ jobs:
       - name: test (update helper and uninstaller)
         timeout-minutes: 15
         run: go test ./...
-
-      - name: Clean workspace
-        if: always() && runner.environment == 'self-hosted'
-        working-directory: ${{ github.workspace }}
-        run: rm -rf ./* ./.[!.]* 2>/dev/null || true
 
   # repolint scans desktop/ and sdk/ too, so this job also runs for diffs the
   # `code` filter would otherwise skip.
