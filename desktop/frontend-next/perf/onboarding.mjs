@@ -5,7 +5,7 @@
 import { chromium } from "playwright";
 
 const PAGE = process.env.PERF_URL ?? "http://localhost:4399/perf.html?onboarding=1";
-const SIZES = [[1920, 700], [1600, 600], [2560, 560], [1366, 600], [1280, 540], [1440, 900], [1600, 760, 1.25]];
+const SIZES = [[1920, 700], [1600, 600], [2560, 560], [1366, 600], [1280, 540], [1440, 900], [1600, 760, 1.25], [800, 480, 1.8], [840, 560, 1.8], [1280, 540, 2.5]];
 const fails = [];
 const check = (name, ok, detail = "") => {
   console.log(`${ok ? "  ok" : "FAIL"}  ${name}${detail ? "  — " + detail : ""}`);
@@ -38,6 +38,17 @@ for (const scheme of ["light", "dark"]) {
       check(`${tag} ${label}: after wheeling to the bottom the button is in the viewport`, !!box && box.y >= 0 && box.y + box.height <= height + 0.5, JSON.stringify(box));
       const bar = await page.locator(".onb-brandbar").boundingBox();
       check(`${tag} ${label}: the title bar stays in the viewport`, !!bar && bar.y >= -0.5 && bar.y + bar.height <= height + 0.5, JSON.stringify(bar));
+      const shell = await page.locator(".onb-shell").boundingBox();
+      const goBox = await go.boundingBox();
+      const across = await page.evaluate(() => {
+        const sh = document.querySelector(".onb-shell");
+        return [...sh.querySelectorAll(".onb-field > input, .onb-go, .onb-protocols, .onb-found")].every((el) => {
+          const r = el.getBoundingClientRect();
+          const s = sh.getBoundingClientRect();
+          return r.right <= s.right + 0.5 && r.left >= s.left - 0.5;
+        });
+      });
+      check(`${tag} ${label}: the card fits across, inside the window`, !!shell && !!goBox && shell.x >= -0.5 && shell.x + shell.width <= width + 0.5 && across, JSON.stringify({ shell, goBox }));
       if (!enabled) return;
       const hit = await page.evaluate(() => {
         const r = document.querySelector(".onb-go").getBoundingClientRect();
