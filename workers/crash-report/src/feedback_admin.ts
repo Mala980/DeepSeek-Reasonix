@@ -1,6 +1,7 @@
 import type { Env } from "./env";
 import { ackReply, blockTarget, getCap, listBlocks, pendingReplies, setCap, triageReplies, unblockTarget } from "./feedback_admin_ops";
 import { listLimit, load, readJson, setState } from "./feedback_admin_store";
+import { listFeedback } from "./feedback_admin_list";
 import { requireAdmin } from "./feedback_auth";
 import { jsonResponse, refuse } from "./feedback_http";
 import { pendingItem, releasedKeys } from "./feedback_read";
@@ -77,7 +78,7 @@ const NOT_ALLOWED = () => refuse("feedback.method_not_allowed", "method not allo
 
 export async function handleAdmin(request: Request, env: Env, url: URL): Promise<Response | null> {
   const path = url.pathname;
-  const m = path.match(/^\/v1\/admin\/feedback\/(?:(pending|open|held|blocks?|cap)|(replies)\/(pending|triage)|replies\/([A-Za-z0-9_-]{1,64})\/ack|(FB-[0-9A-Z]{4}-[0-9A-Z]{4})(?:\/(recorded|status|release|reject|answer|ask|reply|takedown)|\/attachments\/([A-Za-z0-9_-]{16,64}))?)$/);
+  const m = path.match(/^\/v1\/admin\/feedback\/(?:(pending|open|held|list|blocks?|cap)|(replies)\/(pending|triage)|replies\/([A-Za-z0-9_-]{1,64})\/ack|(FB-[0-9A-Z]{4}-[0-9A-Z]{4})(?:\/(recorded|status|release|reject|answer|ask|reply|takedown)|\/attachments\/([A-Za-z0-9_-]{16,64}))?)$/);
   if (!m) return null;
   const denied = await requireAdmin(request, env);
   if (denied) return denied;
@@ -98,6 +99,7 @@ export async function handleAdmin(request: Request, env: Env, url: URL): Promise
     if (name === "pending") return pending(env, url);
     if (name === "open") return open(env);
     if (name === "held") return held(env, url);
+    if (name === "list") return listFeedback(env, url);
     return listBlocks(env);
   }
   if (attachmentKey) return method === "GET" ? adminAttachment(env, receipt, attachmentKey) : NOT_ALLOWED();

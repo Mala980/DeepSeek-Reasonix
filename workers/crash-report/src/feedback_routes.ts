@@ -4,6 +4,7 @@ import { ATTACHMENT_ROUTE, serveAttachment } from "./feedback_attachments";
 import { refuse } from "./feedback_http";
 import { handleMine } from "./feedback_read";
 import { handleUserReply } from "./feedback_reply";
+import { servePage } from "./feedback_admin_page";
 import { handleSubmit } from "./feedback_submit";
 
 // Returns null when the path is not a feedback route so the caller keeps routing.
@@ -11,6 +12,8 @@ export async function handleFeedbackRoute(request: Request, env: Env): Promise<R
   const url = new URL(request.url);
   const path = url.pathname;
   const method = request.method;
+  const page = servePage(request, path);
+  if (page) return page;
   if (path === "/v1/feedback") return method === "POST" ? handleSubmit(request, env) : refuse("feedback.method_not_allowed", "method not allowed");
   if (path === "/v1/feedback/mine") return method === "GET" ? handleMine(request, env) : refuse("feedback.method_not_allowed", "method not allowed");
   const reply = path.match(/^\/v1\/feedback\/(FB-[0-9A-Z]{4}-[0-9A-Z]{4})\/reply$/);

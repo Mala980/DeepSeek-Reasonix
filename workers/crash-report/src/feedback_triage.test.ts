@@ -401,6 +401,7 @@ describe("triage transitions", () => {
     const r = await receiptOf();
     const paths: [string, string][] = [
       ["GET", "/v1/admin/feedback/held"],
+      ["GET", "/v1/admin/feedback/list"],
       ["GET", `/v1/admin/feedback/${r}`],
       ["POST", `/v1/admin/feedback/${r}/release`],
       ["POST", `/v1/admin/feedback/${r}/reject`],
@@ -416,9 +417,10 @@ describe("triage transitions", () => {
       ["POST", "/v1/admin/feedback/cap"],
       ["GET", "/v1/admin/feedback/cap"],
     ];
-    for (const [method, path] of paths) {
-      expect((await call(path, { method })).status, `${method} ${path}`).toBe(401);
-      expect((await call(path, { method, headers: { authorization: "Bearer wrong" } })).status, `${method} ${path}`).toBe(401);
+    for (const [i, [method, path]] of paths.entries()) {
+      const ip = { "cf-connecting-ip": `203.0.113.${i + 1}` };
+      expect((await call(path, { method, headers: ip })).status, `${method} ${path}`).toBe(401);
+      expect((await call(path, { method, headers: { ...ip, authorization: "Bearer wrong" } })).status, `${method} ${path}`).toBe(401);
     }
     expect(statusOf(r)).toBe("held");
   });

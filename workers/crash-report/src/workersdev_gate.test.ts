@@ -81,7 +81,8 @@ describe("workers.dev host gate", () => {
 });
 
 describe("fetch handler host gate", () => {
-  const env = { FEEDBACK_ENABLED: "true" } as unknown as Env;
+  const quiet = { bind: () => ({ first: async () => null, run: async () => ({}) }) };
+  const env = { FEEDBACK_ENABLED: "true", DB: { prepare: () => quiet } } as unknown as Env;
 
   it("reaches admin auth for an allowed converter call on workers.dev", async () => {
     const res = await worker.fetch(req(DEV, "/v1/admin/feedback/open"), env);
