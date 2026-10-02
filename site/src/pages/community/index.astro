@@ -1,6 +1,6 @@
 ---
 import Community from "../../layouts/Community.astro";
-import { QQ_GROUP, DISCORD_URL } from "../../lib/community-links.mjs";
+import { QQ_GROUP, DISCORD_URL, DOUYIN } from "../../lib/community-links.mjs";
 ---
 <Community title="Reasonix Community" description="Ask questions, share skills, and shape a DeepSeek-native agent." active="discussions">
   <section class="head">
@@ -61,6 +61,7 @@ import { QQ_GROUP, DISCORD_URL } from "../../lib/community-links.mjs";
           <a class="btn btn-ghost sm" href={QQ_GROUP.joinUrl} target="_blank" rel="noreferrer"><span class="l-en">Join QQ group</span><span class="l-zh">加入 QQ 群</span></a>
           <a class="btn btn-ghost sm" href={DISCORD_URL} target="_blank" rel="noreferrer">Discord</a>
         </p>
+        <p style="margin-top:12px;font-size:12.5px;color:var(--ink-3)"><span class="l-en">Douyin</span><span class="l-zh">抖音</span> {DOUYIN.name} · <code>{DOUYIN.id}</code></p>
       </div>
     </aside>
   </div>

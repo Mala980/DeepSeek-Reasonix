@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
-import { DISCORD_URL, QQ_GROUP } from "../lib/community-links.mjs";
+import { DISCORD_URL, DOUYIN, QQ_GROUP } from "../lib/community-links.mjs";
 
 const source = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
@@ -10,6 +10,15 @@ test("community links are the official QQ group and the repo's Discord invite", 
   assert.equal(QQ_GROUP.number, "1093562660");
   assert.equal(QQ_GROUP.joinUrl, "https://qm.qq.com/q/i59b0z2R8s");
   assert.equal(DISCORD_URL, "https://discord.gg/XF78rEME2D");
+});
+
+test("the Douyin account is shown as an ID and a QR image, never a guessed link", async () => {
+  assert.equal(DOUYIN.name, "做游戏的小鱼");
+  assert.equal(DOUYIN.id, "22703872788");
+  await access(new URL("../../public/community/douyin.png", import.meta.url));
+  const component = await source("../components/CommunityJoin.astro");
+  assert.match(component, /DOUYIN\.qrPath/);
+  assert.doesNotMatch(component, /douyin\.com/);
 });
 
 test("the QR asset exists and the Discord invite lives only in the shared links module", async () => {
