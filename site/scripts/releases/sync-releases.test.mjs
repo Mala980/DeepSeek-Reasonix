@@ -37,13 +37,13 @@ test('batch sync continues Studio backfill without a model key and reports CLI v
   const catalog = await cliOnlyCatalog();
   const saved = [];
   const result = await syncCatalog({
-    catalog, published: [published('v1.39.3'), published('studio-v2.24.0')],
+    catalog, published: [published('v1.99.0'), published('studio-v2.24.0')],
     studioSHA: 'a'.repeat(40), readStudio: async () => '中立更新。\n',
     save: async (release) => saved.push(release), generateCLI: async () => { throw new Error('must not call'); },
     hasModelKey: false,
   });
   assert.deepEqual(saved.map((r) => r.version), ['2.24.0']);
-  assert.deepEqual(result.pending, ['cli:1.39.3']);
+  assert.deepEqual(result.pending, ['cli:1.99.0']);
   assert.deepEqual(result.added, ['studio:2.24.0']);
 });
 
@@ -76,21 +76,21 @@ test('CLI range selection uses the earlier CLI release even with newer Studio an
 test('an upstream published CLI release becomes public only through the saved review draft', async () => {
   const saved = [];
   const result = await syncCatalog({
-    catalog: await loadCatalog(), published: [published('v1.39.3')], hasModelKey: true,
-    generateCLI: async () => ({ version: '1.39.3', product: 'cli', status: 'reviewed' }),
+    catalog: await loadCatalog(), published: [published('v1.99.0')], hasModelKey: true,
+    generateCLI: async () => ({ version: '1.99.0', product: 'cli', status: 'reviewed' }),
     save: async (release) => saved.push(release),
   });
-  assert.deepEqual(result.added, ['cli:1.39.3']);
+  assert.deepEqual(result.added, ['cli:1.99.0']);
   assert.equal(saved[0].status, 'published');
 });
 
 test('failure reasons carry the error class and a message but never secrets', async () => {
   const result = await syncCatalog({
-    catalog: await loadCatalog(), published: [published('v1.39.3')], hasModelKey: true,
+    catalog: await loadCatalog(), published: [published('v1.99.0')], hasModelKey: true,
     generateCLI: async () => { throw new TypeError('request failed with Bearer abc123token and key sk-live-999\nstack line'); },
     save: async () => {},
   });
-  assert.deepEqual(result.pending, ['cli:1.39.3']);
+  assert.deepEqual(result.pending, ['cli:1.99.0']);
   assert.equal(result.failures[0].reason, 'TypeError: request failed with Bearer [redacted] and key sk-[redacted]');
   assert.equal(describeFailure(new Error('boom hunter2'), ['hunter2']), 'Error: boom [redacted]');
 });
