@@ -3,6 +3,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { withoutOwner } from "../../src/lib/repository-owner.mjs";
 
 const siteRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 export const defaultCatalogPath = resolve(siteRoot, "src/data/releases.json");
@@ -387,11 +388,12 @@ export function renderGitHubRelease(release, lang = "zh") {
   else lines.push(isZh ? "当前没有需要额外操作的已知风险。" : "There are no known risks requiring extra action.");
   lines.push("");
 
-  if (release.contributors.length) {
+  const thanked = withoutOwner(release.contributors);
+  if (thanked.length) {
     lines.push(
       `## ${isZh ? "致谢" : "Thanks"}`,
       "",
-      `${isZh ? "感谢本版本的贡献者" : "Thanks to the contributors in this release"}：${release.contributors
+      `${isZh ? "感谢本版本的贡献者" : "Thanks to the contributors in this release"}：${thanked
         .map((name) => `[@${name}](https://github.com/${name})`)
         .join("、")}`,
       "",

@@ -4,6 +4,7 @@ import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
+import { withoutOwner } from "../../src/lib/repository-owner.mjs";
 import { compareVersionsDesc, loadCatalog, upsertRelease, validateCatalog } from "./release-notes.mjs";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -247,6 +248,10 @@ Every highlight, change, upgrade note, and risk must have a non-empty \"targets\
   }
 }
 
+export function contributorsOf(pulls) {
+  return withoutOwner([...new Set(pulls.map((pull) => pull.author).filter(Boolean))]);
+}
+
 export function previousCLIRelease(catalog, version) {
   return catalog.releases.find((release) =>
     release.product !== "studio" && release.channel === "stable" &&
@@ -320,7 +325,7 @@ async function main() {
       npm: version,
     };
   }
-  release.contributors = [...new Set(pulls.map((pull) => pull.author).filter(Boolean))];
+  release.contributors = contributorsOf(pulls);
   release.links = {
     github: `https://github.com/${repository}/releases/tag/${tag}`,
     compare: `https://github.com/${repository}/compare/${from}...${tag}`,
