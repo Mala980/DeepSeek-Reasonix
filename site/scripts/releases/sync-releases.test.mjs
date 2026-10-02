@@ -14,6 +14,11 @@ test('discovery deduplicates CLI namespaces, includes published Studio previews 
   assert.deepEqual(found.map(({ product, version }) => [product, version]), [['cli', '1.39.3'], ['studio', '2.24.0']]);
 });
 
+const cliOnlyCatalog = async () => {
+  const catalog = await loadCatalog();
+  return { ...catalog, releases: catalog.releases.filter((r) => r.product !== 'studio') };
+};
+
 test('Studio preserves Chinese source verbatim and validates without CLI targeting', async () => {
   const notes = '中立版本说明。\n\n## 修复\n\n- 改善窗口布局\n';
   const release = studioRecord(published('studio-v2.24.0', { prerelease: true }), notes, 'a'.repeat(40));
@@ -29,7 +34,7 @@ test('Studio preserves Chinese source verbatim and validates without CLI targeti
 });
 
 test('batch sync continues Studio backfill without a model key and reports CLI versions for retry', async () => {
-  const catalog = await loadCatalog();
+  const catalog = await cliOnlyCatalog();
   const saved = [];
   const result = await syncCatalog({
     catalog, published: [published('v1.39.3'), published('studio-v2.24.0')],
@@ -50,7 +55,7 @@ test('existing catalog entries are never regenerated', async () => {
 
 test('batch failures retry independently and never manufacture missing Studio notes', async () => {
   const result = await syncCatalog({
-    catalog: await loadCatalog(), published: [published('studio-v2.23.0'), published('studio-v2.24.0')],
+    catalog: await cliOnlyCatalog(), published: [published('studio-v2.23.0'), published('studio-v2.24.0')],
     studioSHA: 'a'.repeat(40), readStudio: async (version) => version === '2.23.0' ? '' : '中立说明。',
     save: async () => {},
   });
