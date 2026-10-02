@@ -242,3 +242,27 @@ test("Studio tag lookup and verbatim rendering stay separate from CLI records", 
   assert.equal(releaseForVersion(catalog, 'studio-v2.24.0').product, 'studio');
   assert.equal(renderGitHubRelease(studio, 'en'), source);
 });
+
+test("the repository owner is never thanked: not collected, not rendered, case-insensitively", async () => {
+  const { contributorsOf } = await import("./generate-release-notes.mjs");
+  const { withoutOwner, repositoryOwner } = await import("../../src/lib/repository-owner.mjs");
+  assert.equal(repositoryOwner, "esengine");
+  assert.deepEqual(withoutOwner(["alice", "EsEngine", "bob"]), ["alice", "bob"]);
+  assert.deepEqual(contributorsOf([{ author: "esengine" }, { author: "alice" }, { author: "alice" }, { author: null }, { author: "ESENGINE" }]), ["alice"]);
+  assert.deepEqual(contributorsOf([{ author: "esengine" }]), []);
+
+  const catalog = await loadCatalog();
+  const base = catalog.releases.find((release) => release.product !== "studio" && release.contributors.length);
+  const markdown = renderGitHubRelease({ ...base, contributors: ["esengine", "alice"] }, "en");
+  assert.doesNotMatch(markdown, /@esengine/);
+  assert.match(markdown, /\[@alice\]/);
+  const alone = renderGitHubRelease({ ...base, contributors: ["esengine"] }, "en");
+  assert.doesNotMatch(alone, /@esengine|## Thanks/);
+});
+
+test("the changelog page filters contributors through the owner helper", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const page = await readFile(new URL("../../src/components/ChangelogPage.astro", import.meta.url), "utf8");
+  assert.match(page, /withoutOwner\(release\.contributors\)/);
+  assert.doesNotMatch(page, /release\.contributors\.(length|map)/);
+});
