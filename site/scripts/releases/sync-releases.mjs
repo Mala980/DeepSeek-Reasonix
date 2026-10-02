@@ -68,8 +68,6 @@ export async function syncCatalog({ catalog, published, studioSHA, readStudio, s
       } else {
         if (!hasModelKey) { pending.push(key); failures.push({ key, reason: 'no model key configured' }); continue; }
         const generated = await generateCLI(release);
-        // Upstream publication is already confirmed; the catalog stays private
-        // on the review branch until a human merges it into the website.
         await save({ ...generated, status: 'published' });
       }
       added.push(key);
@@ -81,22 +79,8 @@ export async function syncCatalog({ catalog, published, studioSHA, readStudio, s
   return { added, pending, failures };
 }
 
-async function github(path) {
-  const response = await fetch(`https://api.github.com/repos/${repository}/${path}`, {
-    headers: { Accept: 'application/vnd.github+json', Authorization: `Bearer ${process.env.GH_TOKEN}`, 'User-Agent': 'reasonix-site-sync' },
-    signal: AbortSignal.timeout(30_000),
-  });
-  if (!response.ok) throw new Error(`GitHub request failed (${response.status})`);
-  return response.json();
-}
-
 async function main() {
-  const published = [];
-  for (let page = 1; ; page++) {
-    const batch = await github(`releases?per_page=100&page=${page}`);
-    published.push(...batch);
-    if (batch.length < 100) break;
-  }
+  const published = JSON.parse(execFileSync('gh', ['api', '--paginate', '--slurp', `repos/${repository}/releases?per_page=100`], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })).flat();
   const studioSHA = git('rev-parse', 'origin/studio');
   const result = await syncCatalog({
     catalog: await loadCatalog(), published, studioSHA,
