@@ -38,7 +38,7 @@ export function studioRecord(release, markdown, sha) {
   const summary = { en: line, zh: line };
   return {
     product: 'studio', version, date: release.published_at.slice(0, 10),
-    channel: release.prerelease ? 'prerelease' : 'stable',
+    channel: 'stable',
     sourceNotes: { language: 'zh', markdown, sha, path: `release-notes/studio/${version}.md` },
     title, summary, surfaces: ['desktop'], guides: [],
     highlights: [{ kind: 'improved', title, body: summary }],

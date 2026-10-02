@@ -20,7 +20,7 @@ test('Studio preserves Chinese source verbatim and validates without CLI targeti
   assert.equal(release.product, 'studio');
   assert.equal(release.sourceNotes.language, 'zh');
   assert.equal(release.sourceNotes.markdown, notes);
-  assert.equal(release.channel, 'prerelease');
+  assert.equal(release.channel, 'stable');
   assert.doesNotThrow(() => validateCatalog({ schemaVersion: 1, releases: [release] }));
   assert.equal(renderGitHubRelease(release), notes);
   const catalog = await loadCatalog();
