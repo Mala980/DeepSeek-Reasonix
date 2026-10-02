@@ -21,6 +21,8 @@ export type ReleaseUpgrade = ReleaseItem & { level: 'info' | 'warning' };
 
 export type ReleaseRecord = {
   version: string;
+  product?: 'cli' | 'studio';
+  sourceNotes?: { language: 'zh'; markdown: string; sha: string; path: string };
   targetingVersion?: 1;
   releaseId?: string;
   baseVersion?: string;
@@ -61,7 +63,8 @@ export const publishedReleases = allReleases.filter(
 );
 // Public navigation contains official releases only. Historical prereleases
 // remain addressable by their exact version URL for compatibility.
-export const releases = publishedReleases.filter((release) => release.channel === 'stable');
+export const studioReleases = publishedReleases.filter((release) => release.product === 'studio');
+export const releases = publishedReleases.filter((release) => release.product !== 'studio' && release.channel === 'stable');
 export const stableReleases = releases;
 export const previewReleases = publishedReleases.filter((release) => release.channel === 'prerelease');
 export const latestStableRelease = stableReleases[0];

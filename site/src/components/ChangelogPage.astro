@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import SiteHeader from './SiteHeader.astro';
 import type { ReleaseItem, ReleaseRecord, ReleaseTarget } from '../data/releases';
 import { releasePath, releaseTargetCount } from '../data/releases';
+import { issueHref, parseStudioNotes } from '../lib/studio-notes.mjs';
 import '../styles/changelog.css';
 
 const { release, releases, canonical } = Astro.props as {
@@ -14,8 +15,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const repo = 'https://github.com/esengine/DeepSeek-Reasonix';
 const prHref = (ref: number) => `${repo}/pull/${ref}`;
 
-const isPreview = release.channel === 'prerelease';
+const isStudio = release.product === 'studio';
+const isPreview = !isStudio && release.channel === 'prerelease';
 const latestForChannel = releases[0];
+const studioDoc = isStudio && release.sourceNotes ? parseStudioNotes(release.sourceNotes.markdown) : null;
+const studioBlocks = studioDoc ? studioDoc.blocks.filter((block, index) => !(index === 0 && block.type === 'paragraph' && studioDoc.summary === release.summary.zh)) : [];
 const downloadHref = isPreview ? 'https://reasonix.io/?download=desktop#start' : release.links.download;
 
 const kindLabel = (kind: string) => ({
@@ -76,7 +80,7 @@ const sectionDefs = [
   ...(release.contributors.length ? [{ id: 'thanks', en: 'Thanks', zh: '致谢' }] : []),
 ];
 const sectionNum = new Map(sectionDefs.map((s, i) => [s.id, String(i + 1).padStart(2, '0')]));
-const tocItems = [...sectionDefs, { id: 'download', en: 'Download', zh: '下载与安装' }];
+const tocItems = [...(isStudio ? [{ id: 'source-notes', en: 'Chinese source notes', zh: '中文原始说明' }] : sectionDefs), { id: 'download', en: 'Download', zh: '下载与安装' }];
 
 /* Version rail: group by minor, show the latest few patches per group,
    older ones behind a native <details> expander. */
@@ -90,8 +94,8 @@ for (const item of releases) {
 }
 const RAIL_VISIBLE = 3;
 
-const titleEn = `Reasonix v${release.version} release notes`;
-const titleZh = `Reasonix v${release.version} 更新日志`;
+const titleEn = `Reasonix${isStudio ? ' Studio' : ''} v${release.version} release notes`;
+const titleZh = `Reasonix${isStudio ? ' Studio' : ''} v${release.version} 更新日志`;
 const description = release.summary.en;
 ---
 
@@ -99,6 +103,10 @@ const description = release.summary.en;
   <SiteHeader active="changelog" scrolled />
 
   <main class="release-stage">
+    <nav class="release-product-tabs" aria-label="Products">
+      <a href={`${base}/changelog/`} aria-current={!isStudio ? 'page' : undefined}>CLI · 1.x</a>
+      <a href={`${base}/changelog/studio/`} aria-current={isStudio ? 'page' : undefined}>Studio · 2.x</a>
+    </nav>
     <div class="release-mobile-switcher">
       <label for="release-version"><span class="l-en">Version</span><span class="l-zh">版本</span></label>
       <select id="release-version" data-release-version>
@@ -151,7 +159,7 @@ const description = release.summary.en;
             {isPreview && <span class="release-channel release-channel--preview"><span class="release-channel__dot"></span><span class="l-en">Historical archive</span><span class="l-zh">历史归档</span></span>}
             <time datetime={release.date}>{release.date}</time>
           </div>
-          <h1>Reasonix v{release.version}</h1>
+          <h1>Reasonix{isStudio ? ' Studio' : ''} v{release.version}</h1>
           <div class="release-surfaces">
             {release.surfaces.map((surface) => {
               const label = surfaceLabel(surface);
@@ -174,6 +182,26 @@ const description = release.summary.en;
           <p class="release-lede"><span class="l-en">{release.summary.en}</span><span class="l-zh">{release.summary.zh}</span></p>
         </header>
 
+        {isStudio && release.sourceNotes && (
+          <section id="source-notes" class="release-section">
+            <div class="release-section__head"><span>01</span><h2><span class="l-en">Chinese source notes</span><span class="l-zh">中文原始说明</span></h2></div>
+            <p class="release-source-link"><a href={release.links.compare}><span class="l-en">View source ↗</span><span class="l-zh">查看原文 ↗</span></a></p>
+            <div class="release-source-notes" lang="zh">
+              {studioBlocks.map((block) => block.type === 'heading' ? (
+                <h3>{block.inline.map((token) => token.type === 'code' ? <code>{token.value}</code> : token.value)}</h3>
+              ) : block.type === 'list' ? (
+                <ul>
+                  {block.items.map((item) => (
+                    <li>{item.map((token) => token.type === 'code' ? <code>{token.value}</code> : token.type === 'ref' ? <a href={issueHref(token.number)} rel="noopener">{token.value}</a> : token.value)}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>{block.inline.map((token) => token.type === 'code' ? <code>{token.value}</code> : token.type === 'ref' ? <a href={issueHref(token.number)} rel="noopener">{token.value}</a> : token.value)}</p>
+              ))}
+            </div>
+          </section>
+        )}
+        {!isStudio && <>
         {release.guides.length > 0 && (
           <section id="guides" class="release-section release-guides">
             <div class="release-section__head"><span>{sectionNum.get('guides')}</span><h2><span class="l-en">Start here</span><span class="l-zh">使用攻略</span></h2></div>
@@ -380,6 +408,8 @@ const description = release.summary.en;
           </section>
         )}
 
+        </>}
+
         <section id="download" class="release-section release-download">
           <div>
             <p class="release-download__kicker"><span class="l-en">Ready when you are</span><span class="l-zh">准备好即可升级</span></p>
@@ -387,7 +417,7 @@ const description = release.summary.en;
           </div>
           <div class="release-download__actions">
           <a class="btn btn-dark" href={downloadHref}><span class="l-en">Download</span><span class="l-zh">下载</span></a>
-            <a class="release-compare" href={release.links.compare}><span class="l-en">Full comparison ↗</span><span class="l-zh">完整差异 ↗</span></a>
+            <a class="release-compare" href={release.links.compare}><span class="l-en">{isStudio ? 'Source notes ↗' : 'Full comparison ↗'}</span><span class="l-zh">{isStudio ? '原始说明 ↗' : '完整差异 ↗'}</span></a>
           </div>
         </section>
       </article>

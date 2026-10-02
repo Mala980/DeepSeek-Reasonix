@@ -104,6 +104,15 @@ export function validateCatalog(catalog) {
     const path = `releases[${index}]`;
     invariant(isObject(release), `${path} must be an object`);
     semverParts(release.version);
+    invariant(release.product === undefined || ["cli", "studio"].includes(release.product), `${path}.product is invalid`);
+    if (release.product === "studio") {
+      invariant(/^2\.\d+\.\d+$/.test(release.version), `${path}.Studio version must be 2.x`);
+      invariant(release.sourceNotes?.language === "zh", `${path}.sourceNotes.language must be zh`);
+      invariant(typeof release.sourceNotes.markdown === "string" && release.sourceNotes.markdown.trim(), `${path}.sourceNotes.markdown must not be empty`);
+      invariant(/^[0-9a-f]{40}$/.test(release.sourceNotes.sha), `${path}.sourceNotes.sha must be a full commit SHA`);
+      invariant(release.sourceNotes.path === `release-notes/studio/${release.version}.md`, `${path}.sourceNotes.path is invalid`);
+      invariant(release.status === undefined, `${path}.Studio does not use CLI publication markers`);
+    }
     invariant(!versions.has(release.version), `duplicate version ${release.version}`);
     versions.add(release.version);
     invariant(/^\d{4}-\d{2}-\d{2}$/.test(release.date), `${path}.date must use YYYY-MM-DD`);
@@ -159,7 +168,7 @@ export function validateCatalog(catalog) {
         );
       }
     }
-    const targetingRequiredByVersion = isCoreVersionAtLeast(release.version, releaseTargetingRequiredFrom);
+    const targetingRequiredByVersion = release.product !== "studio" && isCoreVersionAtLeast(release.version, releaseTargetingRequiredFrom);
     if (targetingRequiredByVersion) {
       invariant(
         release.targetingVersion === 1,
@@ -227,7 +236,7 @@ export async function loadCatalog(path = defaultCatalogPath) {
 }
 
 export function releaseForVersion(catalog, version) {
-  const normalized = String(version).replace(/^(?:desktop-|npm-)?v/, "");
+  const normalized = String(version).replace(/^(?:studio-|desktop-|npm-)?v/, "");
   const release = catalog.releases.find((entry) => entry.version === normalized);
   invariant(release, `release notes for v${normalized} are missing`);
   return release;
@@ -312,6 +321,7 @@ function appendOtherTargetSection(lines, release, lang) {
 }
 
 export function renderGitHubRelease(release, lang = "zh") {
+  if (release.product === "studio") return release.sourceNotes.markdown;
   const isZh = lang === "zh";
   const isPreview = release.channel === "prerelease";
   const channelLabel = isPreview ? (isZh ? "预览版" : "Preview") : (isZh ? "稳定版" : "Stable");

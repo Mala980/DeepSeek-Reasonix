@@ -24,4 +24,4 @@ jobs:
         with:
           node-version: "22"
       - run: node site/scripts/releases/release-notes.mjs validate
-      - run: node --test site/scripts/releases/release-notes.test.mjs
+      - run: node --test site/scripts/releases/*.test.mjs
