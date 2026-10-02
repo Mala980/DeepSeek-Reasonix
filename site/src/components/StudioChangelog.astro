@@ -1,0 +1,25 @@
+---
+import ChangelogPage from './ChangelogPage.astro';
+import Base from '../layouts/Base.astro';
+import SiteHeader from './SiteHeader.astro';
+import { releasePath, studioReleases } from '../data/releases';
+import '../styles/changelog.css';
+const latest = studioReleases[0];
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+{latest ? <ChangelogPage release={latest} releases={studioReleases} canonical={new URL(`${base}${releasePath(latest.version)}`, Astro.site).href} /> : (
+  <Base title="Reasonix Studio release notes" titleEn="Reasonix Studio release notes" titleZh="Reasonix Studio 更新日志" description="Reasonix Studio release notes">
+    <SiteHeader active="changelog" scrolled />
+    <main class="release-stage">
+      <nav class="release-product-tabs" aria-label="Products">
+        <a href={`${base}/changelog/cli/`}>CLI · 1.x</a>
+        <a href={`${base}/changelog/`} aria-current="page">Studio · 2.x</a>
+      </nav>
+      <article class="release-paper release-studio-empty">
+        <h1>Reasonix Studio</h1>
+        <p><span class="l-en">Website notes are awaiting review. Published releases remain available on GitHub.</span><span class="l-zh">网站发布说明正在等待审核。已发布版本可在 GitHub 查看。</span></p>
+        <a href="https://github.com/esengine/DeepSeek-Reasonix/releases">GitHub ↗</a>
+      </article>
+    </main>
+  </Base>
+)}

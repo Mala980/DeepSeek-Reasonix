@@ -403,7 +403,7 @@ test("CLI release links are derived from the validated canonical tag", () => {
   );
   assert.equal(
     cliReleaseModel([release], "stable")?.changelogURL,
-    "https://reasonix.io/changelog/",
+    "https://reasonix.io/changelog/cli/",
   );
   release.release_notes_url = "https://reasonix.io/changelog/v1.18.0/";
   assert.equal(cliReleaseModel([release], "stable")?.changelogURL, release.release_notes_url);
