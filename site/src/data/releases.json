@@ -2,6 +2,1606 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "product": "studio",
+      "version": "2.25.0",
+      "date": "2026-10-02",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版加入子代理记录入口、文件管理器菜单与经同意的 URL 征询，并修复 Windows 远端打不开项目、存储迁移丢项目清单、引导按钮点不到、远端用 nvm 装的 npm 找不到、模型因上下文提示提前停手、底部栏数字跳动等问题。\n\n## 新增\n\n- 右下角的子代理读数在委派结束后保留，可点开完整记录；嵌套输出被截断时可「显示全部」 (#11529, #11505)\n- 项目「⋯」菜单新增「在文件管理器中显示」 (#11533, #11524)\n- MCP 服务器要用户去浏览器完成外部步骤时，改为经同意的 URL 征询，回环与私有地址会警告 (#11475)\n- 手动调整的项目顺序会被保存，并且不改变启动时打开的项目 (#11458)\n- 无头 `reasonix run` 在未信任目录里被拒绝时，会说明原因与补救办法 (#11494, #11493)\n- 指南新增「Hooks」一节，说明事件、settings.json 写法、退出码与限制 (#11562)\n- 没有本机文件夹选择器的浏览器/无头部署，「打开项目」改为弹出路径输入框，按内核所在机器上的路径添加工作区 (#11613, #11574)\n- 新增会话开始时注入上下文的作者示例包 (#11590)\n\n## 变更\n\n- 输入框右键的编辑菜单（剪切、复制、粘贴等）跟随界面语言 (#11530, #11524)\n- 用户自己取消的回合不再画成错误卡，输入框显示「已取消」 (#11551, #11559)\n- 上下文预算与「引导未生效」提示按界面语言显示，终端对用户原文做清洗并限长 (#11552, #11524)\n- 排队暂停的原因按界面语言显示，不再出现英文内核原文 (#11555)\n- 用户跳过提问后，排队的引导按原顺序继续派发；停止、报错、超时仍保持暂停 (#11563)\n- 启动时不再同步整理会话历史，改为后台进行，历史很多的机器冷启动更快 (#11488)\n- 添加来源时，名称规则在输入框旁即时提示，不再显示成「无法连接」 (#11585)\n- 流式 diff 围栏逐块着色，多文件 diff 的文件头按普通样式绘制 (#11419)\n- 会话行右键打开菜单，版本角标不再被悬停按钮压住 (#11588)\n- 反馈提交遇到服务端无法识别的回应时自动重试一次，仍失败则提示已填内容保留并给出「去 GitHub」入口 (#11618, #11608)\n- 补充技能目录、MCP 依赖就绪、sidecar 与前端交付的指南和示例 (#11511, #11514, #11523, #11537, #11542, #11547, #11481)\n\n## 修复\n\n- Windows 远端主机：绝对路径不再拼到远端家目录后面，Windows 项目现在能打开 (#11541, #11539)\n- 存储迁移现在会带走项目清单、长期指令、记忆和计划任务，并为已迁移的安装补回遗漏的内容 (#11548, #11550)\n- 首次运行的连接卡片在矮窗口里可以滚动，「开始」按钮不再点不到 (#11565, #11561)\n- 托盘图标在缩放的显示器上不再发虚 (#11545, #11544)\n- 切换连接后，MCP 安装、包操作、运行时重载和行内确认不再沿用上一个连接的状态 (#11486, #11489, #11496, #11498)\n- MCP 安装部分失败后重试会保留已保存的结果并刷新清单，确认期间控件保持稳定 (#11499, #11500, #11509)\n- 插件安装中来源不再被改，新插件的安装确认与导出失败原因得以保留，导出结果行自动展开 (#11502, #11519, #11520, #11521, #11522)\n- 备份恢复里选中的插件不再串到别的项，作者安装通知退出登录后保留，审核结果在并发刷新后保留 (#11510, #11485, #11592)\n- 市场投票查询失败后可重试，发布草稿提交中保持稳定，安装检查快捷键加了保护，安装中的来源输入框变暗 (#11558, #11532, #11497, #11528)\n- 远端主机引导改用远端用户自己的登录 shell 环境取得 PATH，nvm 等装的 npm 与 reasonix 不再找不到 (#11624, #11619)\n- 上下文预算提示明确说明压缩是自动的、任务会继续，模型不再因它而停手交还任务 (#11601, #11603)\n- 引导页布局跟随缩放后的宽度折叠 (#11596)\n- 来源名称用输入法组词时，「添加来源」保持禁用，不再误提交半截名称 (#11614, #11586)\n- 生成速度变化时，底部栏数字不再让后面的项左右跳动 (#11629, #11630)\n- 个别字体下，侧栏页脚、模型名和文件栏的单行文字不再被上下裁掉 (#11632, #11631)\n- 导出的插件包重装后保留钩子脚本的可执行权限，「我的发布」随当前账号切换 (#11599, #11595)\n- 插件、MCP 安装与包移除后，运行时重载失败的原因和重试入口得以保留 (#11602, #11604, #11609, #11611)\n- 旧版恢复链现在整条一起归档，不再只覆盖可见的首行 (#11610, #11581)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.25.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.25.0",
+        "zh": "Reasonix Studio v2.25.0"
+      },
+      "summary": {
+        "en": "本版加入子代理记录入口、文件管理器菜单与经同意的 URL 征询，并修复 Windows 远端打不开项目、存储迁移丢项目清单、引导按钮点不到、远端用 nvm 装的 npm 找不到、模型因上下文提示提前停手、底部栏数字跳动等问题。",
+        "zh": "本版加入子代理记录入口、文件管理器菜单与经同意的 URL 征询，并修复 Windows 远端打不开项目、存储迁移丢项目清单、引导按钮点不到、远端用 nvm 装的 npm 找不到、模型因上下文提示提前停手、底部栏数字跳动等问题。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.25.0",
+            "zh": "Reasonix Studio v2.25.0"
+          },
+          "body": {
+            "en": "本版加入子代理记录入口、文件管理器菜单与经同意的 URL 征询，并修复 Windows 远端打不开项目、存储迁移丢项目清单、引导按钮点不到、远端用 nvm 装的 npm 找不到、模型因上下文提示提前停手、底部栏数字跳动等问题。",
+            "zh": "本版加入子代理记录入口、文件管理器菜单与经同意的 URL 征询，并修复 Windows 远端打不开项目、存储迁移丢项目清单、引导按钮点不到、远端用 nvm 装的 npm 找不到、模型因上下文提示提前停手、底部栏数字跳动等问题。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.25.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.25.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.24.0",
+      "date": "2026-10-01",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版加入应用内反馈和每个模型单独的上下文设置，并修复重启后首次启动误报、远程中转断线原因不明等问题。\n\n## 新增\n\n- 应用内反馈：可附截图和昵称，得到受理编号，并在「我的反馈」里查看进度、维护者回复和追问 (#11432, #11435, #11445, #11446)\n- 终端支持 `/feedback`，可提交反馈、查看进度并回复 (#11432, #11445)\n- 每个模型可单独设置上下文窗口和最大输出，未设置的沿用服务商的值 (#11422)\n- 技能支持 `disable-model-invocation`（禁止模型调用）和 `user-invocable`（不出现在斜杠列表） (#11439)\n- MCP 服务器可单独禁用其中的某个工具 (#11468)\n- 市场插件可以来自 GitHub 仓库的子目录 (#11449)\n- 终端问答在答完最后一题时可自动提交，默认关闭 (#11357)\n\n## 变更\n\n- 远程中转连接失败时分别提示来源被拒、被限流、离线、网关不可达等具体原因 (#11438)\n- 启动等待延长到 60 秒，3 秒后显示「正在启动」窗口，提前退出时自动重试一次 (#11479)\n- 市场读取失败可重试，并在重试后保持焦点 (#11442, #11444, #11465)\n- 安装信任披露按界面语言显示，自动化事件名称也一样 (#11453, #11454)\n- 更新或安装进行中，对应的行和设置导航会被锁定，避免并发操作 (#11450, #11460, #11469)\n\n## 修复\n\n- Git Bash 不在默认位置时也能被找到，并排除 WSL 转发程序 #11421\n- 删除项目后重启不再因为启动目录而重新出现 #11418\n- 重启电脑后首次打开不再直接报「内核没给握手」 #11434\n- 切换连接后，市场和发布表单不再沿用另一个连接的状态 (#11466, #11478, #11480)\n- 插件包里的 MCP 服务显式连接时保留所属的包 (#11476)\n- 存储面板遇到超大目录不再拖慢 (#11389)\n- DNS 解析失败不再被报成连接重置 (#11394)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.24.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.24.0",
+        "zh": "Reasonix Studio v2.24.0"
+      },
+      "summary": {
+        "en": "本版加入应用内反馈和每个模型单独的上下文设置，并修复重启后首次启动误报、远程中转断线原因不明等问题。",
+        "zh": "本版加入应用内反馈和每个模型单独的上下文设置，并修复重启后首次启动误报、远程中转断线原因不明等问题。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.24.0",
+            "zh": "Reasonix Studio v2.24.0"
+          },
+          "body": {
+            "en": "本版加入应用内反馈和每个模型单独的上下文设置，并修复重启后首次启动误报、远程中转断线原因不明等问题。",
+            "zh": "本版加入应用内反馈和每个模型单独的上下文设置，并修复重启后首次启动误报、远程中转断线原因不明等问题。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.24.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.24.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.23.0",
+      "date": "2026-09-30",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版让终端能把 diff 排成可读的差异视图，市场可以在明确信任后安装未固定版本的已批准包，更新优先走镜像并支持续传，并补上模型服务空闲超时。\n\n## 新增\n\n- 终端里的 diff 或 patch 代码块、以及整段输出就是 diff 的命令结果，会渲染成差异视图，也可用 `[cli].diff_formatter` 指定外部格式化命令 (#11201)\n- 可以为每个模型服务单独设置流空闲超时 `idle_timeout_seconds`，超时后中止等待 (#11258)\n- 市场里已批准但未固定版本的包，在你明确表示信任后可以安装 (#11317)\n- 市场优先展示可安装的条目，并标出已安装的能力 (#11292)\n- 新会话默认使用的沙盒与终端姿态取决于沙盒声明和文件夹信任 (#11298, #11256)\n- 对话内查找改为 Ctrl+F 能真正触发 (#11236)\n- 可以在「记住的规则」里撤销项目规则 (#11177)\n- 可以在模型服务设置里给服务改显示名，不影响它的标识和已有会话 (023f20e97)\n- 技能名称支持 Unicode，MCP 标识不受影响 (42e9c7ce2)\n\n## 变更\n\n- 更新下载优先走镜像，镜像不可用时才回退 GitHub (#11322)\n- 完整安装包下载可以断点续传，增量更新文件放在另一个磁盘卷时也能正常使用 (#11325)\n- 市场信任徽章的文案更清楚，翻页不再出现重复条目 (#11335, #11337)\n- 终端里以 ! 开头的命令只在本地运行，不再触发一轮模型对话 (#11262)\n\n## 修复\n\n- 打开 1.x 写的会话不再丢掉它的上下文压缩摘要 (ac30722a7)\n- 命令实时进度中的非 UTF-8 输出（如 Windows 中文代码页）不再乱码 (#11327)\n- 不带终端直接运行 `reasonix` 时退出码为 0，与 1.x 一致 (#11278)\n- 无头模式在模型正常结束时退出码为 0，结论写进结果里 (#11285)\n- 无头模式恢复 1.x 的 stream-json 与 events-jsonl 行格式 (#11277)\n- npm 包来源可以使用精确的语义化版本固定 (#11351)\n- 模型服务拒绝连接时立即报错，不再空等 (c906f3cd4)\n- 无头运行的错误输出保持干净，诊断信息放到 `run --debug` 后面 (a062240d9)\n- 从 macOS 程序坞点击图标可以恢复已关闭的窗口 (#11221)\n- 回复可以从它自己所在的轮次重新生成 (#11279)\n- 过期的提问卡片会在恢复历史前清掉 (465d7e7dd)\n- 空草稿不再显示发送箭头 (78a67947e)\n- 项目菜单里过长的工作区路径会自动换行 (d1a27868e)\n- 保存用户配置时只改写你改过的键，并保留项目服务商的来源 (3e5607272, 162ee3edb)\n- Windows 命令行过长时会明确指出长度限制 (9f789f9ab)\n- 终端每一行都按终端的宽度完整绘制 (34ef4b033)\n- 医生检查不再误报缺少 use_capability (fb7e7c381)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.23.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.23.0",
+        "zh": "Reasonix Studio v2.23.0"
+      },
+      "summary": {
+        "en": "本版让终端能把 diff 排成可读的差异视图，市场可以在明确信任后安装未固定版本的已批准包，更新优先走镜像并支持续传，并补上模型服务空闲超时。",
+        "zh": "本版让终端能把 diff 排成可读的差异视图，市场可以在明确信任后安装未固定版本的已批准包，更新优先走镜像并支持续传，并补上模型服务空闲超时。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.23.0",
+            "zh": "Reasonix Studio v2.23.0"
+          },
+          "body": {
+            "en": "本版让终端能把 diff 排成可读的差异视图，市场可以在明确信任后安装未固定版本的已批准包，更新优先走镜像并支持续传，并补上模型服务空闲超时。",
+            "zh": "本版让终端能把 diff 排成可读的差异视图，市场可以在明确信任后安装未固定版本的已批准包，更新优先走镜像并支持续传，并补上模型服务空闲超时。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.23.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.23.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.22.0",
+      "date": "2026-09-29",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版加强了项目配置的安全边界：仓库自带的配置只能收紧你的设置，项目声明的程序首次使用前需要你批准。同时新增 OpenAI Pro 模式、更完整的推理档位、四个一键服务商预设、长时间无进展提示和输入框草稿保存。\n\n## 新增\n\n- 在 GPT-5.6、GPT-6（OpenAI Responses 接口）上可以在推理强度菜单里打开 Pro 模式，只对当前会话生效，会消耗更多 token (#11194)\n- 推理档位覆盖 GPT-5.6、GPT-6 和通义 Qwen3.8 的完整档位，菜单里选的档位会原样发给模型 (#11166)\n- 新增 OpenRouter、OpenAI、Gemini 和火山方舟 Coding Plan 四个一键服务商预设 (#11193)\n- 连续多轮没有可观察的进展时，输入框上方会给出提示，可以直接停止；阈值在「设置 → 会话」里调整 (#11160)\n- 模型反复输出同一段文字时，输入框上方会给出提示，默认不打断也不改动对话 (#11183)\n- 输入框里没发出去的文字会按会话保存，刷新页面或重新打开会话后恢复 (#9580)\n- 可以在用户配置 `[tools.shell.env]` 里为 bash 工具预设环境变量 (#11163)\n- 新增技能编写指南 `docs/SKILLS.md` (#11191)\n- 模型服务设置里可以按模型单独设置推理档位，同一个中转接入下不同厂商的模型各用各的档位 (#11192)\n- 命令行界面可以在用户配置里设置 `ui.commandmode = \"vi\"`，开启 vi 命令模式 (#11074)\n- 工作台资源管理器新增「显示隐藏文件」按钮，默认关闭；版本库目录和 node_modules 始终不显示 (#11203)\n\n## 变更\n\n- 项目的 `reasonix.toml` 和 `.reasonix/settings.json` 只能让沙盒、权限和审批设置更严格，不能再放宽 (#11208)\n- 项目声明的钩子、语言服务器、模型服务商、shell、ripgrep、浏览器等程序，首次使用前需要你批准；声明或相关文件变化后会再次询问 (#11208)\n- 在项目里选择的「总是允许」改为保存在你的 Reasonix 主目录，不再写进仓库 (#11208)\n- 沙盒可写目录在会话中保持首次授权时的位置，被替换成链接后不再授予写权限 (#11208)\n- 更新下载并校验完成后由你决定何时重启，有任务在运行时会先提示；只有主动回退才会固定版本 (#11196)\n- 更新没有生效时会说明原因，并给出完整安装包的下载链接 (#11196)\n- 内置浏览器面板只在真正被遮挡时才暂停，并显示网页的最后一帧，不再误判页面被遮住 (#11198)\n- MCP 服务向你提问时，系统通知会注明是哪个服务在问，并截短过长的内容 (#10950)\n- `/memory recall` 分别列出因条数上限和字数预算而省略的记忆 (#11170)\n\n## 修复\n\n- 手机在同一网络直连时，工作台里的文件可以正常打开，窄屏下文件列表和文件内容轮流显示 (#11205)\n- 手机直连长时间使用后卡住、切换不了会话的问题：连续收不到心跳时会自动重连并接着接收 (#11207)\n- 文件列表开着时，关掉最后一个标签不再收起整个工作台 (#11204)\n- 去掉速度指示前面多余的仪表盘图标 (#11202)\n- 中等宽度下输入框工具栏溢出、发送按钮压住推理强度选择器的问题 (#11159)\n- 点击网页元素时误报被其他元素遮挡的问题 (#11195)\n- OpenAI 预设改走 Responses 接口，GPT-6 调用工具不再出错 (#11199)\n- 英文界面下回退菜单的范围标签显示为中文的问题 (#11179)\n- 记忆索引不可读时，恢复归档和迁移旧记忆会先报错，不再留下写了一半的状态 (#11167, #11172)\n- `--continue --copy` 在没有历史会话时改为直接开始新会话 (#10945)\n\n## 升级须知\n\n- 项目声明的程序需要批准一次：在项目目录运行 `reasonix trust` 查看，`reasonix trust --yes` 批准；钩子也可以在钩子设置页批准 (#11208)\n- 同一仓库的每个工作树、每个其他文件夹都需要分别批准 (#11208)\n- `tools.shell.path`、`tools.search.rg_path` 和浏览器路径不能再指向工作区、临时目录或工具链缓存里的程序，请改为已安装的程序 (#11208)\n- 只指向未批准项目服务商的模型设置会回落到你自己的设置；项目里不再生效的设置会在加载时以警告列出 (#11208)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.22.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.22.0",
+        "zh": "Reasonix Studio v2.22.0"
+      },
+      "summary": {
+        "en": "本版加强了项目配置的安全边界：仓库自带的配置只能收紧你的设置，项目声明的程序首次使用前需要你批准。同时新增 OpenAI Pro 模式、更完整的推理档位、四个一键服务商预设、长时间无进展提示和输入框草稿保存。",
+        "zh": "本版加强了项目配置的安全边界：仓库自带的配置只能收紧你的设置，项目声明的程序首次使用前需要你批准。同时新增 OpenAI Pro 模式、更完整的推理档位、四个一键服务商预设、长时间无进展提示和输入框草稿保存。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.22.0",
+            "zh": "Reasonix Studio v2.22.0"
+          },
+          "body": {
+            "en": "本版加强了项目配置的安全边界：仓库自带的配置只能收紧你的设置，项目声明的程序首次使用前需要你批准。同时新增 OpenAI Pro 模式、更完整的推理档位、四个一键服务商预设、长时间无进展提示和输入框草稿保存。",
+            "zh": "本版加强了项目配置的安全边界：仓库自带的配置只能收紧你的设置，项目声明的程序首次使用前需要你批准。同时新增 OpenAI Pro 模式、更完整的推理档位、四个一键服务商预设、长时间无进展提示和输入框草稿保存。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.22.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.22.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.21.0",
+      "date": "2026-09-28",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版开始建设 Studio 的扩展生态：设置里新增社区市场，可以浏览、安装和发布技能、插件、MCP 服务器与主题；登录账号后还能把配置备份到云端。同时加强了本地服务、宿主 git 和沙盒的安全边界。\n\n## 新增\n\n- 设置 → 扩展新增「发现」页，可浏览社区市场并安装技能、插件和 MCP 服务器；只安装经过审核、绑定了内容摘要的版本，内容与审核时不一致会拒绝安装 (#11107)\n- 登录后可以从 Studio 直接发布技能、插件、MCP 服务器和主题到社区市场，并查看每次提交的审核状态 (#11112)\n- 发布时可选「仅自己可见」：私有包不进入公开列表，发布者本人无需等待审核即可安装自己的包 (#11135)\n- 市场支持赞和踩，每人每个包各一次；列表按下载、赞踩等综合权重推荐排序 (#11128, #11129, #11130)\n- 登录账号后可选择把配置备份到云端，并在其他电脑上恢复；可按类别勾选设置、扩展、记忆和自动化，API 密钥默认不备份；未登录时不提供此功能 (#11109)\n- 备份用你设置的口令加密后才上传，服务器读不到内容；恢复时会运行程序的条目需你逐项同意，审批模式、权限和沙盒设置不会被恢复 (#11109)\n- 在输入框里选择技能或子代理会插入标签，而不是纯文本；行中任意位置输入 `/` 都能唤出菜单 (#11149)\n\n## 变更\n\n- 市场列表每行最多两行，窄屏下截断而不溢出；新增「只看可安装」筛选 (#11126)\n- 本地服务默认要求身份验证，审批等改变状态的请求必须带启动令牌；`[serve]` 设置只从用户级配置读取 (#11110)\n- 宿主自己运行的 git 命令不再执行仓库配置的程序；沙盒内的命令不能改写工作区仓库的 `.git/config` 和 hooks（macOS、Linux） (#11110)\n- 计划里写明要改的文件而这一轮没有任何改动时，不会判为完成，并提示可选的三种处理方式 (#11095)\n\n## 修复\n\n- 手机上模型和推理强度选择器被发送按钮挡住、点不开的问题 (#11120)\n- 手机加入正在运行的会话时，正确显示运行中状态 (#11133)\n- Windows 安装在 Program Files 或与更新缓存不同的磁盘时，不再尝试无法完成的增量更新，改用完整更新 (#11121)\n- DeepSeek 的 Anthropic 接口在思考模式下调用工具时不再报 400 错误 (#11061)\n- 用量面板的金额与会话使用同一币种 (#11154)\n- 提问卡片的标题在英文界面下正确翻译 (#11102)\n- 直接打开 studio.reasonix.io 时跳转到设备选择页，而不是提示连不上内核 (#11098)\n- 记忆文档或索引读取失败时报错，不再把原有内容当作空文件覆盖 (#11142, #11143)\n- 恢复已归档的记忆时执行与保存时相同的校验 (#11148)\n\n## 升级须知\n\n- 本地服务现在默认要求身份验证。如果你用脚本或其他工具直接调用 `reasonix serve`，需要带上启动令牌 (#11110)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.21.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.21.0",
+        "zh": "Reasonix Studio v2.21.0"
+      },
+      "summary": {
+        "en": "本版开始建设 Studio 的扩展生态：设置里新增社区市场，可以浏览、安装和发布技能、插件、MCP 服务器与主题；登录账号后还能把配置备份到云端。同时加强了本地服务、宿主 git 和沙盒的安全边界。",
+        "zh": "本版开始建设 Studio 的扩展生态：设置里新增社区市场，可以浏览、安装和发布技能、插件、MCP 服务器与主题；登录账号后还能把配置备份到云端。同时加强了本地服务、宿主 git 和沙盒的安全边界。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.21.0",
+            "zh": "Reasonix Studio v2.21.0"
+          },
+          "body": {
+            "en": "本版开始建设 Studio 的扩展生态：设置里新增社区市场，可以浏览、安装和发布技能、插件、MCP 服务器与主题；登录账号后还能把配置备份到云端。同时加强了本地服务、宿主 git 和沙盒的安全边界。",
+            "zh": "本版开始建设 Studio 的扩展生态：设置里新增社区市场，可以浏览、安装和发布技能、插件、MCP 服务器与主题；登录账号后还能把配置备份到云端。同时加强了本地服务、宿主 git 和沙盒的安全边界。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.21.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.21.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.20.4",
+      "date": "2026-09-27",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版正式打通 Web Studio 与桌面 Studio：手机或其他浏览器可通过同一账号安全连接家中电脑，看到并操作同一套会话；桌面端会明确显示谁正在远程控制，并可随时断开。\n\n## 新增\n\n- Web Studio 现在使用完整的 Studio 界面，通过端到端加密的远程通道访问电脑上的同一内核、工作区、会话与模型配置，不再是另一套简化控制页 (#11054, #11053)\n- 桌面端顶部新增统一的「设备访问」状态：显示互联网远程设备数量、稳定的设备编号、Web Studio 在线状态，以及连接和离开提示 (#11058)\n- 桌面端可对互联网远程设备执行两步确认断开；中转服务只允许同账号的电脑端关闭对应控制连接 (#11057, #11058)\n- ACP 客户端可收到上下文用量和会话费用 (#11083)\n- 发往模型服务的请求带上 `Reasonix/<版本>` 标识 (#11063)\n\n## 变更\n\n- 从 Web Studio 发出的消息在桌面端标注「来自 设备 N」，两端看到同一条会话和回复，便于确认当前操作来源 (#11058)\n- 即使没有开启局域网手机访问，桌面端仍会持续显示互联网远程设备状态；局域网开关不会影响同账号 Web Studio (#11058)\n- 远程请求超时、连接断开和身份校验错误改为中文可操作提示；请求错误固定在右下角悬浮显示，主动断开后提供「重新连接」入口 (#11058)\n- 只有完成端到端加密握手的 Web Studio 才会出现在桌面设备列表；中转服务只转发密文，无法读取会话和文件内容 (#11054, #11058)\n- 断开命令由本机窗口发起，并同时校验账号和单次连接标识，不能跨账号关闭其他人的连接 (#11057)\n- 打开 Web Studio 时授权请求与页面加载并行进行，连接更快 (#11067)\n- 计划里写明要改的文件时，这一轮什么都没改就不会判为完成 (#11060, #11056)\n- 计划步骤的检查命令在最近一次改动之后跑通即可放行，不再要求额外引用；没有检查命令的步骤不再阻塞 (#11046)\n- `edit` 找不到 `old_string` 时会指出是空行数量不同；空行数量不同但其余一致时也能匹配 (#11064, #10946)\n\n## 修复\n\n- Windows 上 Studio 启动失败时弹窗说明原因，并在日志目录写下 `shell.log` 与 `host.log`（敏感参数已打码） (#11069)\n- Windows 安装包内的全部 exe 和 dll 都已签名，开启智能应用控制的电脑不再因未签名的组件拒绝启动 (#11080, #11091)\n- 重新打开会话后，已回答的提问仍可阅读 (#11078)\n- 写文件的工具调用返回后，资源管理器立即刷新 (#11068)\n- 只包含一个网址的行内代码可点击打开 (#11070)\n- `PATH` 缺少 `%SystemRoot%` 时也能打开主题文件夹 (#11084)\n- Anthropic 模型在结果增量里返回的网页搜索结果能正常显示 (#11087)\n- 在 Studio 里通过 ACP 输入的技能调用保持原样发送 (#11045)\n- 无法归类的计划检查命令不再让自己永远等待下一次运行 (#11090)\n\n## 升级须知\n\n- 使用 Web Studio 完整远程控制与桌面端在线提示，需要电脑上的 Reasonix Studio 升级到 2.20.4；旧版仍会显示为不支持完整桌面能力 (#11058)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.20.4.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.20.4",
+        "zh": "Reasonix Studio v2.20.4"
+      },
+      "summary": {
+        "en": "本版正式打通 Web Studio 与桌面 Studio：手机或其他浏览器可通过同一账号安全连接家中电脑，看到并操作同一套会话；桌面端会明确显示谁正在远程控制，并可随时断开。",
+        "zh": "本版正式打通 Web Studio 与桌面 Studio：手机或其他浏览器可通过同一账号安全连接家中电脑，看到并操作同一套会话；桌面端会明确显示谁正在远程控制，并可随时断开。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.20.4",
+            "zh": "Reasonix Studio v2.20.4"
+          },
+          "body": {
+            "en": "本版正式打通 Web Studio 与桌面 Studio：手机或其他浏览器可通过同一账号安全连接家中电脑，看到并操作同一套会话；桌面端会明确显示谁正在远程控制，并可随时断开。",
+            "zh": "本版正式打通 Web Studio 与桌面 Studio：手机或其他浏览器可通过同一账号安全连接家中电脑，看到并操作同一套会话；桌面端会明确显示谁正在远程控制，并可随时断开。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.20.4",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.20.4.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.20.3",
+      "date": "2026-09-27",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版让内置浏览器工具有了独立开关，工作台能用满宽屏，模型服务可调整顺序，并修复行内技能调用发给模型的内容。\n\n## 新增\n\n- 设置 → 工具新增「内置浏览器」开关，由 `[tools] browser_tools` 决定，未设置时开启；项目配置覆盖时显示实际生效的值 (#10898)\n- 模型服务可在设置中调整顺序，输入框的模型菜单和模型偏好按同样顺序列出；聚焦某一行时可用 Alt+↑/↓ 移动 (#10864)\n\n## 变更\n\n- 宽屏窗口中右侧工作台最宽可拉到 1600px；窗口变窄时暂时收窄，再变宽时恢复你拖出的宽度 (#10990)\n- 模型用 `python -c` 等临时脚本自检时，会被告知这为何不算验证，并列出可认的验证命令 (#11001)\n- 后来的计划删掉已接受的验证命令时，交由你审批，不再由规划器自行决定 (#11024)\n- 发布页为引用的合并请求注明作者、为问题注明修复它的合并请求，并在末尾列出贡献者 (#10984)\n\n## 修复\n\n- 只输入 `/技能名` 或只放一个技能标签时，技能以与模型调用相同的形式发出，不再作为原始技能正文夹在你的消息里 (#11008)\n- 行内调用技能后，不再把技能正文里提到的其他技能当作必须调用，记忆检索按你输入的任务而非技能正文进行 (#11020)\n- 只把待办标记为完成、没有其他动作的回合，完成回执不再显示为「完成」 (#11014)\n- 前台子代理用 `sed -i` 等命令改动的文件能被识别，不再留下无法消除的未证实改动 (#11009, #11013)\n\n## 升级须知\n\n- 内置浏览器工具不再读取与 1.x 共用的 `[browser] enabled`：1.x 写入的 `enabled = false` 不会再关掉 Studio 的浏览器，Studio 保存设置也不会改动它 (#10898)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.20.3.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.20.3",
+        "zh": "Reasonix Studio v2.20.3"
+      },
+      "summary": {
+        "en": "本版让内置浏览器工具有了独立开关，工作台能用满宽屏，模型服务可调整顺序，并修复行内技能调用发给模型的内容。",
+        "zh": "本版让内置浏览器工具有了独立开关，工作台能用满宽屏，模型服务可调整顺序，并修复行内技能调用发给模型的内容。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.20.3",
+            "zh": "Reasonix Studio v2.20.3"
+          },
+          "body": {
+            "en": "本版让内置浏览器工具有了独立开关，工作台能用满宽屏，模型服务可调整顺序，并修复行内技能调用发给模型的内容。",
+            "zh": "本版让内置浏览器工具有了独立开关，工作台能用满宽屏，模型服务可调整顺序，并修复行内技能调用发给模型的内容。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.20.3",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.20.3.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.20.2",
+      "date": "2026-09-27",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版让 Studio 有了独立的匿名遥测，图片多的会话不再把自己写坏，评测报告会写明是哪类未完成义务导致分歧。\n\n## 修复\n\n- Studio 启动时没有开启遥测报告，服务端只统计到 1.x；现在以 `studio` 单独计数，仍遵守现有的隐私开关与 `DO_NOT_TRACK` (#10982)\n- 图片改为按内容哈希存进会话目录，事件日志只存引用，不会再超过 128 MiB 后无法读取；超限的旧会话可以重新打开 (#10970)\n- 评测分歧不再只显示笼统的 `obligation.outstanding`，报告会带上未完成义务的类型（不含内容） (#10980)\n\n## 升级须知\n\n- 带图片的会话改用 schema 3 格式，旧版 Studio 和 1.x 会拒绝打开它，避免把看不懂的图片引用存坏；纯文本会话格式不变 (#10970)\n- 遥测不上传对话、项目文件、提示词、账号邮箱或模型内容，启动统计按匿名安装标识每天去重 (#10982)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.20.2.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.20.2",
+        "zh": "Reasonix Studio v2.20.2"
+      },
+      "summary": {
+        "en": "本版让 Studio 有了独立的匿名遥测，图片多的会话不再把自己写坏，评测报告会写明是哪类未完成义务导致分歧。",
+        "zh": "本版让 Studio 有了独立的匿名遥测，图片多的会话不再把自己写坏，评测报告会写明是哪类未完成义务导致分歧。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.20.2",
+            "zh": "Reasonix Studio v2.20.2"
+          },
+          "body": {
+            "en": "本版让 Studio 有了独立的匿名遥测，图片多的会话不再把自己写坏，评测报告会写明是哪类未完成义务导致分歧。",
+            "zh": "本版让 Studio 有了独立的匿名遥测，图片多的会话不再把自己写坏，评测报告会写明是哪类未完成义务导致分歧。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.20.2",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.20.2.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.20.1",
+      "date": "2026-09-27",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版带来与 1.x 聊天界面一致的终端界面，并能打开 1.x 保存的会话；bash 外连可限制到指定域名；「模型服务」设置独立成页；另修复一批用户报告的问题。\n\n## 新增\n\n- 新的终端界面：在终端里直接运行 `reasonix`（或 `reasonix tui`）即可打开，外观和操作与 1.x 聊天界面一致 (d58a02719, c5b651bea)\n- 终端界面默认全屏，带滚动条、滚轮和拖选复制；`--inline` 则把对话写进终端的回滚区 (6146fb508, 7519957fb, 6cd950890, a7ffbd48e)\n- 终端界面接受 1.x 的会话选项：`--effort`、`--permission-mode`、`--yolo`、`--add-dir`、`--allowed-tools` 等 (a7ffbd48e)\n- `--permission-mode` 也认得 1.x 的 `workspace-write`、`danger-full-access` 等名称 (3047105ea)\n- 终端界面：`-r` 或 `/resume` 可挑选要继续的会话；Ctrl+V（Windows 上为 Alt+V）可粘贴截图；Ctrl+B 可展开长的 shell 输出 (4ad09c665, 4b9ec9298)\n- 终端界面：提问逐题作答；输入 `/` 或 `@` 弹出补全；显示任务列表；需要你处理时发出系统通知 (3579dbbd3, 5ff9d7a0f)\n- 终端界面全屏时，点击或按 Ctrl+O 可展开回答的思考过程 (#10917 by @esengine)\n- 终端界面新增 `/version`，显示当前构建版本 (#10793 by @onionviolet, #10828 by @onionviolet)\n- 终端界面和 ACP 编辑器里，以 `!` 开头的一行直接运行你自己的命令，模型会读到命令、退出码和输出后接着回答 (72e5d8ddb, e86fd8f88, ed499c4ca)\n- 可列出并打开 1.x 保存在 sessions-v4 中的会话，以及 1.38.2–1.38.7 保存的 schema 2 会话；继续对话时另存为新的 2.x 会话，1.x 的原文件保持不变 (454d1da76, 2c63162b6)\n- `--continue` 找不到已保存的会话时改为开启新会话，不再直接退出 (#10815 by @BuGlessRB)\n- `[sandbox] allowed_domains` 可把 bash 的外部网络限制到指定域名；名单外的域名会询问你是否放行，可选仅本次或本会话；macOS 与 Linux 生效 (45f28b677, a250e3139, ebb278cec)\n- Agent 读过的文件若之后被你或其他程序改过，`write_file` 会拒绝整体覆盖并要求先重读；可用 `[tools].protect_changed_files` 或 Studio 沙盒设置关闭 (79c984b32)\n- 开启 `[agent] worktree_isolation` 后，`task` 可让负责写入的子代理在独立的 git 工作树中运行，结果由你决定应用还是丢弃 (9da268b76)\n- 设置中的「模型服务」独立成页，左侧列出服务、右侧直接编辑；「模型偏好」改为一张按用途选模型的表 (a11c9bf95, 186e75abb)\n- 资源管理器可在系统文件管理器中显示文件或文件夹 (#10862 by @esengine)\n- 新增「只看改动」折叠方式：只展开改动过文件的步骤 (#10875 by @esengine)\n- 输入框下方新增眼睛按钮，可隐藏钱包余额和会话花费，方便共享屏幕 (#10959 by @esengine)\n- 在侧栏选中会话后按 Delete（macOS 为 ⌘+Backspace）可删除，同样需要确认 (#10960 by @esengine)\n- 窗口变空白时可按 Ctrl+R / ⌘R 或 F5 重新加载；渲染进程崩溃时自动重新加载 (#10940 by @esengine)\n- Linux 与 Windows 上按 F11 进入全屏 (#10899 by @esengine)\n- 后台任务可在列表中停止 (74ae5a337)\n- 编辑消息、重新生成或回退时，被截掉的对话保存为一个版本，挂在侧栏该会话下，可随时打开 (a7986e6ea)\n- 主题包可为对话中的加粗文字单独指定颜色 (#10944 by @esengine)\n- 打开的 Markdown 预览和文件预览会随磁盘上的改动自动刷新 (#10829 by @KHG420, #10879 by @esengine)\n- `@` 引用可按字母顺序模糊匹配，例如 `@proinf` 能找到 `ProjectInfoNew.tsx` (#10910 by @esengine)\n- 单选题选中选项后仍可附上一段文字 (#10958 by @esengine)\n- 使用独立的规划模型时，规划模型能看到执行模型上次规划之后做了什么 (#10897 by @esengine)\n- `multi_edit` 一次报告所有失败的步骤 (#10854 by @esengine)\n- 新增 `SubagentStart` hook；`SubagentStop` 在子代理失败或取消时也会触发 (#10905 by @esengine)\n- 提问等待回答时触发 `Notification` hook (#10812 by @scrappylabsai)\n- MCP 服务器配置可用 `${REASONIX_WORKSPACE_ROOT}` 或 `${CLAUDE_PROJECT_DIR}` 指代当前工作区 (#10903 by @esengine)\n- 可读取 OpenRouter 的 credits 接口作为余额 (#10935 by @esengine)\n- ACP 客户端可暂停、恢复已有的 Goal (#10943 by @esengine)\n- 新增 `[skills].suppress_warnings`，启动时可隐藏非致命的技能警告 (#10795 by @onionviolet)\n\n## 变更\n\n- 审批模式在权限菜单、设置和工具栏中统一为「不询问 / 询问 / 自动批准 / 全部放行」，窄屏时菜单不再超出屏幕 (eab809e16)\n- 请求失败的提示浮在输入框上方，不再把输入框顶上去 (f3274a324)\n- 模型长时间不出数据时，等待五分钟才判定连接断开，适合较慢的本地模型 (#10901 by @esengine)\n- 技能过多时，列表改为列出全部技能名称，不再截掉末尾 (b2ddd0c91)\n- 环境信息写明所报告的 shell 是 bash 工具所用的，不再被当成你的登录 shell (#10895 by @esengine)\n- 写入工作区之外被拒时，说明原因是写入范围，而不是沙盒 (#10907 by @esengine)\n- 正在运行的步骤带有动画，步骤行去掉多余空白 (#10859 by @esengine)\n- 侧栏只突出当前会话所在的工作区；项目行的 × 改为「···」菜单 (c9ebc5815)\n- 终端界面原生鼠标模式下去掉滚动条和代码块竖线 (#10816 by @BuGlessRB)\n- 终端界面支持 Shift+PgUp/PgDn 翻页、Shift+Insert 粘贴 (#10873 by @esengine)\n- 终端界面遵守 `ui.show_turn_usage` 和用户级 `[statusline].command` (#10894 by @esengine, #10936 by @esengine)\n\n## 修复\n\n- 仓库自带的配置不能再给自己授予 `host_authorities`（如 docker 套接字） (e07df2ed8)\n- `reasonix review` 不再执行被审查仓库自己配置的搜索程序和技能 (#10850 by @esengine)\n- 已配置的工具 hook 在子代理、规划器、守护模型和 `reasonix review` 中同样生效 (#10846 by @esengine)\n- 编辑 UTF-8 中文文件时，未改动处的字节不再被错误改写；被截断在半个字符处的输出、MCP 服务器的 GBK 错误输出不再显示为乱码 (#10889 by @esengine, #10947 by @esengine, #10911 by @esengine)\n- 长时间高强度思考不再因客户端的思考字节上限而中止 (#10913 by @esengine)\n- DeepSeek 思考模式在工具轮次后只留下思考、没有回答时，自动重试一次 (#10820 by @esengine)\n- Goal 的完成判定在思考模型上不再因回答为空而暂停 (#10785 by @esengine)\n- 响应头超时会重试，不再直接结束本轮 (#10882 by @esengine)\n- Anthropic 在尚未输出时返回的错误（如 overloaded）会重试 (dae42027c)\n- 某些中转站因工具 schema 中 `required: null` 拒绝整个请求的问题 (d31823235)\n- 通过 OpenAI 兼容中转使用 Gemini 时，每次请求都返回 400 (#10931 by @esengine)\n- OpenCode Go 服务因缺少 `x-opencode-session` 报 400 (#10954 by @esengine)\n- `request_url` 只是重复 `base_url` 时被当作未设置，修复部分中转站返回 404 (#10937 by @esengine)\n- Responses 中转漏发结束事件时，工具调用不再被丢弃 (#10923 by @esengine)\n- 子代理只写模型名时，留在父会话所用的服务上 (#10928 by @esengine)\n- 新增模型服务时，不再覆盖或读到其他服务的密钥 (#10932 by @esengine)\n- 修改模型服务的上下文窗口等设置后，正在运行的会话立即生效 (#10915 by @esengine)\n- TypeSafe 模型的检查改为通过 System One 实际发起请求 (#10952 by @KHG420)\n- 中国法定节假日按 DeepSeek 低峰价计费 (#10758 by @nanami-0713)\n- 切换模型会等正在进行的 `/compact` 完成，不再丢失压缩结果 (#10880 by @esengine)\n- 回合开始时即保存对话，进程被中途结束也不会丢失刚发出的消息 (#10824 by @esengine)\n- 重新打开会话时，主机写给模型的指令不再显示成你输入的内容 (#10927 by @esengine)\n- Goal 在两轮之间重启后，高风险改动仍需审查，已取得的验证不必重跑，原有的检查不会被改写的声明绕过 (acc273a31, 5521459d2, 7a8b720bc)\n- 独立工作树中的子代理结果在重启后仍可应用；会话关闭时中断的后台任务显示为「已中断」而非「已终止」 (09d281160, 56b24652d)\n- Linux 包不再依赖较新的 glibc，glibc 2.31 系统上能启动 (#10810 by @esengine)\n- Wayland 下有 XWayland 时改用 X11 启动，避免窗口出现前崩溃 (#10823 by @esengine)\n- 工作区在 Box 等云盘挂载目录下时，配置能正常加载 (#10900 by @esengine)\n- 连接 OpenSSH 默认 shell 为 Git Bash 的 Windows 远端机器 (#10906 by @esengine)\n- Clash 等 fake-ip 模式下 `web_fetch` 不再拒绝所有公网站点 (#10908 by @esengine)\n- Windows 系统代理的例外列表中 `127.*`、`192.168.*` 等通配符生效，本机和局域网模型不再绕经代理 (bf4edd280)\n- 分页返回工具列表的 MCP 服务器，第一页之后的工具不再丢失 (29ecacc74)\n- ACP 客户端发来的图片能传给模型 (#10920 by @esengine)\n- 读图时的拒绝说明写清谁能附加图片 (628163e0f)\n- `complete_step` 能认出以工作区相对路径引用、以绝对路径写入的文件 (#10896 by @esengine)\n- 粘贴的附件和后台任务状态不再出现在 `git status` 里 (#10941 by @esengine)\n- 没有沙盒的主机上，沙盒设置的其他字段仍能保存 (e4fc2b0e1)\n- 启动时文件夹列表显示「加载中」，不再误显示「尚无文件夹」 (#10963 by @esengine)\n- 资源管理器：展开文件夹只读该文件夹，失败会在列表中说明；窗口重新获得焦点时刷新；指向文件夹的链接可展开 (27f247bc3, #10861 by @esengine, #10881 by @esengine)\n- 进度条（curl、pip 等）在工具卡片中原地刷新，不再只显示 0% (#10874 by @esengine)\n- 单个 `~`（如 `500~1000`）不再被渲染成删除线 (#10885 by @esengine)\n- 提问卡片中可用键盘填写并提交「其他」答案 (#10916 by @esengine)\n- 复制按钮的提示写明复制的是什么 (#10926 by @esengine)\n- 斜杠与 `@` 补全查询较慢时显示加载状态，列表不再闪烁 (#10869 by @KHG420)\n- 长命令旁的回执标签不再被挤成一列；模型服务详情中的协议说明不再被挤成一词一行 (#10855 by @esengine, #10867 by @esengine)\n- 登录账号时，审批页在系统浏览器中打开 (#10976 by @esengine)\n- 后台任务结束状态按实际情况显示，停止的任务不再显示为成功 (34da60673)\n- 打开手机配对卡片时不再误报需要先开启手机访问 (9a78e9216)\n- 浅色主题下多处文字对比度不足、侧栏控件层次不清的问题；窄屏提问卡片把主要答案放在最前 (1ec1f1949, fb115ebeb, bc599b2d3)\n- 1.x 生成的 `.turns.jsonl` 不再作为多余的会话出现在列表中 (4391487d8)\n- 双击 `reasonix.exe` 时会说明 Studio 在哪里，而不是一闪而过 (2da273ba7)\n- 缺少模型密钥时，提示指向凭据文件而不是 shell 环境变量 (#10807 by @esengine)\n- `--resume` 匹配到多个会话时列出候选 (#10787 by @esengine)\n- `run` 前后写的审批参数含义一致，如 `reasonix run --yolo` 可用 (#10922 by @esengine)\n- CLI 致命崩溃的输出会保留，下次启动时报告 (#10790 by @esengine)\n- 终端界面：上翻历史不再丢掉正在输入的草稿；中文字体的 conhost 窗口不再叠画 (#10789 by @esengine, #10827 by @esengine)\n- 终端界面：引用块按宽度正确换行；复制代码不带竖线；流式回答保持段落与缩进 (#10876 by @esengine, #10887 by @esengine, f9a5b3916)\n- 终端界面遵守 `REASONIX_DISABLE_MOUSE`，通过 SSH 使用时默认把鼠标交给终端 (f1a584a9e)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.20.1.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.20.1",
+        "zh": "Reasonix Studio v2.20.1"
+      },
+      "summary": {
+        "en": "本版带来与 1.x 聊天界面一致的终端界面，并能打开 1.x 保存的会话；bash 外连可限制到指定域名；「模型服务」设置独立成页；另修复一批用户报告的问题。",
+        "zh": "本版带来与 1.x 聊天界面一致的终端界面，并能打开 1.x 保存的会话；bash 外连可限制到指定域名；「模型服务」设置独立成页；另修复一批用户报告的问题。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.20.1",
+            "zh": "Reasonix Studio v2.20.1"
+          },
+          "body": {
+            "en": "本版带来与 1.x 聊天界面一致的终端界面，并能打开 1.x 保存的会话；bash 外连可限制到指定域名；「模型服务」设置独立成页；另修复一批用户报告的问题。",
+            "zh": "本版带来与 1.x 聊天界面一致的终端界面，并能打开 1.x 保存的会话；bash 外连可限制到指定域名；「模型服务」设置独立成页；另修复一批用户报告的问题。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.20.1",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.20.1.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.20.0",
+      "date": "2026-09-24",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版支持用手机扫码操控 Studio，MCP 服务器可设为常驻加载，Windows 更新改为只下载差异部分。\n\n## 新增\n\n- 同一网络下的手机扫描顶栏二维码即可配对，并在手机上操作窗口里的会话 (74f76057f, bb47cd4a7, 45b0ea470)\n- 各屏幕能看到彼此发出的消息，并标明来自哪台设备 (3b5aef077, d3049d69a, f39a0f868)\n- 窄屏窗口改用抽屉式侧栏，工作台占满宽度，不再横向滚动 (96ed3492f)\n- MCP 服务器可设为常驻：工具每轮直接交给模型，启动时预先连接，在扩展设置里切换 (1333c04e7)\n- MCP 服务器可在工具调用中途弹出表单向你询问 (38f0e3371)\n- 支持 MCP 2025-11-25 与 2026-07-28 协议，旧服务器照常可用 (88b0fc139, 7dcfebbcf)\n- 发送前可让当前模型润色输入框里的草稿 (de375d26a)\n- 新增 `run_script` 工具，模型可用一段 Starlark 脚本连续调用多个工具 (fc902b846)\n- 新增 `best_of_n`：在多个工作树中并行尝试，由评审选出结果落地 (bba7bcf51)\n- 新增 `advise` 工具，任务中途可向更强的模型请教 (c76dd5182)\n- 新增 locate 子代理，分四轮并行查找代码所在位置 (c7a85ffe5)\n- 可选开启对外部工具返回内容的提示注入筛查，默认关闭 (d5ad1a8e5)\n- 工作台以渲染形式打开 Markdown，可在阅读与编辑间切换，链接与图片按工作区解析 (0136f0427, f16172f3b)\n- 代码块带标题与行号，过长时可折叠 (dd6e9436c)\n- 回答的思考时长会被记录并随该轮保留 (84ab2569e)\n- 可导入主题包，并能直接打开主题包所在的文件夹 (817d6806e)\n- 插件包可提供 prompt 与主题，插件运行时可给 Agent 增加新工具 (2c7bde871, d318d2405)\n- Windows 上 Agent 可操作其他应用，并能按下任意字母、数字、功能键与标点 (69fb12a25, fd63a02de)\n- 内置浏览器遇到内网证书时，可由你手动确认后在本次继续访问 (55312636c)\n\n## 变更\n\n- Windows 更新只下载缺少的数据块，退出后再替换 (887c17e4b, 633b954a4)\n- 审批卡片会写明批准后除本次调用外还授权了什么 (b42e15d3a)\n- 工作区扫描并行读取目录，大仓库中更快 (c60065661)\n- 对话记录直接铺在窗格上，不再套一层卡片 (7fddafb31)\n\n## 修复\n\n- 有多个问题的提问卡片按顺序逐个询问 (2b504d43f)\n- 正在运行的对话保留自己的行与窗格，并且可以关闭 (375abff0b)\n- 渲染失败的回复会重试一次，仍失败时以可读的纯文本显示 (21e8036bc)\n- 没有打开对话时也能打开设置 (86428ba0e)\n- 内网页面可在内置浏览器中打开，加载失败时会说明原因 (9be873730, 27fa18d7c)\n- 所选壁纸能正确显示，图标居中，托盘图标更清晰 (d8a758140)\n- 在仓库子目录里开始的会话归到该仓库名下 (fe1af1bb9)\n- 不声明 PKCE 的 OAuth MCP 服务器默认被拒绝，需你明确允许 (902091b0a)\n- 远端内核随代理切换，不再被替换掉 (d1fed2b45)\n\n## 移除\n\n- MCP 的 `tier` 字段及慢服务器自动降级，读取配置时已不再生效 (1333c04e7)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.20.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.20.0",
+        "zh": "Reasonix Studio v2.20.0"
+      },
+      "summary": {
+        "en": "本版支持用手机扫码操控 Studio，MCP 服务器可设为常驻加载，Windows 更新改为只下载差异部分。",
+        "zh": "本版支持用手机扫码操控 Studio，MCP 服务器可设为常驻加载，Windows 更新改为只下载差异部分。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.20.0",
+            "zh": "Reasonix Studio v2.20.0"
+          },
+          "body": {
+            "en": "本版支持用手机扫码操控 Studio，MCP 服务器可设为常驻加载，Windows 更新改为只下载差异部分。",
+            "zh": "本版支持用手机扫码操控 Studio，MCP 服务器可设为常驻加载，Windows 更新改为只下载差异部分。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.20.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.20.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.19.0",
+      "date": "2026-09-23",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版加入内置浏览器与 macOS 应用操作，改版 Studio 界面，并修复用量金额被放大数十倍的问题。\n\n## 新增\n\n- Agent 可按站点授权打开、阅读、操作网页，页面画在对话旁边，你能看到它看到的内容 (d1ec7b727, edd9ce180, c24306bd6)\n- macOS 上 Agent 可读取并操作其他应用的窗口 (049ee1a75, 591326b98)\n- Agent 截取的图片会显示在对话里，而不只发给模型 (1aefe8cf7)\n- 写完网页或 SVG 后，Agent 会先看一眼渲染结果再结束本轮 (0670f6b9e)\n- System One 决策工具，可接入 TypeSafe 与 Laya 后端 (b76b055a1)\n- 工作台用代码编辑器打开文件，支持查找、跳转行与保存；也可在本机编辑器中打开工作区 (73b88cde9, 2807d121b)\n- 外观设置新增「会话折叠」，可分别设定思考、执行过程、输出等默认展开或收起 (3b717c40b)\n- 中转站可在来源编辑里声明思考参数与推理档位，推理强度菜单可直达该处 (016810261)\n- 不打开窗格即可读取远端机器的会话列表，并可删除远端会话 (0e8a034ac, 7776d07f7)\n- 回合结束或模型停下提问时可发出系统通知 (71a63d325)\n- 选中回答中的一段文字即可引用到输入框 (6b391c1cf)\n- 规则设置中可撤销「本会话允许」的授权 (3e75ad8f8)\n- 新的启动动画与应用图标；窗口偏好在重启后保留 (9d34b96a9)\n\n## 变更\n\n- Studio 界面改版：侧栏、会话列表、输入框与设置页重新设计 (8a6a4f20d, 5b31c7322, fd413aaf7, 9a4ead5cd)\n- 主题包现在覆盖浮层、代码块与语法高亮等全部界面颜色 (12855f3bf)\n- 对话中的链接在内置浏览器打开，按住 Ctrl 或 ⌘ 点击则用系统浏览器打开 (b56a3d839)\n- 审批卡片可直接选择「始终允许」并写入规则 (e54381d4f)\n- 删除会话、文件夹、远端机器或正在使用的模型来源时，只有对话正在运行才会被拦下 (1da292d94)\n\n## 修复\n\n- 用量与成本页的金额被重复累加，显示为实际花费的数十到上百倍 (a84c67dcf)\n- 没有文件夹时点「新建会话」只报一句英文错误，现在会引导添加文件夹 (23d9d75f6)\n- 审批说明按界面语言显示，不再是给模型看的英文 (c2d643fe4)\n- 截图不再随后续每次请求重复发送，长会话不会因此被服务端拒绝 (2a0695bf7)\n- Responses 协议下工具返回的图片可被读图模型看到 (d4a87e9f2)\n- Git Bash 在工作区生成名为 NUL 的文件时，Agent 会被告知原因与清理方法 (5690c3989)\n\n## 移除\n\n- `reasonix` 的交互式终端会话；命令本身保留，用于远端机器与自动化 (42fff96b5)\n\n## 升级须知\n\n- 用量统计会在首次打开时从本机记录重建，此前被放大的历史金额随之更正 (a84c67dcf)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.19.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.19.0",
+        "zh": "Reasonix Studio v2.19.0"
+      },
+      "summary": {
+        "en": "本版加入内置浏览器与 macOS 应用操作，改版 Studio 界面，并修复用量金额被放大数十倍的问题。",
+        "zh": "本版加入内置浏览器与 macOS 应用操作，改版 Studio 界面，并修复用量金额被放大数十倍的问题。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.19.0",
+            "zh": "Reasonix Studio v2.19.0"
+          },
+          "body": {
+            "en": "本版加入内置浏览器与 macOS 应用操作，改版 Studio 界面，并修复用量金额被放大数十倍的问题。",
+            "zh": "本版加入内置浏览器与 macOS 应用操作，改版 Studio 界面，并修复用量金额被放大数十倍的问题。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.19.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.19.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.18.1",
+      "date": "2026-09-17",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版修复远端主机使用本机模型时报 unknown model，并移除 IM 机器人网关。\n\n## 修复\n\n- 远端主机使用本机模型时，新会话、模型列表和切换模型不再落到远端自己的配置，不再报 unknown model #10448\n- 所选模型在本机不存在时，报错会说明缺模型的是本机，并提示如何改用远端自己的模型 (8b2a05c51)\n\n## 移除\n\n- `reasonix bot` 与 QQ、飞书、微信机器人网关；配置文件里已有的 `[bot]` 段原样保留，不影响 1.x (f352dfbec)\n\n## 升级须知\n\n- 模型来源为本机的远端主机，若内核低于 2.18.1，下次连接会自动下载并替换远端内核 (437b982b5)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.18.1.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.18.1",
+        "zh": "Reasonix Studio v2.18.1"
+      },
+      "summary": {
+        "en": "本版修复远端主机使用本机模型时报 unknown model，并移除 IM 机器人网关。",
+        "zh": "本版修复远端主机使用本机模型时报 unknown model，并移除 IM 机器人网关。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.18.1",
+            "zh": "Reasonix Studio v2.18.1"
+          },
+          "body": {
+            "en": "本版修复远端主机使用本机模型时报 unknown model，并移除 IM 机器人网关。",
+            "zh": "本版修复远端主机使用本机模型时报 unknown model，并移除 IM 机器人网关。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.18.1",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.18.1.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.18.0",
+      "date": "2026-09-17",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版修复 Windows 窗口打不开、读图模型误报看不到图、问题框不弹出，并精简内置文档。\n\n## 修复\n\n- Windows 安装目录带 AppContainer 包授权时窗口打不开；启动时自动移除这类授权 #10435\n- 读图模型不再声称看不到已附加的图片 (44150b0aa)\n- Goal 续跑时不再提示读图模型\"无法读图\" (44150b0aa)\n- 切换模型、重载扩展或切换工作区后，问题框和审批框不再被吞掉 (921a04bda)\n\n## 变更\n\n- 内置文档除 README、使用指南、CLI 参考外只保留英文版，中文提问会检索到英文文档 (68b031ae5)\n\n## 移除\n\n- 内置文档检索中的版本历史，其内容停留在旧产品线的 1.24.1 (99c5360fd)\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.18.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.18.0",
+        "zh": "Reasonix Studio v2.18.0"
+      },
+      "summary": {
+        "en": "本版修复 Windows 窗口打不开、读图模型误报看不到图、问题框不弹出，并精简内置文档。",
+        "zh": "本版修复 Windows 窗口打不开、读图模型误报看不到图、问题框不弹出，并精简内置文档。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.18.0",
+            "zh": "Reasonix Studio v2.18.0"
+          },
+          "body": {
+            "en": "本版修复 Windows 窗口打不开、读图模型误报看不到图、问题框不弹出，并精简内置文档。",
+            "zh": "本版修复 Windows 窗口打不开、读图模型误报看不到图、问题框不弹出，并精简内置文档。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.18.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.18.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.17.0",
+      "date": "2026-09-16",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版的主线是**让\"检查通过\"意味着它所说的那件事**：模型可用性探测此前从不发工具，于是一个只会聊天的中转站通过了验证、在第一条消息上失败，而设置面板仍标着\"已验证\"；一个 2024 年才有的可选字段被无条件发给每个 OpenAI 兼容端点，让不认它的网关拒掉整场会话。界面一侧，一个中文词在两处字典里有两种英文，英文窗口上的\"保存\"按钮读作 Transcript；补全菜单的内置动词由内核按进程语言渲染，于是中文机器上的英文窗口配一份中文菜单。另一条主线是**老外壳的退役**：Wails 那套连同它的 CGO 与 GTK/WebKitGTK 构建要求一次性移除，Studio 从此只有一个外壳；内核与控制器随之做了一轮按主题的归位。自 2.16.0 起 39 个提交，净减两万六千行。\n\n**升级路径**：无需人工步骤。三平台照旧自更新——Linux 走 `.deb`，Windows 运行下一个安装器，macOS 替换自身 bundle。已安装的 2.10 及更早的 Wails 版本仍由现有的接管路径升到本版，那条路径不是 Wails 代码，未被此次退役触及。\n\n## 修复\n\n### 检查通过，然后第一条消息就失败\n\n- **模型可用性探测现在带一个工具**。Reasonix 是代理，一个递不进工具的模型跑不了一回合。探测此前只发 messages 和 max_tokens，于是一个应答聊天、拒绝 tools 数组的中转站通过了验证，用户的第一条消息才失败——而那一行仍显示\"已验证\"。被拒时它再问一次、这次不带数组，**只有当去掉数组正是让请求答上来的那件事时**才报\"tools\"：结论来自第二次尝试成功，不是拒绝里的某个词。凭据错误与限流不给重试——第二次会因第一次的同一个理由被拒——所以那条\"只试一次\"的规则对它们原样保留。连接按钮从未声称超出它所证明的（它只列模型，它自己的注释就这么写），但\"已连接，OpenAI 兼容\"读起来像\"可以用了\"。现在那一行说得出\"端点应答聊天、拒绝工具调用\"，这一句话把人送去换网关，而不是送进一场注定失败的会话。\n- **不再为一个 token 计数器赔上整场会话**。`stream_options` 被无条件发给每个 OpenAI 兼容端点。它是 2024 年的新增项，比它更早的、或转发时较真的网关会拒掉带着它的请求，而它要的只是用量记录——一个 token 数，不是一回合需要的任何东西。于是一个别的代理都能驱动的中转站，在这里每一条消息都被拒。客户端现在对每个端点问一次：请求体被拒就去掉这个字段重试，若这样答上来了，此后不再发它。**按端点问一次而不是每次被拒都问**，所以一个因别的理由拒绝请求体的网关不会被永远反复试探；值得一问的状态码是点名的三个——400、413、422——而不是整个 4xx，因为 402 的意思是账户付不出钱，再发一次什么也不会变。实测于一个为此搭的网关：此前每一回合都失败，现在完成一回合，字段发了一次、再没发过。\n\n### 一个中文词，一种英文读法\n\n- **五个中文词条在两份字典里各有一份定义**，而目录是十个模块展开进一个对象——同一个键写两遍，留下的是后展开的那一份，另一种读法从此不可达。其中三处渲染了错的词：`记录` 在指标那边是 \"Save\"、在运行图那边是 \"Transcript\"，运行图赢了，于是那个记录模型上下文窗口的按钮读作 Transcript；`还原` 在窗口控件是 \"Restore\"、在文件是 \"Revert\"，文件赢了，于是最大化窗口的还原按钮自称 Revert；`改动文件` 在权限规则里指 edit_file 这个工具，在顶栏指改动文件数，顶栏赢了。**一个中文词承担两种意思，修法是两个中文词，不是更聪明的查表**：记录值的按钮改称\"保存\"，窗口控件改称\"向下还原\"（Windows 中文里它就叫这个）。另外两处（`模型`、`取消`）两种写法渲染相同，失去那份从未胜出的定义；十二个写了两遍但值相同的键失去它们的副本。\n- **补全菜单说窗口的语言，不说进程的**。内置动词由内核措辞、在窗口里被读，两者不必一致：一台 CLI 说中文的机器上可以开着英文窗口。端点此前读配置里的桌面语言，而在没有设置时——那是默认值，意思是\"跟随机器\"——落到本进程按自己的 `$LANG` 装的那份目录。于是中文机器上的英文窗口，英文输入框下面挂着二十一条中文菜单。窗口才是\"它正在画什么\"的权威：配置里有值它早已采纳，没有值它跟随自己的区域设置，而那是内核读不到的。所以语言由请求携带，配置只回答那些什么都不说的客户端。\n\n## 变更\n\n### Wails 外壳退役\n\n- **一次事务，而不是逐件删除**：`desktop/next` 与它的事件泵、`remote_pump.go`、`/rx-replay`、前端的 `WAILS_*` 常量与总线分支、`apiPaths`/`apiPrefixes` 白名单、vendored 的 go-webview2 分支，以及 Wails 依赖连同它的 CGO 与 GTK/WebKitGTK 构建要求。先删任何一件留下的都是一个坏掉的外壳，而不是一棵更小的树。\n- **允许它发生的是那个条件本身**：不再有任何只有那个外壳才有的语义，加上此前记为\"未验证\"的那一条——发布线。studio-v2.11.0（2026-09-01）到 2.16.0 已经七次发出 Electron 包，而从已安装的 Wails 2.10 跨过来这件事由维护者确认过，不是在这里假定的。\n- **两个后果值得说出来**。desktop 模块现在不含 CGO，所以 CI 与贡献者都不再为构建它安装 GTK 或 WebKitGTK，`webkit2_41` 标签从每条命令里消失。而**老外壳装下的东西原样不动**：`winuninstall`、Electron 外壳的接管路径、`studio_line` 的二进制名——已安装的 2.10 靠它们变成 2.11，它们都不是 Wails 代码。\n- 迁移契约变成 `docs/STUDIO_SHELL_BOUNDARIES.md`：它立下的规则活得比迁移本身长，它记的那些账不必。契约里跟踪的展示层缺口原样转为已知缺口，并补上主机侧缺失的崩溃捕获。\n- 内核随之失去只有那个外壳够得到的东西：`update.LocalApplication`（一个自身即应用的进程，Electron 的不是）、`update.Here`、`appidentity` 的 AppUserModelID 应用与快捷方式修复（Electron 自报 appId）、`crashreport.CaptureStudioPanic`。AppUserModelID 本身留下——Windows 的通知仍带着它。\n\n### 内核按主题归位\n\n四个各自占着一个包三分之一的文件，按它们服务的那个界面拆开，代码与规则一行未改：\n\n- `controller.go` 3232 → 1430。七组方法回到它们的主题已经拥有的文件，回合入口（`Send`、`RunTurn` 与它们驱动的循环）拿到自己的一个。留下的是构造函数与访问器——每个主题都要读的那份会话状态——这就是行为搬到状态旁边之后，控制器剩下的东西。审批桥拿到的不止一次搬家：决定一次工具调用跑不跑的 `gateApprover` 此前住在 `controller.go`，在敏感路径之外；`approval_bridge.go` 现在被声明为敏感，评审与覆盖率下限一并覆盖它。\n- `service.go`（ACP）3047 → 1676，按协议自己命名的东西拆：会话动词、可在活动会话上切换的轴、以及记住会话的边车。\n- `gateway.go`（bot）2973 → 1147：连接在做什么、聊天能发哪些命令、哪一条回复算哪种批准、一条消息属于哪个会话、以及发出去过什么。\n- `evidence.go` 2529 → 723，**这一系列里第一个把自己的欠账清掉的文件**：账本能被问什么、一条 shell 命令算不算验证（从解析出的形状读，不从措辞）、以及待办清单作为证据。\n- 一批判断收敛为一处：`fileutil.Under`/`AtOrUnder` 把三个包各自的 `pathWithin` 分成两个问题、各问一种（其中两个决定安全边界）；`internal/neterr` 把\"这个 socket 失败值不值得再试\"问一次，并点名每个平台真正报的身份——`syscall.ECONNRESET` 在 Windows 上是个占位符，于是那边只剩一张英文子串表，而系统的句子是本地化的，非英文 Windows 上两条路都不通；`extensioncontract` 让包解析器与内核读同一条 provider 引用语法，避免一个包通过校验却绑不上。\n- 十七个只有测试够得到的导出函数、十三个只是填好一个参数的便利入口、四个再无人构造的类型退役。一个测试调用包装器不是在覆盖生产走的那条路，是在保着第二个入口的温。\n- 五十七条带开发阶段编号的注释（\"stage 7\"、\"Phase 0\"）清零，其中三条不只是读不懂而且已经说错了——沙箱配置说读取不受限、而它文档的那个结构体带着 `ForbidRead`。\n\n## 门禁与工具\n\n- **两个走查回答了没人问它的问题**。外壳的冒烟套件判的是工作台窗口，而一个没有配置模型的数据目录打开的是引导卡——那里根本没有那个窗口。拖拽区那条判据于是以 \"no .chrome\" 失败，读起来像标题栏有缺陷，实际是套件从没到达它的主题。它现在在外壳读取之前把目录带到判据所假定的状态，而一个已经带着配置的目录原样不动。\n- **对比度走查报了一个禁用按钮**。WCAG 豁免处于非活动状态的界面组件——一个控件变灰正是为了说它现在不能用——所以 4.5 的底线下那个 3.92 是没人能据以行动的数字，压在能行动的那些上面。两个走查都跳过禁用控件内部的元素，深色十二个区段回到零。\n- **中文词条的重复由源文件判定，不由合成对象**：展开之后失败的那一份已经不存在，类型系统与运行时都看不见跨两个对象字面量的重复。判据同时核对这次读取覆盖了整份目录——一个模式解析不出的条目，也就是它找不到第二份定义的条目——正是这一条抓出了 prettier 去掉引号的裸键（中文是合法标识符）。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.17.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.17.0",
+        "zh": "Reasonix Studio v2.17.0"
+      },
+      "summary": {
+        "en": "本版的主线是**让\"检查通过\"意味着它所说的那件事**：模型可用性探测此前从不发工具，于是一个只会聊天的中转站通过了验证、在第一条消息上失败，而设置面板仍标着\"已验证\"；一个 2024 年才有的可选字段被无条件发给每个 OpenAI 兼容端点，让不认它的网关拒掉整场会话。界面一侧，一个中文词在两处字典里有两种英文，英文窗口上的\"保存\"按钮读作 Transcript；补全菜单的内置动词由内核按进程语言渲染，于是中文机器上的英文窗口配一份中文菜单。另一条主线是**老外壳的退役**：Wails 那套连同它的 CGO 与 GTK/WebKitGTK 构建要求一次性移除，Studio 从此只有一个外壳；内核与控制器随之做了一轮按主题的归位。自 2.16.0 起 39 个提交，净减两万六千行。",
+        "zh": "本版的主线是**让\"检查通过\"意味着它所说的那件事**：模型可用性探测此前从不发工具，于是一个只会聊天的中转站通过了验证、在第一条消息上失败，而设置面板仍标着\"已验证\"；一个 2024 年才有的可选字段被无条件发给每个 OpenAI 兼容端点，让不认它的网关拒掉整场会话。界面一侧，一个中文词在两处字典里有两种英文，英文窗口上的\"保存\"按钮读作 Transcript；补全菜单的内置动词由内核按进程语言渲染，于是中文机器上的英文窗口配一份中文菜单。另一条主线是**老外壳的退役**：Wails 那套连同它的 CGO 与 GTK/WebKitGTK 构建要求一次性移除，Studio 从此只有一个外壳；内核与控制器随之做了一轮按主题的归位。自 2.16.0 起 39 个提交，净减两万六千行。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.17.0",
+            "zh": "Reasonix Studio v2.17.0"
+          },
+          "body": {
+            "en": "本版的主线是**让\"检查通过\"意味着它所说的那件事**：模型可用性探测此前从不发工具，于是一个只会聊天的中转站通过了验证、在第一条消息上失败，而设置面板仍标着\"已验证\"；一个 2024 年才有的可选字段被无条件发给每个 OpenAI 兼容端点，让不认它的网关拒掉整场会话。界面一侧，一个中文词在两处字典里有两种英文，英文窗口上的\"保存\"按钮读作 Transcript；补全菜单的内置动词由内核按进程语言渲染，于是中文机器上的英文窗口配一份中文菜单。另一条主线是**老外壳的退役**：Wails 那套连同它的 CGO 与 GTK/WebKitGTK 构建要求一次性移除，Studio 从此只有一个外壳；内核与控制器随之做了一轮按主题的归位。自 2.16.0 起 39 个提交，净减两万六千行。",
+            "zh": "本版的主线是**让\"检查通过\"意味着它所说的那件事**：模型可用性探测此前从不发工具，于是一个只会聊天的中转站通过了验证、在第一条消息上失败，而设置面板仍标着\"已验证\"；一个 2024 年才有的可选字段被无条件发给每个 OpenAI 兼容端点，让不认它的网关拒掉整场会话。界面一侧，一个中文词在两处字典里有两种英文，英文窗口上的\"保存\"按钮读作 Transcript；补全菜单的内置动词由内核按进程语言渲染，于是中文机器上的英文窗口配一份中文菜单。另一条主线是**老外壳的退役**：Wails 那套连同它的 CGO 与 GTK/WebKitGTK 构建要求一次性移除，Studio 从此只有一个外壳；内核与控制器随之做了一轮按主题的归位。自 2.16.0 起 39 个提交，净减两万六千行。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.17.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.17.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.16.0",
+      "date": "2026-09-15",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版的主线是**让屏幕上写着的东西与内核里的事实是同一件**：任务面板读内核发布的那份清单而不再从转录里把它猜回来，一次被拒的工具调用带着主机给它的身份而不是一句话，卡片名出内核真正跑的那个能力，能力清单在调用被花掉之前就说出它要的参数。工作台补上四件它做不到的事——会话内查找、代码块高亮、消息改写重发、能力名到卡片。回合多了一个出口：把清单交回用户，而不是被主机推着往下走。界面一侧是一轮以实测为准的整理（阅读尺寸与栏宽、等宽面、汉字下的小型大写、浅色的灰、卡片的高度成本），以及三个早已失灵的门。自 2.15.0 起 43 个提交。\n\n**升级路径**：无需人工步骤。三平台照旧自更新——Linux 走 `.deb`，Windows 运行下一个安装器，macOS 替换自身 bundle。\n\n## 新增\n\n### 工作台：四件它做不到的事\n\n- **会话内查找**。转录只挂载几十张卡片，所以浏览器自带的查找只看得见屏幕上那些：200 条消息时 DOM 里有 59 张卡，第一条根本找不到。查找改读行本身——`saidBy()` 对 `Item` 是穷尽的，新卡片必须回答它携带什么文本。命中用高亮注册表画，而不是包一层标签：那等于重写 React 拥有的 markdown，而那些卡片在每一个增量上重渲染。\n- **代码块高亮**。rehype-highlight 像 katex 一样惰性加载，输出的是 class 而非内联颜色——自己写十六进制的高亮器会离开令牌系统、从此不跟随主题。调色板是四个新令牌，注释与标点走 `--faint` 和 `--muted`，跟随对比度档位。**没有标注语言的围栏不上色**：猜一门语法等于把散文画成代码。\n- **一条消息可以改写后重发**。由内核已有的两件事组合而成：把对话回卷到那一回合，然后发送。`RewindResult` 的 TS 镜像少了 `conversationOk`，于是\"动了文件但对话仍在\"与\"对话被截断\"无从分辨——那会把消息发两次。类型补全，这一对进了 `wireparity`。\n- **调用解析到的能力会到达卡片**，仅当名字尚未说出它时：`tool:grep` 写在 Search 旁边是一件事说两遍，`skill:review` 不是。\n\n### 任务清单，与回合的出口\n\n- **面板画的是清单主人所持的状态**。`GET /todos` 一直在发布那份权威清单——最新一次 `todo_write` 与其后每一次 `complete_step` 推进的合并——而窗口从来没调用过它。面板自己从转录里解析 `todo_write` 的参数重建一份，那是 `rebuildTodoState` 的第二份实现，并在两处漂开：它不重放 `complete_step`，所以每一次签收都丢了；它不看回执，所以一份被内核拒绝的清单成了计划。每一次重建——挂载、面板重绑、流中断——都把面板重置回\"模型最后写下的样子\"。**已签收的条目渲染成当前项、此后任何调用都推不动它，这就是\"待办面板清不掉\"从外面看的样子。**\n- **任务清单根本不可能从转录导出**：推进不是 `todo_write` 调用，而被拒绝的写入是。所以 `fromHistory` 不再尝试，窗口去问；回合结束再读一次，因为有些移动没有事件可说（一次取消会让内核重建自己的状态）；读取失败时面板保持原样而不是清空。\n- **投影在状态移动时就欠下，而不只是 id 变了的时候**。`withTodoIdentityTail` 只要每个步骤 id 还能在视图里读到就认为不欠——而 id 永远读得到，它们就在模型自己的 `todo_write` 参数里。底下的状态不会留在原地：`complete_step` 在主机侧推进那份权威清单而模型什么也没写。于是一份主机已经翻过页的清单还按模型最后写下的样子读着，下一次签收点的是主机已不认为是当前的那一项——`complete_step` 拒绝它，代价是满上下文下的一整轮，且学不到任何关于任务的东西。23 个录制会话里 `complete_step` 在 43 次调用中失败 16 次，这一类是其中最大的一组。\n- **一个回合可以把清单交回用户，而不是被驱动**。带着未完项停下来此前一律读作\"活没干完\"，`continueUntilReady` 会拿主机写的一句话把它推上至多八轮。对模型能独自推进的步骤这是对的；对下一步输入在用户手上的步骤是错的——**呈现一项并等待回复，与提前退出无从分辨，于是一份每回合走一项的清单根本没法走：回合停下、主机重启它、整张清单在一轮里全吐出来。** `await_user` 成为除 `ask` 与 `conclude_blocked` 之外第三种由模型决定的收尾，它点名等待中的那一项和用户需要提供什么，清单原样保留，就绪判定豁免未完项，续跑循环不运行。守卫是结构性的：必须有一份未完清单、`step_id` 必须点中其上未完成的一项、必须有可交互的用户——无头运行拒绝它并被指向 `conclude_blocked`。\n\n### 工具表面与能力\n\n- **一个工具在 schema 里，就是此刻可调用的**。此前存在三种状态而模型只分得清两种：在 schema 里且可调用、注册了但藏在 `use_capability` 后面、以及在 schema 里却会被拒——最后一种不是任何人的本意。`update_goal` 就住在第三种里：534 个真实会话中它被调用 121 次，拒绝 116 次。\n- **把工具钉住不动的那条理由被量掉了**（`benchmarks/tool-surface-cache`）。\"改 schema 会把缓存前缀搅浑\"对任何位置的改动为真、对末尾的追加为假，而没有任何东西测过哪一条适用。实测：同一个工具在头部要 896 个缓存 token，在中部 384，追加在尾部**不花任何东西**；一个尾部工具在\"有/无\"之间来回三次，缓存读数稳定在 1920 与 2048 之间、没有一次未命中尖峰——因为缺席的那份表面是在场那份的字节前缀，一条缓存同时服务两者。于是 `ProviderSchemas` 分两段排序：稳定工具在前，本回合准入的上下文工具在后。\n- **能力清单说出一次调用要被held到的参数**。藏在 schema 之外的能力靠列目录再按 id 调用来够到，而清单只有 id 没有参数，第一次调用只能是猜。534 个会话里 12 次调用对 3 次 inspect，5 次带回\"它需要……\"。契约错误在调用被花掉之后才打印的两张表，现在在调用之前就在清单里：必填字段名，和每一个声明过的属性。从目标自己的 schema 经注册表读出——不是注册表工具、或 schema 没声明属性的条目什么也不说，而不是报一张空表让读者当成\"它不要参数\"。\n- **卡片名出内核真正跑的那个东西**。内核注册的 54 个工具里有 22 个在两张表里都没有条目，于是一次经 `use_capability` 的调用渲染成它自己 title-case 过的 id，顶着那个\"折角的纸\"标记。一次委派、一次记忆写入、一次安装全都读作文件读取，而类别颜色——那一行唯一的警示——是中性的那个。`install_source` 是其中最糟的一个：它不是只读的，它安装一个 MCP 服务器，而它根本没有身份。兜底标记改为中性圆点：\"·\" 是一份文档，一个没有条目的名字此前在声称自己读过文件。\n- **重新打开的转录说得出代理够到的是哪个能力**。实时转录读作 \"Remember · 2026-08-20 会下雨\"，重开后读作 \"MCP\" 且没有参数——身份在三处被丢掉。现在 `historyToolCall` 加入 `mirroredWireTypes`：它此前是一对手写的类型、没有守卫，那正是一个字段在一侧消失而无人察觉的方式。\n\n### 主机归因\n\n- **一次被拒的工具结果带着主机给它的身份**。这棵树的规则是\"调用者必须分辨的错误携带身份、而不是一句话\"，工具结果是那个例外。按天在真实会话上量过：shell 那一侧 08-17 就收口了、此后每一次失败都写下了身份；其余从来没有——08-16 有 27 次、08-17 有 10 次、08-25 有 16 次，九月仍在到达。`ToolFailure` 现在携带它：非空即是\"失败\"这个事实，`RefusalCode` 点名主机的拒绝。这个身份此前也从未过线——`event.Tool` 一直有 `RefusalCode` 而 `eventwire.Tool` 没有，所以没有任何前端读得到；**双方同样缺失，所以 parity 是静默的**。现在失败标签说出那是哪一种拒绝，而不是\"失败\"。\n- **token 估算量的是真正发出去的那个请求**。把 provider 表面收窄到\"本回合准入的\"之后，估算被落下了：`context_breakdown` 与 `estimatedVisibleRequestTokens` 都向注册表要 `Schemas()`，那会连本回合没带的工具一起答。而估算要与 provider 强制的窗口、与主机折叠用的那条维护线相比——一个把没带的工具也数进去的估算，会比对话需要的更早折叠。\n- **被别处持有的会话说得出是哪个进程**。删除另一个 Reasonix 进程打开着的会话会被拒绝，而那个拒绝是条死路：面板映射属于一个进程，所以侧栏看不到可关闭的面板、任何窗口里的任何按钮都关不掉它，而 `session.in_use` 渲染成\"被别处持有——请先在那里关闭\"却说不出那个\"别处\"是谁。守卫为了拒绝本来就读过租约，pid、主机名和取得时间它全都知道，全部在边界上丢掉了。`session.in_use_by` 携带持有者，且仅当持有者是另一个进程时——本进程持有的租约确实意味着这里有写入在途，那是另一回事。实测于共享同一状态根的两个宿主：拒绝点名 pid 88240，`pgrep` 确认那是第二个宿主，它消失后删除成功。\n\n### 计量：串行化写入者到底花掉了什么\n\n- **工作区写入租约是两个会话不能同时写一个项目的原因，而这件事花掉了谁多少，此前没有数字**。唯一的记录是屏幕上一句\"等了 2.3 秒\"，且只对超出一秒宽限期的等待出现——把常见情形整个藏住了。`workspacelease.Stats` 为每一次持有结账：含宽限期内的争用次数、其中多少成了通知、总等待、持有时长，以及**持有中有多少发生在最后一次写入请求之后**。最后这个数字是\"在最后一次验证处就释放\"这条提案成立与否的全部依据，而此前没有任何东西在量它。它骑在一个影子事件上，`TodoProgress` 已经在用的那个形状：没有门读它，没有一个 prompt 字节随它移动。写这个测试时发现一个真实的顺序错误——取得租约的那次请求，其时间戳早于它所等来的那次取得，于是 idle 量出来比它所属的 held 还长。\n- **一个工具把这些账从会话日志里读回来**，并拒绝让任何数字表示它并不表示的东西：分母是\"持有次数\"，所以一个写了但从未等待的会话要计进去——那是这个比率的大部分；争用与\"成了通知\"是两列；零长度的持有**没有** idle 占比，而不是占比为零；被大小上限截断过的日志让每个数字成为下界，这句话写在渲染里而不是留给读者去记得。\n- **上报走已有同意的那条通道**：三个封闭枚举加进上传白名单，仪表盘上与其他设置指标并排一组。策略没有变，仍然拒绝非发布构建、CI、`DO_NOT_TRACK`，以及 `auto` 档下任何非交互会话。\n\n### 排版与配色：一轮以实测为准\n\n- **答案设在可读的字号上、可读的栏宽里**。两个只有一起才有意义的数字：转录正文此前是 820px 栏里的 13.5px，每行 103 个拉丁字符或 56 个汉字——比\"眼睛还能不用找就落到下一行开头\"的 45–75 / 30–40 多出一半。`--read` 到 15px（中文 16，笔画更密），`--doc` 到 706px——后者不是口味：这一栏必须容下的最窄的东西是 80 列 IBM Plex Mono，实测 624px，转录自己的缩进与内边距还要 82px。实测 1600x1000：103 → 71 个拉丁字符，56 → 39 个汉字。\n- **答案读起来是答案，右栏有地方可落眼**。转录此前只靠颜色和行距区分\"模型说的\"与\"工具做的\"——同样 14.5px、同样字重——于是一列下来扫描成一条没有分节的事件流。答案拿到一级字号，机器输出留在原处，节奏因此分成三档真实的台阶：两行机器输出之间 22px，跨过边界进入话语 32px，两段独立发言之间 42px（原为 22/28/34，方向对而台阶太浅）。每张工具卡片都带一个填充的图标片，于是填充什么也没说；中性的那些现在透明，net/write/ask/deleg/mcp 保留填充，填充就变成了它的注释一直声称的那个信号。\n- **等宽字面还给机器**。等宽说的是\"这是机器产生的\"：路径、命令、id、不能跳动的数字列、必须占住格子的标记。而窗口在用它排自己的句子——每一个空状态、每一条设置脚注——一列这样的散文读起来像终端而不像被写下来的东西。判断是结构性的、从不看词：一个 class 是等宽的，当且仅当 `app.css` 里有规则给它 `var(--mono)`；一个元素渲染散文，当且仅当它自己的子节点调用 `t()`。两者一起在 155 个里找出 63 个，那是截图做不到的——扫描只看得见这一次渲染画出来的东西。等宽字符占比 42% → 33%，转录内 54% → 45%，右栏 37% → 22%。\n- **小型大写排版不再施加于汉字**。带字距的大写是拉丁字母的做法：字距在那里分开单词，在汉字上它拉开的是单个字形的笔画，而大写根本无从作用。样式表本来就知道（一条 `:lang(zh)` 规则给 17 个小型大写选择器换了常规字面），但此后又写了 10 个，其中一个是工作台唯一的语义标题。哪些属于这一类由\"文本从哪来\"settle，绝不靠读文本：`.hl .fail` 渲染\"{n} 项失败\"因而加入，`.hl .src` 与 `.hl .who` 就在同一行徽章里却留下——它们渲染的是 MCP 服务器名和子代理 id。\n- **中文里的块标题不再低于它所引介的东西**。右栏有四级，而块标题在所有四级之下：12px w700 的 `--ghost`，对着 13px `--faint` 的行、`--muted` 的图例、`--text` 的数值。在英文里那条带字距的大写撑得住它——那正是 eyebrow 的定义；中文没有小型大写可撑，字距一去就只剩一行略粗略淡、与下面各行等长的字。\n- **浅色方案的灰是暖的**。浅色中性色此前沿 255 号色相排布，`#EEF1F7` 里蓝多于红——那是工程工具的样子——而它坐在琥珀色强调色之下，两者在色轮的对侧：窗口里最大的那块面与\"这里需要你\"的颜色在悄悄互相抵消。现在沿 85 号色相，`#F4F1EA`。**只有色相与彩度移动**：52 条声明的明度一条未动，所以没有任何对比度为此被交易掉。深色保留它的蓝。\n\n### 卡片的成本\n\n- **一行输出不该花掉 109px**。一次结算完毕、整个输出就是 \"ok\" 的调用量出 109px，对着什么都没打印的 39px——两个字符换来 2.8 倍高度。九次普通调用就填满一屏，其中三分之二是什么都不装的留白。三笔成本各自量过：块自身的内边距与底色（一行输出两样都不要）、画在每张结算卡片上而不管有没有被裁的\"下面还有\"渐隐（裁剪逻辑本来就知道，现在它说出来）、以及 `.term` 那 13px 下边距。九次普通调用的一回合：1474px → 1162px。\n- **一行说出它运行的是什么，并且只说一遍**。shell 行显示命令的前 96 个字符，对 `PATH=$(echo $PATH | …) go test ./x` 来说那是六十个字符的管道装配、一个动词都没有。命令的哪一段命名了它运行的东西只有解析器答得出——对文本跑正则正是这棵树不做的词匹配——所以内核来答：`shellrun.OperativeCommand` 按解析出的命令自己的字节偏移**按位置**切掉前导赋值，引号与替换原样存活。它骑 `ShellExecution.Subject`，从不取代命令：授权界面拿到的是全文，行的 title 也是。\n- **横向跑出去的输出会说自己跑出去了**。纵向被裁的输出有两个提示（脚部的渐隐、\"显示全部\"），横向藏起来的一个都没有，而滚动条是覆盖式的：静止时那一行看上去就是完整的。实测 499 个真实会话、7587 段工具输出：54% 的最长行超出这个宽度能容的约 80 列，31.5% 超出 120 列；一个屏上会话里有 19 块横向滚动，最糟的一块在 624px 的盒子里装着 2881px 内容——78% 在屏外而没有任何东西说。\n\n## 修复\n\n- **回合结束时的回执卡片此前不可达**。它藏在一个没有任何控件写过的 localStorage 键后面，所以它不是\"默认关\"，它是根本打不开。它报告的是这一回合改了什么、验证了什么、什么没被验证——正是读者在回合停下时想要的东西。现在它默认开，关掉它的开关也存在了，与其他\"本机显示\"选项并列。\n- **查找命中落在查找栏之外**。那条栏浮在转录上沿，所以按通常 12px 净空落位的行就落在它底下——一次搜索的第一条命中正是读不到的那一条。\n- **每个面板的转录有自己的 id**。`id=\"flowScroll\"` 写在 `Transcript` 里，而它每个面板渲染一次，于是两个打开的面板应答同一个 id，右轨的 `aria-controls` 指向先来的那个——未必是它所滚动的那个。\n- **MCP 步骤底下那条线说出它的标记所说的**。装订线用两处命名类别：标记带色相，其下的线带同一色相的 30%。net、deleg、write、ask 各有两半，mcp 只有标记——它的线落到默认灰，于是图标说\"这出网了\"、底下的条纹说\"普通工具\"。`src/styles/gutter.test.ts` 把两半都从 `app.css` 里读出来。\n- **侧栏不再数没有的东西**。右轨渲染十二个计数，其中六个说\"0 会话\"。机器行数的是打开的面板，所以每台机器静止时都这么说；一个没有存档对话的工作区在自己名字底下这么说，而它下面没有行本来就已经说过了。\n- **没人在看的面板停止轮询、停止重绘**。每个会话保持挂载、屏外的用 CSS 隐藏，所以切标签不丢流、不丢转录、不丢滚动位置。这笔交易只在隐藏的面板确实安静时才划算，而其中一个不是：`/status` 轮询的门是\"回合在跑\"，不是\"面板可见\"。于是每个带活跃回合的后台面板每秒要花四次往返、四次整棵子树重渲染，账单随打开的对话数增长而不是随正在看的那一个。实测（mock port + 假定时器）：每个隐藏的运行中面板此前每秒 4 次 `/status` 读取，此后 0 次。\n\n## 门禁与工具\n\n- **六个浏览器守卫早已不再解析**。`\"[data-pane=\"flow\"]\"` 关掉了它自己的字符串，从 60b028856 起 cards、bench、look、motion、scale、verify **一个都没解析过**——21 条卡片几何断言、20 条行为断言，没有人跑过。而 selfcheck 把这读成健康：它注入一条假断言、问退出码是否变红，而 `SyntaxError` 也是非零。它现在先问守卫解析不解析，再问它能不能失败。\n- **对比度扫描读的是被画出来的那个颜色**。扫描此前手工解析 `getComputedStyle` 的文本，而计算后的颜色按它被写下时的记法返回：`oklch(0.85 0.012 255)` 被当成 8 位 RGB 读成 r=1, g=0, b=255，就是报告里满屏的 `#0100FF`；色相 262 给出 b=262、打印成七位宽的 `#0100106`。**于是每一个设置页都在被拿去和屏幕上并不存在的颜色比对**：深色里十行\"低于 AA\"、浅色里八行是凭空造出来的，而其中真有一条失败也分辨不出来。现在它画而不是解析：把值填进 1×1 画布再把像素读回来，那是画出被测物的同一个引擎。两个方案现在在十二个区段上都报零。\n- **一个开放的原因说得出承载它的是哪个 effect**。`PROJECTION_CAUSE_WITHOUT_SOURCE` 停在 17：开放性由组件拥有的每一个 effect 共同判定，而来源是从 `d.by`——被展示的那一行所命名的单个 effect——读出来的。Transcript 有十二个：让 unmountOpen 为真的是 456 行那个清理函数读不出来的 effect，而 `by` 指向 325，第一个 setup 开放、根本没有清理函数的那个。谓词现在只声明一次、判定与归因都读它。\n- **trace fixture 记录的是形状，不是一次测量**。它们门着桌面 reducer 被拿去比对的东西，所以 `stabilize()` 剥掉一切属于测量而非回合结构的字段——工具调用的 `DurationMs` 一直在那里被清零。租约账目带着 `heldMs`/`idleMs` 到达而没有任何东西剥它们，于是文件记下了某一次运行恰好持有了多久：写下时 24ms，下一台跑它的机器上 23ms。**这个测试不可能连过两次**，它在 ubuntu、macos、windows、race 与 coverage 上同时变红。\n- **样式表不带任何注释**。668 个注释块、1500 行，在读规则时一次一段地遇到。它们几乎没有一条在复述 CSS：它们是量过的颜色、布局机制、以及为什么显而易见的那条规则是错的——比它们所在的位置更值钱的知识。它移进两份从头读到尾的伴随文档：`TOKENS.md` 持有词汇表的法律，`LAYOUT.md` 逐条跟着 `app.css`。**没有任何一条声明移动过。**\n- **注释规则说出它指的是哪种语气、由谁持有**。\"绝不写：事故或对话历史\"是一条没有人认为自己违反过的规则：手里有修复的人叙述这个修复，而结果通过所有现存的门——篇幅规则比的是行数，没有任何东西读语气。规则现在说出它的判据（一个从没见过早先版本的读者不该损失任何东西，而\"关于这段代码自身行为的过去时\"就是那个破绽），给出成对的例子，说出叙述该去哪里，并说明它压过周围的风格。它也说明**没有门读语气、而且不会建一个**：把叙述和约束陈述分开需要一张短语表，那是这个仓库唯一不建的东西。那条规则由 review 持有，说出来比暗示一个检查存在要好。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.16.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.16.0",
+        "zh": "Reasonix Studio v2.16.0"
+      },
+      "summary": {
+        "en": "本版的主线是**让屏幕上写着的东西与内核里的事实是同一件**：任务面板读内核发布的那份清单而不再从转录里把它猜回来，一次被拒的工具调用带着主机给它的身份而不是一句话，卡片名出内核真正跑的那个能力，能力清单在调用被花掉之前就说出它要的参数。工作台补上四件它做不到的事——会话内查找、代码块高亮、消息改写重发、能力名到卡片。回合多了一个出口：把清单交回用户，而不是被主机推着往下走。界面一侧是一轮以实测为准的整理（阅读尺寸与栏宽、等宽面、汉字下的小型大写、浅色的灰、卡片的高度成本），以及三个早已失灵的门。自 2.15.0 起 43 个提交。",
+        "zh": "本版的主线是**让屏幕上写着的东西与内核里的事实是同一件**：任务面板读内核发布的那份清单而不再从转录里把它猜回来，一次被拒的工具调用带着主机给它的身份而不是一句话，卡片名出内核真正跑的那个能力，能力清单在调用被花掉之前就说出它要的参数。工作台补上四件它做不到的事——会话内查找、代码块高亮、消息改写重发、能力名到卡片。回合多了一个出口：把清单交回用户，而不是被主机推着往下走。界面一侧是一轮以实测为准的整理（阅读尺寸与栏宽、等宽面、汉字下的小型大写、浅色的灰、卡片的高度成本），以及三个早已失灵的门。自 2.15.0 起 43 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.16.0",
+            "zh": "Reasonix Studio v2.16.0"
+          },
+          "body": {
+            "en": "本版的主线是**让屏幕上写着的东西与内核里的事实是同一件**：任务面板读内核发布的那份清单而不再从转录里把它猜回来，一次被拒的工具调用带着主机给它的身份而不是一句话，卡片名出内核真正跑的那个能力，能力清单在调用被花掉之前就说出它要的参数。工作台补上四件它做不到的事——会话内查找、代码块高亮、消息改写重发、能力名到卡片。回合多了一个出口：把清单交回用户，而不是被主机推着往下走。界面一侧是一轮以实测为准的整理（阅读尺寸与栏宽、等宽面、汉字下的小型大写、浅色的灰、卡片的高度成本），以及三个早已失灵的门。自 2.15.0 起 43 个提交。",
+            "zh": "本版的主线是**让屏幕上写着的东西与内核里的事实是同一件**：任务面板读内核发布的那份清单而不再从转录里把它猜回来，一次被拒的工具调用带着主机给它的身份而不是一句话，卡片名出内核真正跑的那个能力，能力清单在调用被花掉之前就说出它要的参数。工作台补上四件它做不到的事——会话内查找、代码块高亮、消息改写重发、能力名到卡片。回合多了一个出口：把清单交回用户，而不是被主机推着往下走。界面一侧是一轮以实测为准的整理（阅读尺寸与栏宽、等宽面、汉字下的小型大写、浅色的灰、卡片的高度成本），以及三个早已失灵的门。自 2.15.0 起 43 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.16.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.16.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.15.0",
+      "date": "2026-09-14",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版的主线是**把\"谁有权决定\"和\"谁有权改写\"各自收回一处**：只有人能拍板的工具成为一条声明而不是三处分支，会话授权按它被问到的那个主体记录，委派运行需要越过写入围栏时向人发问而不是向派它出来的模型发问；同时一个会话被另一个窗口占用时改为只读打开——租约保护的从来是写回，不是阅读。供应商一侧，DeepSeek 目录、视觉能力与官方价格各自收敛为一份声明，九个逐厂商手写的迁移函数随之退役。界面一侧是一轮以实测为准的整理：阅读列、任务页、导航树的键盘可达、上下文折叠点说出是哪条界限并在读到它的地方修改。自 2.14.1 起 67 个提交。\n\n**升级路径**：无需人工步骤。三平台照旧自更新——Linux 走 `.deb`，Windows 运行下一个安装器，macOS 替换自身 bundle。DeepSeek 的 flash 模型 id 改为 `deepseek-flash`，已安装的配置由升级改写而非弃置，价格、推理强度等以旧 id 为键的设置随之迁移。此前\"只能由人批准\"的会话授权若以裸工具名记录，会在下一次遇到时再问一遍——那条规则不是你给出的答案，是记录它的代码替你放宽的。\n\n## 新增\n\n### 权限：只有人能决定的事，是一条声明\n\n- **三处声明合一，并因此补上了前一次修复漏掉的那一半**。\"这个工具的授权要读它的主体\"此前写在三个地方：`subjectRequiresHuman` 的分支、`subjectScopedTools` 表、以及测试里的一份副本。合并后暴露出一条更早的路径：`install_source` 的 `apply` 拿到 `high:...` 计划时，分级判定返回 Ask，而 Approver 为 nil 时 `unattendedAsk` 直接放行——YOLO 正是以 nil approver 构建的，**高风险自我扩展计划（常驻进程、生命周期钩子、外部服务）在该档下被静默批准，没有人看到过那张计划**。现在成员资格一处声明同时承载三个后果，加第四个工具只是一条表项。\n- **「不再询问」只对它被问到的那个主体生效**。`SessionGrantRuleForScope` 只为 bash 保留主体、把文件工具合并为一条 Edit 授权，其余一律落到裸工具名——而裸工具名规则匹配该工具此后的一切主体。实测：给 `/ws/internal/foo/bar.go` 的一次放行同时覆盖 `~/.ssh/authorized_keys` 与 `/ws/.git/hooks/pre-commit`；给一份低风险安装计划的放行覆盖高风险计划。\n- **旧形态的会话授权不再生效**。上一条只停止了新的记录。已记录的那些同样覆盖一切，而它们不是用户写下的句子——用户当时看的是一份计划、一条路径。规则里没有主体，迁移无从谈起，所以判定移到读取侧：主体敏感工具的裸授权被拒绝，问题再问一次。**用户自己写在配置里的 `allow = [\"install_source\"]` 是他自己的句子，不在此列。**\n- **委派运行可以请求扩大写入围栏，且只有人能回答**。`write_paths` 只能在开工前声明，于是每一次\"读了才知道要动哪里\"都是终局：工具拒绝，运行自行绕开或放弃。现在它发问——问用户，不问父代理，因为父代理是模型，模型批准自己的触及范围不构成围栏。走的是权限这条轴（扩权是一种能力），在所有 fallback 档位下都回到人，与 `install_source` 同一把尺。`WriteGrant` 把 declared 与 granted 分开：只有 declared 那一份能在开工前证明互不重叠，调度读 `Declared()`、审计读 `Scope()`，越出声明集的写入按调用时长向调度器预留（try 而非 wait——持有路径的调用内再等待正是死锁的形状）。\n\n### 会话与运行时\n\n- **被另一个窗口写着的会话，改为只读打开**。租约存在是为了两个窗口不把同一份转录互相覆盖：各自持有内存副本，`Hub.Close` 与 resume 都会在退出时快照，后关的那个抹掉前一个的产出。那是真实的丢失路径，但它完全是关于**写回**的。现在面板改为 attach：租约空闲则取得，被活跃运行时持有则以无租约、无写入权限打开。守卫没有移动——回合准入走 `ensureWriteAuthorityReady`，每一次保存走 `requireWriteAuthorityForSave`，没有租约就什么都递不出去。\n- **一个活过了自己窗口的内核，不再攥着那个窗口的会话**。排查\"为什么打不开这个会话、它说被别处占用\"时发现：本机有四个 Reasonix 内核存活，其中一个在派生它的应用消失后又活了十天，它们之间握着五个会话租约。宿主本应随 shell 结束——它读 stdin 的 EOF 来判定——但启用这条的判据要求 `os.ModeNamedPipe`，而 shell 是 Node：libuv 在 Studio 发布的每个平台上给子进程 stdio 的是 socketpair，不是 FIFO。**`parentLease` 在每一次真实启动中都返回 nil，看门狗从未武装过。** 现在 socket 也算租约（终端与普通文件仍不算：一个永不结束，另一个立刻结束会在启动时带走宿主）。原有测试用 `os.Pipe()` 证明机制，那是任何一次启动都不会走的形状，所以它一直绿着而生产侧根本没有看门狗。\n- **同时打开的会话数不再有上限**。8 是一台机器对另一台机器的猜测，在三处强制、在第四处解释，读者遇到它的形式是一个在本可承载三十个的笔记本上变灰的按钮。整条移除而非调高：`Open`/`OpenRemote` 的拒绝、`X-Panes-Max` 头、`[desktop] max_panes` 及其钳制、窗口侧的天花板、新建按钮的守卫、两侧的 `hub.too_many_panes` 文案。它保护的成本是真实的（每个面板是一套完整装配，带自己的工具、扩展与 MCP 子进程），那笔成本由人来花。实测打开 fixture 全部会话：十五个面板，无拒绝，无控制台错误。\n- **会话已经删除的，就说它已经不在**。删掉一个会话后点同项目的另一个，回答是\"被别处占用，请先在那里关闭\"。`resumeInto` 返回 (status, error) 且注释写明了为什么，`/resume` 把状态交给 `writeErr`，而 `Open` 把它丢进了 `_`，`openRuntime` 用 409 作所有失败的兜底——于是**每一个没有自己代码的失败都以 Conflict 抵达**，前端渲染为\"正被占用\"。兜底改为 500，路径拒绝改为携带 `session.bad_path` / `session.outside_dir`（前端本来就有文案），新增 `session.open_failed`。两个测试成对：已删除的必须说自己不在，真有活跃持有者的必须仍然按占用拒绝。\n\n### 上下文折叠点\n\n- **说出是两条界限中的哪一条把它放在那里**。会话在 `compact_ratio` 与 `context_soft_limit_tokens`（默认 160000）中先到者折叠。1M 窗口下永远是后者胜出，所以 `compact_ratio = 0.8` 从未到达它所要求的 800k——会话在 160k 折叠，是同一块面板所称模型容量的 16%，而屏幕上没有任何东西提到另一条界限。宿主早已判定（`compactBoundary()` 自 280dfd8c9 起随 `ContextMaintenance` 传递），只是无人渲染。现在 `event.Compaction` 与 `ContextBreakdown` 都携带界限及其尺寸，轨道把折叠点刻在容量条上——160k 对 1M 是没人会在读面板时做的除法。同期更正三处\"`compact_ratio` 是唯一自动触发\"的陈述，其中一处写在向导渲染的每一个 config.toml 里。\n- **在读到它的地方就能改**。此前脚注解释完为什么 1M 窗口在 160k 折叠，就把读者留在原地：界限本身在两次点击之外的设置页、一个叫「高级」的折叠区里。轨道现在提供与设置页相同的三个选择（默认 / 自定义 / 仅容量保护），`FoldMode` 与 `foldModeOf` 收进 `ui/foldbound.ts`。写入会重建运行时，所以交回的读数是内核自己的 `port.context()`，不是本次回复的算术。\n- **条上的刻度就是手柄**。它被画成一个刻痕、被读作可以拖的东西——那确实是读者期待的控件。它不能变成的是百分比滑块：这条界限是绝对输入尺寸，同样的 16% 对一个窗口是 160k、对另一个是 20k，按份额计量的轨道会在每次换模型时改写这条设置。四件只有真拖一次才会暴露的事都已修正（轨道按窗口而非 min..max 定位、默认值处的顿感做两步宽、读数与滑块各自的钳制、步进按千而非 2 的幂——否则 160k 落在两个停位之间）。\n\n### 供应商目录与价格\n\n- **DeepSeek 的 flash 模型是 `deepseek-flash`**，它被服务的那个 id 去掉了它从不需要的世代号。已安装的条目被改名而不是被抛下，改名会把每一个以旧 id 为键的字段一起搬走——留在旧键下的价格或强度列表会停止为取代它的模型作答，在下游读起来就是用户改过的设置自己变回了默认值。\n- **预设是\"它的哪些模型读图\"的判据**。读名字会漏掉这些预设声明的每一个 Kimi、Qwen、MiniMax 与 Claude 模型，而 `deepseek-flash` 什么也拼不出；拼写退为无人声明过的地址的最后手段，并且仍是可纠正的建议而非断言。那条只为够到一个读图模型而存在的连接，在它旁边的条目以同一把 key 够到同一个模型时折叠掉——除非它的用户配置过它，因为折叠等于用删除来回答用户的编辑。\n- **预设改形状通过一份声明抵达已装机**：每一代一个声明形状，一个把匹配条目带向前的升级。判据是整个形状——目录、窗口、默认值——因为**持有我们发布过的形状的条目是我们的，其余都是它的用户自己整理的**。这让九个逐厂商手写的迁移函数退役。\n- **官方价目只活在一处**（`billing` 的 `officialRates`，最老的一代在前）。**价格变动是追加，不是编辑**：被取代的那一档正是\"认出这份已安装配置持有的是我们的价格、并把它带向前\"的依据，否则它余生都在报一个已退役的价格。`config` 通过 `billing.CurrentRate` 与 `SupersededRates` 读取、自己不复述——写两遍的表就是会漂移的表，某家厂商的美元价此前只在一侧被更新过正是这么来的。\n- **`make pricecheck`** 读各厂商自己的页面与这张表比对，并报出每一条距上一次有人确认过去了多久。它会联网，所以不进 lint、不进 CI。**读不到的页面以非零退出**：未读是它自己的结论，绝不算作一致。\n\n### 界面\n\n- **一条阅读列**。转录此前没有宽度上限，1920 下一行跑到 159 字符，是可读长度的两倍。此前两次尝试都因同一个理由被退回（右边缘悬空），两次都只收窄了一半——一次收外层列而正文仍保持 68ch，一次收正文而列仍占满。两者同时取才是没有东西悬空的那一版：820px，正是 1512 窗口本来就在排的宽度。\n- **导航树可以用键盘走**。十六行声明了 `role=\"treeitem\"`——那是在告诉读屏软件方向键可以走它们——而没有一行能被任何按键到达。Tab 够得到的反而是行内的小按钮，于是键盘可以删掉一个它没办法打开的会话。改为 roving tabindex（树是 Tab 路径上的一站，方向键在其内移动），入口从当前打开的会话起算。实测：走动前后都是 16 行 1 个 tab stop，Left 把 16 行收成 11、Right 还原，重命名输入框保留它自己的方向键。\n- **计划只画一次，由有地方画的那一面画**。任务视图在侧轨仍在时以全宽铺开步骤，于是同一份清单以两种笔法同时站在一块屏幕上。316px 与 880px 不该要同样的密度，所以两者不合并，只是不再同时出现——存在与否仍是面板自己的契约，顺序表未动。\n- **任务页是一页带答案的内容，不是四张等重的卡片**。状态与目标成为页头（无框、目标大一档、下面一条发丝线），计划与实时轨迹是正文，轨迹拿到它本该有的整幅宽度。四张卡片各自携带的 520px 径向光晕取消：卡片不是控件，指针进入它时什么都不会发生，而那四种色相里没有一种有含义——「当前任务」与「快速操作」都是琥珀色。\n- **上下文条有了自己的调色板**，状态色也拿回了它们的槽位。五个部分此前画在 deleg / net / accent / ok / faint 上——它们各自已经表示一件事，没有一个表示\"系统提示词\"。代价有两重：状态词汇表丢掉五个槽位给了一张图表，而这张图表并没有调色板：分类色集要过的六项检查它不过四项。最要命的是第四项——工具输出（faint，灰）对模型回复（ok，绿）在常规视觉下 ΔE 12.0，低于 15 的底线，而它们是条上第二与第四大的两段。现在五个槽位是自己的令牌，在两个方案里各自分档并作为一个集合校验（相邻 CVD 最差 9.1 浅 / 8.4 深，目标 8；常规视觉 19.6 / 19.3，底线 15）。\n- **浅色方案的强调色是那个色相，而不是一种能托住白字的棕**。`#A76200` 不是被选出来的颜色，是从另一头倒推出来的——还能托住白字的最深的琥珀，白字实测 4.4977，连 4.5 都没到。深色方案一直是反着来的：用色相本身，配深色字。现在两个方案都是（浅 `#E6AC45` 对深 `#DDA144`，字色实测 7.25:1）。\n- **其余整理**：会话轨按机器分组且字重不再与颜色相反；指标轨用间距而非发丝线分组，最大的数字跟随位置而非固定给成本块；工具标题行读作三件事而不是五件；移除与新建不再同等分量；正在挡着你的那张卡片是被抬起的那一张；你说的话有多宽取决于你说了多少；答案里的表格是排版而不是表单，其中的行内代码不再穿着\"已委派\"的色相；空输入框下那行只在 Enter 的含义变化时才说话。\n\n### 端点\n\n- **一个端点如何携带上下文是声明，不是探测**。中转站可以在不存储任何状态的情况下应答 Responses 协议，然后拒绝 `previous_response_id` 而不是忽略它，于是第一轮之后每一轮都失败——报错还点名一个读者无从控制的字段。配置字段一直存在，只是从窗口里够不到，唯一的办法是手改 `reasonix.toml`。现在它是协议目录上的一个位（只有 Responses 能按引用携带一轮），`config` 一处声明优先级（mode 优先于遗留布尔值），列表像携带 `canSetThinking` 一样携带 `canSetContinuation`，未知 mode 一律拒绝而非折成 auto。**把\"任意 400 就退出有状态模式\"的方案试过并退回了**：一次无关的 400 就会让一个好端点永久掉出有状态模式、掉出前缀缓存——端点拿一个字段做了什么，不是它是否支持该字段的证据。（#9815）\n\n## 修复\n\n- **标题栏重新可以整条拖动**。两种拼写都在说\"这一行是拖拽把手\"，而它们对继承的看法相反：`--wails-draggable` 是自定义属性，于是 Wails 下整条的每个 span 都继承了拖拽；`-webkit-app-region` 是常规属性，不继承任何东西——在运行页上实测，`.chrome` 计算为可拖，它的九个后代全部计算为不可拖。整条只在什么都没画的地方可拖，而面包屑一个就占 1060px、右侧那组 328px。（#10156）\n- **长项目名不再跑到标题栏控件底下**。`.crumb` 带着 `flex:1` 与 `min-width:0` 所以盒子会收缩，但子元素留着 `overflow:visible`，文字照常画出去：1512 下越界 1336px，900 下 1948px，运行药丸和右侧三个按钮被画在一起。裁剪规则本来就存在，只是写在\"两侧栏都折起\"那一档下——而把标题栏撑爆并不需要等到窄窗。\n- **转录不再伸到定位轨底下**。`.flow` 靠收窄自己给轨让位，又用 `margin-inline:auto` 居中剩下的部分，于是一条轨的宽度被两侧平分、只有一半落在轨所在的那侧。1512 下实测内容跑到 1077，而轨从 1070 开始；轨整条 `pointer-events:auto`，那些像素对点击的回答是跳转而不是选中。\n- **滚动指示器不再在你向上滚时倒着走**。没人滚到过的块用自己的占位高度顶替，而那个数字停留在 96px——实际最短的卡片 119、中位 199、均值 216。回滚 300 轮实测：内容在读者脚下长了 18393px（+20%），指示器在向上滚的过程中三次下滑，最差 713px 轨上 48.8px。改为由这份转录自己的块学习（有界窗口内的滑动均值，以实测 216 作种子）后：1113px（−94%）、0 次倒退、最差 0.5px；1200 轮时 1229px、零次。\n- **消息轨是鱼眼，不是地图**。它按每条消息在整份转录中的位置放刻度，于是画出来的是每一轮产出了多少，而不是\"被问了哪些问题\"的清单：混合长度的会话里间距从 14px 到 171px，σ=56。现在刻度以固定 9px 挤在中间（300 个刻度落到 2.21px 并保持在轨内），长度与浓淡是自指针挑中的那一个起的余弦衰减。\n- **MCP 服务器被取消时说得出是谁取消的**。首次工具调用才启动的服务器跑在宿主拥有的 context 上；该 context 在子进程起来之前结束时，`exec.CommandContext` 从 `Start()` 返回 \"context canceled\"——不到一毫秒、没有 stderr，因为进程根本没跑。读者看到的是 `MCP startup launch failed after 0.7ms: context canceled`，读起来像是服务器启动失败。宿主是唯一知道发生了哪一种的一方，而两者要去修的东西不同（MCP 宿主关闭 / 这台服务器被移除、停用或重连），现在两者都作为 cause 携带。\n- **不允许在这里编辑的来源，不是连不上的来源**。对着不授予 provider 路由的内核做检查会得到 403 `provider.editing_disabled`，而面板把每一次失败的检查都画成「无法连接」压在内核自己的句子上面，两者互相矛盾。判据读代码而不读状态码——403 也是内核前面的网关会给的答案，那是另一件要去修的事。（#9772）\n- **一个字段和它的外层不再共用一个名字**。`.mfind` 同时代表弹出菜单里的裸 `<input>` 与模型列表里包着字段和计数的 `<div>`，两份样式表都没有作用域，于是双向互相够到：菜单的 sticky 规则把设置容器粘在页面上而它的行在下面滚动。（#9648）\n- **成本面板说出四个原因里的哪一个**；**CSRF 守卫此前一直在拒绝的两个 POST 带上了它要求的类型**（启动健康确认与等待中提示的重放，一个永远落不了地、又因为沉默而从不说出来的调用）；**长输出上的渐隐遮罩不再盖住\"展开全部\"**；**英文界面下三处标签不再为了保住脚注而被截断**（设置列表的分区名此前 `flex: 1`，basis 为零，行永远不算溢出）；**折叠标记、警告符号、圆角各自只有一种画法**。\n\n## 门禁与工具\n\n- **英文窗口里仍在渲染的中文，改走目录**。26 处字符串是直接写进 JSX 而非经由 `t()` 到达屏幕的：登录设备码、安装与 MCP 连接完成时说的话、包管理行、标签页菜单、Ask 卡与 Rewind 卡，以及版本面板里的六处——最后这一处从没有人读到过，因为走查运行中的应用的扫描只看得见一次运行渲染出来的东西，而它的版本目录答的是 404。旁边那个目录测试检查的是 `t()` 调用点名的键，所以**一个不点名任何键的字面量对它是隐形的**。新的 `jsx.test.ts` 改读每个组件的语法：JSX 文本、属性、表达式里的中文，除非最近的外层调用会翻译它，否则一律红（会跟随 import 时改名的 `t`）。\n- **对比度是量出来的，不是看出来的**，而量它的探针自己也被量了一次：`perf/contrast.mjs` 的脚本回合给出的工具结果没有 `contextTokens`，于是 `.cost` 只渲染一个 span，第二个 span 上的规则永远没有元素可匹配——补上一个字段后，它找出了三处低于 AA 的读数（深 3.30 / 浅 3.33 / 深 4.07），其中一处还是一次手工普查漏掉的浅色实例。\n- **守卫的守卫改为自己找齐**。`selfcheck` 向每个守卫注入一条恒假断言来看它是否真的会红，而它的 GUARDS 数组漂移了：cards、composer、intrinsic、motion、overflow、press、surface 七个脚本从未被问过能不能失败。现在它在目录里找出每一个以 `fails` 表达失败的脚本，新守卫靠存在就加入。22 个全部在注入下变红。同期扫出四条已经不再看着产品的断言，以及三条在它们自己的断言写下之后才变红的守卫（其中一条是产品：审批卡窄档下两个次级按钮高度差一像素）。\n- **走查判据不再误报**。`offscreen` 此前把可横向滚动容器里的元素算作出界（最窄窗口下设置导航的每一个按钮都被点名，而那条轨会滚到每一个），`unnamed` 把 `aria-hidden` 的装饰按钮算作无名控件——73 条发现，没有一条是缺陷。一个总在喊狼来了的门禁会被当成噪音读，而它旁边两条真的发现正要走这条路。\n- **repolint 的翻译表豁免指向了现存的目录**。它仍然点名已退役桌面存放 locale 的那棵树，自那棵树被删除起就没有豁免过任何东西，而在用的目录正好卡在行数天花板上。\n- **取消归因那条守卫改跑平台上存在的命令**。它点名 `/bin/echo`，而它自己的注释写明了为什么命令必须存在：可执行文件的解析发生在读 context 之前，所以一个不存在的命令会更早、以另一个原因失败。Windows 上正是如此——`exec: \"D:\\bin\\echo\": executable file not found` 取代了本该被断言的取消原因，这条守卫自写下起在那条腿上一直是红的。\n- **wire-parity 现在同时约束携带折叠界限的两面镜子**：页面读不到的界限，是一次它只能靠猜来解释的折叠。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.15.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.15.0",
+        "zh": "Reasonix Studio v2.15.0"
+      },
+      "summary": {
+        "en": "本版的主线是**把\"谁有权决定\"和\"谁有权改写\"各自收回一处**：只有人能拍板的工具成为一条声明而不是三处分支，会话授权按它被问到的那个主体记录，委派运行需要越过写入围栏时向人发问而不是向派它出来的模型发问；同时一个会话被另一个窗口占用时改为只读打开——租约保护的从来是写回，不是阅读。供应商一侧，DeepSeek 目录、视觉能力与官方价格各自收敛为一份声明，九个逐厂商手写的迁移函数随之退役。界面一侧是一轮以实测为准的整理：阅读列、任务页、导航树的键盘可达、上下文折叠点说出是哪条界限并在读到它的地方修改。自 2.14.1 起 67 个提交。",
+        "zh": "本版的主线是**把\"谁有权决定\"和\"谁有权改写\"各自收回一处**：只有人能拍板的工具成为一条声明而不是三处分支，会话授权按它被问到的那个主体记录，委派运行需要越过写入围栏时向人发问而不是向派它出来的模型发问；同时一个会话被另一个窗口占用时改为只读打开——租约保护的从来是写回，不是阅读。供应商一侧，DeepSeek 目录、视觉能力与官方价格各自收敛为一份声明，九个逐厂商手写的迁移函数随之退役。界面一侧是一轮以实测为准的整理：阅读列、任务页、导航树的键盘可达、上下文折叠点说出是哪条界限并在读到它的地方修改。自 2.14.1 起 67 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.15.0",
+            "zh": "Reasonix Studio v2.15.0"
+          },
+          "body": {
+            "en": "本版的主线是**把\"谁有权决定\"和\"谁有权改写\"各自收回一处**：只有人能拍板的工具成为一条声明而不是三处分支，会话授权按它被问到的那个主体记录，委派运行需要越过写入围栏时向人发问而不是向派它出来的模型发问；同时一个会话被另一个窗口占用时改为只读打开——租约保护的从来是写回，不是阅读。供应商一侧，DeepSeek 目录、视觉能力与官方价格各自收敛为一份声明，九个逐厂商手写的迁移函数随之退役。界面一侧是一轮以实测为准的整理：阅读列、任务页、导航树的键盘可达、上下文折叠点说出是哪条界限并在读到它的地方修改。自 2.14.1 起 67 个提交。",
+            "zh": "本版的主线是**把\"谁有权决定\"和\"谁有权改写\"各自收回一处**：只有人能拍板的工具成为一条声明而不是三处分支，会话授权按它被问到的那个主体记录，委派运行需要越过写入围栏时向人发问而不是向派它出来的模型发问；同时一个会话被另一个窗口占用时改为只读打开——租约保护的从来是写回，不是阅读。供应商一侧，DeepSeek 目录、视觉能力与官方价格各自收敛为一份声明，九个逐厂商手写的迁移函数随之退役。界面一侧是一轮以实测为准的整理：阅读列、任务页、导航树的键盘可达、上下文折叠点说出是哪条界限并在读到它的地方修改。自 2.14.1 起 67 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.15.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.15.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.14.1",
+      "date": "2026-09-11",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版修三处「界面没有说话」：按需加载的设置页取件失败时不再带走整个窗口，弹出菜单不再被正文的卡片盖住，以及一次仍在执行的调用会报出它已经跑了多久。\n\n**升级路径**：无需人工步骤。三平台照旧自更新——Linux 走 `.deb`，Windows 运行下一个安装器，macOS 替换自身 bundle。\n\n## 新增\n\n- **仍在执行的调用报出已运行时长**。此前一次调用跑着的时候，屏幕上唯一在动的是 `sympulse`——一枚 14px 符号 1.9 秒一次呼吸，而脉冲在第 2 秒与第 2 分钟完全相同。逐卡片采样：四次 600ms 以内的调用整个生命周期各只有 1 种文本，7.4 秒的那一次只有 4 种（0.41 次变化/秒），所以一条跑半分钟的命令就是一行字不动半分钟。读数落在已完成时长原本占用的槽位，调用结束时数字停住而非在别处出现新值；一秒以内不绘制，那一档调用从未显得停滞；运行期间不绘制长度条，长度条是相对已知时长的量度，而此刻无人知道总长。内核的 `startedAt` 未被采用：它是内核所在机器的 unix 毫秒，远程会话中与窗口不是同一个时钟，相减会把时钟偏差计为耗时。计时只走窗口自身的时钟，自窗口观察到该调用运行时起算。改动后同一次回合复测：7.4 秒的调用由 4 种文本增至 11 种，四次短调用仍各为 1 种。\n  \n  同期确认线程一侧无需改动：18 秒的回合中主线程仅出现 1 次 131ms 的长任务，运行期间切换视图连续六次响应均在 62–71ms。\n\n## 修复\n\n- **按需加载取件失败时丢失的是面板，不是窗口**。2.14.0 将设置页拆为独立 chunk。自更新会在窗口仍然打开时替换这些文件（Linux 的 `.deb` 由 dpkg 直接替换 SPA 目录），该窗口持有的文档所请求的 chunk 名已不存在，被拒绝的导入在渲染期抛出，而其上没有错误边界：React 卸载整棵树，界面变为空白。转录正文以同样方式按需加载，其调用处一直包裹 `Boundary`，一次抛出至多让一条消息退回纯文本；设置页此前只有 `Suspense`，其后没有边界。现退回设置浮层自身，声明该页未能到达，并提供重新载入与关闭两个出口。\n- **弹出菜单不再被正文的卡片覆盖**。菜单为 z-index 30，而滚动容器内全部后代经运行时扫描无一高于 5——正文本不该胜出。实际情况是菜单的层级从未参与与正文的比较：标签条之上任一祖先形成层叠上下文，即把整个菜单压在该祖先的层级上，作为后继兄弟的滚动容器随后覆盖它并接管命中测试，因此菜单中的行同时不可点击。入场动画 `fill` 留下的 `transform` 与卡片的绘制包含都会形成这样的上下文。菜单现渲染至 `body`，层级归其自身，位置改为测量写入：使用布局盒而非客户端矩形，入场过渡的 `scaleY` 在测量时仍在生效，按一个正在离开的尺寸定位会偏 6px。三个 Picker 在 2000×1080 与缩放 1.25 下复验，间距与对齐同原有 CSS 一致。\n\n## 门禁与工具\n\n- 本版界面新增文案同步补入英文目录；reduced-motion 块中两条关闭 `.shim` 动画的规则移除——该动画早已不存在，留下的规则会让读者以为仍有。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.14.1.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.14.1",
+        "zh": "Reasonix Studio v2.14.1"
+      },
+      "summary": {
+        "en": "本版修三处「界面没有说话」：按需加载的设置页取件失败时不再带走整个窗口，弹出菜单不再被正文的卡片盖住，以及一次仍在执行的调用会报出它已经跑了多久。",
+        "zh": "本版修三处「界面没有说话」：按需加载的设置页取件失败时不再带走整个窗口，弹出菜单不再被正文的卡片盖住，以及一次仍在执行的调用会报出它已经跑了多久。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.14.1",
+            "zh": "Reasonix Studio v2.14.1"
+          },
+          "body": {
+            "en": "本版修三处「界面没有说话」：按需加载的设置页取件失败时不再带走整个窗口，弹出菜单不再被正文的卡片盖住，以及一次仍在执行的调用会报出它已经跑了多久。",
+            "zh": "本版修三处「界面没有说话」：按需加载的设置页取件失败时不再带走整个窗口，弹出菜单不再被正文的卡片盖住，以及一次仍在执行的调用会报出它已经跑了多久。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.14.1",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.14.1.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.14.0",
+      "date": "2026-09-11",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版的主线是**界面的可交互动作成为一个被声明、被普查、被 CI 约束的集合**：每个控件在源码处写下自己的动作 id，`actions.ts` 再独立声明一次，`tools/ui-census` 从源码结构判定哪些输入会写入宿主状态，十六条不变量在 CI 中拦截——一个被证明会写、却没有任何动作声明的输入不能进入主干。同期收拢回合边界：一个回合只开始一次，`turn_started` 携带它所属的消息，一次工具调用记录发起方，一份轨迹声明自己覆盖了会话的哪一段。压缩侧改为按实际发生的调用记账：一次折叠的回执覆盖它发出的每一次摘要请求，`/compact` 不再因重复调用而重复付费。自 2.13.0 起 89 个提交。\n\n**升级路径**：无需人工步骤。三平台照旧自更新——Linux 走 `.deb`，Windows 运行下一个安装器，macOS 替换自身 bundle。\n\n## 新增\n\n### 界面动作：一份注册表，一套普查，十六条不变量\n\n- **界面声明 132 个动作 id**。id 形如 `<界面>.<意图>`，在控件处写一次、在 `actions.ts` 中再写一次，两处可以不一致并因此被检出——共用同一个常量会让检查退化为把一个值与它自身比较。属性只承载归属：涉及哪一条记录由 `data-target` 表达，给出哪一个答案由 `data-value` 表达，因此一行渲染七十次仍然是同一份契约，而「取消」这类文案不会成为身份。\n- **`tools/ui-census` 从源码结构判定输入的效果**。426 个交互根，每一条判定或者带有正面证据，或者带有阻断它的开放边；无法判定即为 UNRESOLVED，不按「未被识别」归入只读。十六条不变量在 CI 中运行，`UNDECLARED_MUTATION == 0` 是其核心约束，并已在三次真实缺陷下亮红——一个掩盖 prop 链的 memo 别名、一个掩盖另一条链的 JSX 展开，均非装饰性的绿灯。\n- **重命名与阈值调整改为回车提交**。会话重命名、压缩起点、面板重命名此前仅在失焦时写入，而失焦由点击别处、Tab、窗口失活、元素卸载等无意图的原因触发，普查因此将其计为运行时事件而非交互根——三处宿主写入没有对应的根，seal A 成立于一个看不见它们的集合之上。失焦仍然保存，因为点击别处确实是一种回答。\n- **Promise 的判定先于续延的解读**。只有源码显式声明的 `Promise<T>` 成立；可能不是的联合类型、无法追踪的别名、`PromiseLike` 与 `any` 均不构成证明。落在已证明 Promise 上的 `.then`/`.catch`/`.finally` 才被视为执行边，且标记为延后——请求返回时才发生的写入不是当前发生的写入。\n- **按下反馈的归属由标记决定**。改动前的测量：页面上 42 个接受指针的控件中，21 个在 mousedown 时没有任何视觉反馈。成因是归属而非意图——同一条按下规则列举了九个类名，降低动效的块中存在第二份副本，更上方还有第三份拼写不同的副本。归属现改为由标记语义决定（`button`、`summary`、`a[href]` 等）。\n\n### 回合边界与回放\n\n- **一个回合只开始一次**。此前一个回合有几次模型运行就产生几个开始：协调器在计划前开启一个，执行器在工作前开启另一个，回合中批准的计划再开启第三个。该路径是生产可达的——当计划方判定无需改动时，执行器根本不会运行。\n- **`turn_started` 携带它所属的消息**。此前该事件不带任何标识，自行生成用户行的客户端只能按位置配对、以提示词文本确认，两条相同的提示词无法区分，而一条插入其间的引导会使其后每一次配对错位。\n- **工具调用记录发起方**。模型发出的调用、宿主代为铸造的调用（为已批准的计划铺设清单、推进步骤、关闭目标、将一次委派展开为条目）、供应商在其侧执行的调用，此前共用同一个 id 空间与同一种形状。真实语料统计：51 个候选执行片段中有 5 个以 `plan-seed` 开头——那是宿主自身的记账，任何按步骤计数的折叠都会将其计入模型。\n- **重开会话可从落定的 `message` 帧重建卡片**。记录中不保留流式增量，回放只有一帧落定的 `message`，而此前的归约器只能为流已经开启的卡片封口，因此重开会话会丢失计划方写过的全部回答。\n- **`/trajectory` 声明覆盖范围**。此前返回裸数组，三种状态产生同一个空结果：未被记录的运行、被容量上限停止追加的日志、确实未产生帧的会话。读取方将最后一帧当作运行终点时，三次中有两次正确，且无从分辨是哪一次。\n\n### 压缩：回执与经济性\n\n- **压缩回执覆盖它发出的每一次摘要调用**。此前读取的是被保留的那个答案的用量；一次需要覆盖修复的折叠会产生两次计费而只保留一次，因此上报的数字从来不是这笔交易本身。\n- **`/compact` 只免除触发条件与尾部长度**。此前该命令设置一个 `Force` 标志，而该布尔承担五项职责，其中只有两项对应用户请求的语义。另外三项是重复调用会产生两份摘要的原因——本机历史中自动压缩约每五千次调用触发一次，而 `/compact` 按定义每次都触发。\n- **覆盖修复改为从宿主回执补全**。此前的做法是对同一次折叠再做一次摘要，以恢复摘要遗漏的改动文件；而这些事实是宿主自有的——回执已经记录哪些路径被写入、哪些命令失败。\n- **压缩不再提升本地原始工具输出**。\n\n### 计费、上下文与运行时指标\n\n- **会话报告计费完整度的四种状态**。此前是一个布尔值，而聚合需要区分四种情形：未产生计费、每一轮均已定价、部分定价、全部未定价——其中第一种与第四种的金额合计同为零。Studio 侧另有一个原因：该字段声明在页面自己的 `CostQuote` 中且无人读取，会话投影并不携带完整度。\n- **上下文表盘以折叠点为分母**。决定何时折叠的是两个界限中较低的那个，而绘制在界面上的是模型窗口：一个 1M 会话在维护实际发生的时刻只绘出 16% 的进度。该设置背后是内核的配置语言——一个有符号整数，负值表示停用经济界限，而窗口份额仍会在 85% 触发，标签却读作「关闭」。\n- **上下文与缓存各自声明分母**。用量此前绘制两次，一次对折叠点、一次对模型窗口，393 次采样渲染中从未出现不一致，因为它本就是同一个数。现绘制一次，每个上限各占一行并各自标注分母：单一百分比无法表达「6%」指的是宿主开始整理的那个点，还是模型能够容纳的总量。\n- **运行时面板按内容出现**。一次干净运行的采样中，100% 的样本显示「失败步数 0、外部请求 0、子代理数量 0」，以及两个仅用于声明自身没有内容的区块。\n- **吞吐按墙钟过期而非由墙钟重新推导**。此前每秒读取四次，无论是否有 token 到达：样本从窗口前端老化而被除的跨度不变，读数因此沿平滑斜坡下滑。采样到一次运行中连续十七个读数自 87 降至 2 tok/s，其间模型没有任何产出。\n- **工具派生的运行时指标来自执行记录而非卡片**。\n\n### 设置与外观\n\n- **设置可检索，并逐项声明生效方式与作用域**。此前查找一项设置需要预先知道它归属十四个页面中的哪一个；而改动的后果是整张表最上方的一句话，该句只覆盖三种情形中的两种。作用域由每个控件背后的端点行为确定，而非按它归档在哪一页推断——仅模型页一页即同时存在按供应商条目存储、按整机存储、以及不做存储的值。\n- **外观页按访问目的排序**。此前全部控件一次呈现，顺序为语言与窗口在前、明暗与配色在后。现调整为明暗、配色、大小、壁纸在前，语言与窗口其次，字体、文字粗细与文字对比度折叠为一个展开项。\n- **被拒绝的写入在发生点击的页面上呈现**。对活动内核逐一点击 121 个非破坏性按钮并检查内核拒绝时界面是否给出回应，其中一处没有：会话页的「创建隔离副本」。`run()` 已正确捕获并存储拒绝原因，但打印它的横幅被复制到了模型页与扩展页，会话页写入同一状态却没有呈现位置。横幅移至每一页共用的那一列。同一次清扫另行移除两处以渲染文案作为状态判据的代码：技能行以比较「调不到」决定标记，会话归约器以比较「等待工作区」判断所离开的状态。\n- **设置页与工作区的次要部分改为按需加载**。\n\n### 导航栏：机器、工作区、会话\n\n- **导航栏呈现三层结构**。此前绘制「工作区」与「远程」两个区块，各有标题、添加按钮与各自对「一行是什么」的定义；而其下的层级本就只有一种——远程工作区已在使用本地工作区的类渲染，在某个目录中打开会话也是同一个意图。本地此前跳过机器这一层，现以列表中的第一台机器呈现。\n- **搜索覆盖整份列表**，而非当前展开的段落。\n- **远端会话标题在远端内核写入后到达**。远端内核在第一个回合结束时为会话命名，而此前没有任何路径在此之后重读该记录。\n\n### 供应商\n\n- DeepSeek 的 flash 视觉能力在 Studio 各处得到识别。\n- 未列出的供应商模型可经验证后使用。\n- OpenAI 侧被取消的流有了清理边界。\n\n## 修复\n\n- `grep` 的斜杠通配以搜索目标为根，而非以工作区为根。\n- 回合运行期间，实心按钮是停止该回合的按钮。\n- 标题栏控件重新排除在窗口拖拽区之外。\n- 窗口内的内核使用所配置的语言。\n- 卡片在回合中到达时转录不再跳动。\n- 菜单标记当前行的方式与导航栏一致；会话行的操作为弱化呈现而非隐藏。\n- 已知金额不再按零的字符串形式输出。\n- 内核已给出的答案会到达设置页的读取方。\n- 动效具有明确成因，挂载不作为成因。\n\n## 门禁与工具\n\n- **普查跟进动态 import**。`@babel/parser` 8 将 `import()` 解析为 `ImportExpression`，而普查按调用名读取该节点，该分支从未命中；设置页改为按需加载后，整棵设置子树退出产品可达图，75 个动作被记为没有生产根。\n- **输入框的粘贴声明动作身份**。粘贴文件经 `attach → upload → port.attach`，构成一次证据确凿的宿主写入。\n- `make check` 会打开 git 尚未记录的文件。\n- 发布流水线从产生产物的作业取件。\n- 本版界面文案、注释与守卫输出统一为书面中文，代码注释统一为英文。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.14.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.14.0",
+        "zh": "Reasonix Studio v2.14.0"
+      },
+      "summary": {
+        "en": "本版的主线是**界面的可交互动作成为一个被声明、被普查、被 CI 约束的集合**：每个控件在源码处写下自己的动作 id，`actions.ts` 再独立声明一次，`tools/ui-census` 从源码结构判定哪些输入会写入宿主状态，十六条不变量在 CI 中拦截——一个被证明会写、却没有任何动作声明的输入不能进入主干。同期收拢回合边界：一个回合只开始一次，`turn_started` 携带它所属的消息，一次工具调用记录发起方，一份轨迹声明自己覆盖了会话的哪一段。压缩侧改为按实际发生的调用记账：一次折叠的回执覆盖它发出的每一次摘要请求，`/compact` 不再因重复调用而重复付费。自 2.13.0 起 89 个提交。",
+        "zh": "本版的主线是**界面的可交互动作成为一个被声明、被普查、被 CI 约束的集合**：每个控件在源码处写下自己的动作 id，`actions.ts` 再独立声明一次，`tools/ui-census` 从源码结构判定哪些输入会写入宿主状态，十六条不变量在 CI 中拦截——一个被证明会写、却没有任何动作声明的输入不能进入主干。同期收拢回合边界：一个回合只开始一次，`turn_started` 携带它所属的消息，一次工具调用记录发起方，一份轨迹声明自己覆盖了会话的哪一段。压缩侧改为按实际发生的调用记账：一次折叠的回执覆盖它发出的每一次摘要请求，`/compact` 不再因重复调用而重复付费。自 2.13.0 起 89 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.14.0",
+            "zh": "Reasonix Studio v2.14.0"
+          },
+          "body": {
+            "en": "本版的主线是**界面的可交互动作成为一个被声明、被普查、被 CI 约束的集合**：每个控件在源码处写下自己的动作 id，`actions.ts` 再独立声明一次，`tools/ui-census` 从源码结构判定哪些输入会写入宿主状态，十六条不变量在 CI 中拦截——一个被证明会写、却没有任何动作声明的输入不能进入主干。同期收拢回合边界：一个回合只开始一次，`turn_started` 携带它所属的消息，一次工具调用记录发起方，一份轨迹声明自己覆盖了会话的哪一段。压缩侧改为按实际发生的调用记账：一次折叠的回执覆盖它发出的每一次摘要请求，`/compact` 不再因重复调用而重复付费。自 2.13.0 起 89 个提交。",
+            "zh": "本版的主线是**界面的可交互动作成为一个被声明、被普查、被 CI 约束的集合**：每个控件在源码处写下自己的动作 id，`actions.ts` 再独立声明一次，`tools/ui-census` 从源码结构判定哪些输入会写入宿主状态，十六条不变量在 CI 中拦截——一个被证明会写、却没有任何动作声明的输入不能进入主干。同期收拢回合边界：一个回合只开始一次，`turn_started` 携带它所属的消息，一次工具调用记录发起方，一份轨迹声明自己覆盖了会话的哪一段。压缩侧改为按实际发生的调用记账：一次折叠的回执覆盖它发出的每一次摘要请求，`/compact` 不再因重复调用而重复付费。自 2.13.0 起 89 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.14.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.14.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.13.0",
+      "date": "2026-09-06",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版的主线是**委派与运行图不再靠\"边跑边累加\"来知道发生过什么**：一次委派在能够动作之前先落盘，运行图从这些持久事实重建而不是从事件流累积，于是一次崩溃留下的是可读的证据而不是一段无人认领的空白。同期把拒绝从\"服务器写的句子\"改成宿主自己的代码，并给这个界面里\"一个人能做什么\"编了一份有名字的清单。自 2.12.0 起 98 个提交。\n\n**升级路径**：无需人工步骤。三平台照旧自更新——Linux 走 `.deb`，Windows 运行下一个安装器，macOS 替换自身 bundle。\n\n## 新增\n\n### 委派：先记录，再动作\n\n- **一次委派在运行前就是持久的**。此前记录发生在运行之后，所以被中断的那一次不在任何地方——既不在运行图里，也不在恢复能看到的地方。现在顺序反过来：先落盘，再交给调度器。\n- **运行图从持久事实重建**，而不是把增量流折进一个状态。快照因此并入编号流而不是另开一支，读者拿到的是权威而不是一段需要自己重放的历史。\n- **执行身份不再是父调用的**。一次委派、一次采纳、一个被调度器拒绝而排队的条目，各自记录自己是什么：谁的答案被复用、扇出声明过的顺序、调度器从未接纳的那一次欠存储什么——都不再由调用方的身份代答。\n- **被调用方停下的运行不是失败的运行**。两者此前记同一个结局。\n\n### 裁决：问一个人之前先写下来\n\n- **屏障先于问题成立**。此前是先问、后记，于是崩在中间时，一个人被问过一件宿主没有任何记录说自己欠着的事。现在注册即是它可被回答的前提；写不下去就不问。\n- **下一个请求被告知死掉的运行在等什么**，后继回合继承它被交给的那次中断——中断是宿主的状态，不是让模型去猜的下游症状。\n\n### 拒绝：代码，不是句子\n\n- **HTTP 状态在它变成一句话的那一刻就不再是数字**。插件与 MCP 的失败此前把传输状态当成领域身份，把服务器自己的措辞当成分类；一台写不进磁盘的机器因此被报成\"你的请求有错\"。\n- **每一条 inbox 拒绝以代码到达前端**，一条拒绝路径而不是二十五条各自为政。\n- **一个服务器自己的话不再决定那一行提供什么操作**——那些文字是外部 MCP 服务器写的，宿主还在中途做过消毒和截断。\n\n### 这个界面能做什么，是一份有名字的清单\n\n- **哪些点击会写，由它背后的动词决定**，不是由它长什么样。权限、沙盒与端点开关各自有了名字。\n- 一次回合如何结束是四个判断，其中只有一个是交付；证据为什么不算数，本身就是一个答案。\n\n### 其它\n\n- 上下文标签在被绘制时读取，不在文件加载时读取；输入框只有一个预算，不是每个子组件一个。\n- 专注模式把外框收起来再还回去；队列里正文读不出来的消息不算空消息。\n- 技能的持久开关在翻动它的那个会话里就生效，并且到达发现路径而不只是展示它的面板。\n- 折叠边界译成规范坐标，覆盖前缀的身份跨重启成立——被冻结的正文不再握着活的尾巴。\n\n## 修复的 CI 与发布线\n\n这一版也带着为了发它而修好的东西：`x/crypto` 越过公告版本；一个 Job Object 句柄有了自己的所有者（两条拆解路径此前在关同一个 Windows 句柄，第二次关落在系统已经改派给别人的对象上）；图 sink 不再与自己竞争；敏感路径的覆盖率是补回来的而不是调低门槛的；发布流水线的两组产物都从产生它们的作业取件。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.13.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.13.0",
+        "zh": "Reasonix Studio v2.13.0"
+      },
+      "summary": {
+        "en": "本版的主线是**委派与运行图不再靠\"边跑边累加\"来知道发生过什么**：一次委派在能够动作之前先落盘，运行图从这些持久事实重建而不是从事件流累积，于是一次崩溃留下的是可读的证据而不是一段无人认领的空白。同期把拒绝从\"服务器写的句子\"改成宿主自己的代码，并给这个界面里\"一个人能做什么\"编了一份有名字的清单。自 2.12.0 起 98 个提交。",
+        "zh": "本版的主线是**委派与运行图不再靠\"边跑边累加\"来知道发生过什么**：一次委派在能够动作之前先落盘，运行图从这些持久事实重建而不是从事件流累积，于是一次崩溃留下的是可读的证据而不是一段无人认领的空白。同期把拒绝从\"服务器写的句子\"改成宿主自己的代码，并给这个界面里\"一个人能做什么\"编了一份有名字的清单。自 2.12.0 起 98 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.13.0",
+            "zh": "Reasonix Studio v2.13.0"
+          },
+          "body": {
+            "en": "本版的主线是**委派与运行图不再靠\"边跑边累加\"来知道发生过什么**：一次委派在能够动作之前先落盘，运行图从这些持久事实重建而不是从事件流累积，于是一次崩溃留下的是可读的证据而不是一段无人认领的空白。同期把拒绝从\"服务器写的句子\"改成宿主自己的代码，并给这个界面里\"一个人能做什么\"编了一份有名字的清单。自 2.12.0 起 98 个提交。",
+            "zh": "本版的主线是**委派与运行图不再靠\"边跑边累加\"来知道发生过什么**：一次委派在能够动作之前先落盘，运行图从这些持久事实重建而不是从事件流累积，于是一次崩溃留下的是可读的证据而不是一段无人认领的空白。同期把拒绝从\"服务器写的句子\"改成宿主自己的代码，并给这个界面里\"一个人能做什么\"编了一份有名字的清单。自 2.12.0 起 98 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.13.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.13.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.12.0",
+      "date": "2026-09-04",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版的主线是**远程工作区第一次真正可用**：此前这条线没有发布过远端能装的内核，所以「在另一台机器上开工作区」在任何配置下都装不上东西，而失败会报成一个与真因无关的错误码。同期把项目自身状态移出跨项目共享的缓存前缀（首轮缓存命中率实测 4.2% → 54.7%），并把 Controller 按生命周期拆成协作者。自 2.11.0 起 56 个提交。\n\n**升级路径**：无需人工步骤。三平台照旧自更新——Linux 走 `.deb`，Windows 运行下一个安装器，macOS 替换自身 bundle。\n\n## 新增\n\n### 远程工作区：这条线现在会发布远端要装的内核\n\n- **发布 CLI 归档**。此前 studio 线只发桌面包，而远端安装的三条路里有两条要按版本名去取一个 release。它们取的地址不存在（tag 是 `studio-v2.11.0`，取的却是 `/download/v2.11.0/`），于是双双在发网络请求之前就被拒，只剩 npm 一条——而 npm 上那个包属于 1.x 线，装下来低于开工作区所需的内核版本。现在每次发布同时产出六个平台的 `reasonix-<os>-<arch>` 归档与 `SHA256SUMS`，`releaseasset.Line` 表达 tag 命名空间（它是 tag 前缀，不是 `update.Line` 那种安装布局——一个类型同时回答两件事，就会让 tag 前缀去决定 `.deb` 装到哪）。\n- **内核声明自己的版本**。打包脚本此前不注入版本，于是发布出去的内核自称 `dev`，而按版本取 release 的两条路都拒绝一个非发布版本。顺带修好了一个从未生效的门：`ParseVersion` 读不了 `studio-v2.11.0`（它在第一个连字符处断开），版本因此为空，而「没说版本」按设计是放行的——所以内核版本下限对整条 studio 线从来没有真正生效过。注入的是 `v2.12.0` 这种 semver 而非完整 tag，门才成立。\n- **取过一次的发布不再取第二次**。为一台够不到 release 的机器安装时，归档由本机取下、经 SFTP 推过去；每多一台同平台的机器就重付一次同样的下载。现在验证过的字节留在 `<cache>/cli/<tag>/<goos>-<goarch>`，第二台起不再下载，而安装包体积不变——把 CLI 塞进 Studio 是相反的取舍：给每次安装加约 30MB，只为省一次下载，且只对同平台的远端有效。缓存旁存摘要，那是本机磁盘的完整性检查而不是边界（能写二进制的也能写摘要），不匹配即当作未命中。\n- **内核可以托管 Studio 页面**。新界面此前只有一条到达路径——经桌面外壳，隔着一道绑死 `127.0.0.1` 且不可放宽的 loopback 门。其它任何打开内核的方式拿到的都是内核内嵌的旧页面。现在页面挂载是 hub 的能力（`--page`，落在 `/_studio/`），两个宿主共用一份。它位于认证门**之内**：外壳把页面包在门外是安全的（loopback 门先答），但一个绑到网络地址的 serve 没有那道门，同样的写法等于把页面交给任何能连到端口的人。\n- **首次连接不再是一项配置任务**，以及一条临时 `-R` 转发在重连后仍留在原端口上。\n\n### 其它\n\n- 上下文窗口在「注意到它缺失的地方」直接声明：中继服务以自己的名义转发别人的模型，没有任何探测或目录能说出它的上限，此前只能把人指到连接页。\n- 折叠阈值成为设置项，并说明是哪一条边界触发的。\n- 工具调用会报告它花在命令之外的时间；宿主记录一个会话计费多少、冷启动花了多少。\n- 请求会说明它携带的正文是否与上次发出的相同。\n\n## 修复\n\n### 远端安装：探测说能用、启动必崩\n\n一个内核能否被驱动，此前只靠在 `serve --help` 里找一个 `port-file` 来判断。但启动传的不止这一个——broker 那一对晚了一整条发布线才出现。于是一个只有前半组标志的旧内核通过了探测，带着 `--provider-broker` 被启动，在一个它从未定义过的标志上退出。到达使用者的是 20 秒后的「serve 从未报告端口」：一个超时、一台机器、一句「去看日志」——而那份日志已被失败清理删掉。真因（那台机器上的内核来自另一条线）没有出现在任何一处。\n\n现在探测问的就是启动会传的那一组，并有测试断言两者相等。同一形状还有两处：失败清理与停止各自抄了一份「一次 serve 的记录由哪些文件组成」，broker 令牌加进来时两边都漏了，于是每次失败的启动都把本机的凭据留在远端；`remote test` 与 `remote connect` 接的是不同的参数，前者因此把一条 `connect` 会走的路报成关闭、把一条注定被拒的路报成开着。\n\n失败归因也补上了缺的那个身份：`ErrNoReleaseForBuild` 说「这个构建没有可安装的发布」，排在各条路自己的错误码之前——被指去装 curl 的人装完了仍然没有路。npm 那条路装完后版本不够时，现在报的是版本不够，而不是「装到 PATH 之外」。**没有摘掉 npm 这条路**：摘它需要硬编码「npm 上是 1.x」这个会过期的判断。\n\n另外，一个由程序启动、凭据来自 broker 的内核不再在启动时查询余额——它按设计没有自己的凭据，那次查询必然失败，于是每份远端日志的开头都常驻一条与故障无关的错误，而那份日志只在排查故障时才会被打开。\n\n### 编码与路径\n\n- 命令输出按它被写出时的代码页读取。\n- 大于预读窗口的 CJK 文件不再被判成 GB18030。\n- 以盘符根开头的 glob 走那个盘，而不是当前目录；在盘符根打开的项目不再显示为 `\\`。\n\n### 其它\n\n- MCP：会话的 MCP 生命期不再等同于构建它的那次请求；连接一个待定服务器是一个决定并被记录；仓库声明的服务器会等待回答；读取 Claude Code 实际写入的 scope。\n- capability：目录是索引而不是每一条描述；批处理分发器在模型读得到的地方被命名；工具自己的名字解析到它自己。\n- agent：从未运行的调用不再判定一次修改失败；在参数中途被截断的调用即使终端看起来完整也会被丢弃；子代理的工具 id 只做一次命名空间；依赖屏障不再丢掉委派。\n- 被拒绝的完成会说明是哪一条主张没有成立、缺了什么。\n- 判断哪些文件是测试不再靠读工作区。\n- 界面要过而目录里没有的八个 i18n 键。\n- 最新的指令可以取代它之前的副本。\n- 长文件名不再覆盖它自己的 +N -N；前缀缓存说明文字不再成为那一行的溃缩区。\n\n## 内部\n\n- Controller 按生命周期拆成协作者：会话的生命周期与持久化、审批编排及其守卫、MCP 服务器编排、把输入变成一个回合与运行一个回合、取消与善后，各自成文件；一次回合的投影从八处前置改为一处。\n- 项目自身的规则、记忆索引、技能目录与版本控制状态移出每个项目共享的缓存前缀，改由回合承担。\n- 安装脚本现在会被真正执行而不只是被写出来：下载、校验摘要、解包、定位、读回版本，全程真跑一次 shell。\n- macOS 按架构分别构建而不再产出单一 universal bundle；产物按其中的 bundle 命名；不再打包 bundle 里没有任何东西会读取的文件。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.12.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.12.0",
+        "zh": "Reasonix Studio v2.12.0"
+      },
+      "summary": {
+        "en": "本版的主线是**远程工作区第一次真正可用**：此前这条线没有发布过远端能装的内核，所以「在另一台机器上开工作区」在任何配置下都装不上东西，而失败会报成一个与真因无关的错误码。同期把项目自身状态移出跨项目共享的缓存前缀（首轮缓存命中率实测 4.2% → 54.7%），并把 Controller 按生命周期拆成协作者。自 2.11.0 起 56 个提交。",
+        "zh": "本版的主线是**远程工作区第一次真正可用**：此前这条线没有发布过远端能装的内核，所以「在另一台机器上开工作区」在任何配置下都装不上东西，而失败会报成一个与真因无关的错误码。同期把项目自身状态移出跨项目共享的缓存前缀（首轮缓存命中率实测 4.2% → 54.7%），并把 Controller 按生命周期拆成协作者。自 2.11.0 起 56 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.12.0",
+            "zh": "Reasonix Studio v2.12.0"
+          },
+          "body": {
+            "en": "本版的主线是**远程工作区第一次真正可用**：此前这条线没有发布过远端能装的内核，所以「在另一台机器上开工作区」在任何配置下都装不上东西，而失败会报成一个与真因无关的错误码。同期把项目自身状态移出跨项目共享的缓存前缀（首轮缓存命中率实测 4.2% → 54.7%），并把 Controller 按生命周期拆成协作者。自 2.11.0 起 56 个提交。",
+            "zh": "本版的主线是**远程工作区第一次真正可用**：此前这条线没有发布过远端能装的内核，所以「在另一台机器上开工作区」在任何配置下都装不上东西，而失败会报成一个与真因无关的错误码。同期把项目自身状态移出跨项目共享的缓存前缀（首轮缓存命中率实测 4.2% → 54.7%），并把 Controller 按生命周期拆成协作者。自 2.11.0 起 56 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.12.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.12.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.11.0",
+      "date": "2026-09-01",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版把 Studio 的外壳从 Wails 换成 Electron：窗口、打包、发布线、三平台自更新与全部 OS 能力都重新落到内核与传输层上，两个外壳跑同一份前端。另有三条主线：Plan 生命周期成为带授权世代的宿主态，`ask` 成为回合屏障；沙盒把外网与宿主授权拆成两轴，凭据文件对 bash 也拒绝；上下文维护改由经济边界触发，长回合内可反复折叠，`recall` 可检索已折叠区。自 2.10.0 起 131 个提交。\n\n**升级路径**：Windows 安装器改为按用户安装，并在安装时接管旧的 Wails 全机安装（会弹一次卸载确认，拒绝也不影响本次安装）；Linux 的 `.deb` 与旧包同名，`dpkg` 按升级处理；macOS 替换自身 bundle。\n\n## 新增\n\n### Studio 改由 Electron 承载\n\n- 控制面首次落到真实 socket 上。此前 Wails 的资源服务器把 `hub.Handler()` 挂成进程内中间件——没有端口、没有 CORS、没有第二条传输，独立进程的渲染器够不到。现在 hub 跑在 loopback HTTP 上，`NewLoopbackGate` 是随之必须存在的边界：策略来自打开监听的宿主而非配置，请求必须发往本监听、必须以本监听为 origin 才能改动、必须携带本次启动铸出的凭据。无 origin 的读放行（顶层导航不发 origin），无 origin 的写拒绝。四类拒绝各有独立错误码。凭据只走 cookie（query token 会落进请求行、历史与 referrer），由宿主设置，页面 JS 读不到。\n- Electron 外壳：内核由外壳派生，stdout 传一行版本化 JSON 握手（版本不认识就拒绝启动，日志一律走 stderr），stdin 是租约（父进程一端关闭即内核排空，覆盖崩溃与退出，三平台无信号参与）。页面落在 `/_studio/`，一条前缀规则即完成路由——反过来「枚举内核所有路由、其余落到页面」是资源服务器逼出来的形状，内核每加一个端点就要改一次。渲染器沙盒化、context isolation、无 node，preload 只递出动词。\n- 页面不再自己推断身处哪个外壳。四个窗口控件此前直接够 `window.go.main.App`，绕过端口层；入口点靠探测 Wails runtime 决定 chrome 长什么样。两者都改问 `HostPort`，它同时回答窗口是否自绘标题栏。CSS 按该属性而非外壳名分支，并同时发 `--wails-draggable` 与 `-webkit-app-region` 两种拼写——它们是互不理睬的两套机制。\n- 窗口的四项 OS 能力接回，内核侧零改动（不加端点、不加事件种类）：拖入文件重新以**路径**到达（渲染器只拿得到 `File`，而要对文件本身动手的回合不能在字节副本上做，preload 经 `webUtils` 解析）；保存文本与导出插件包走外壳自己的对话框（压缩包仍来自浏览器构建已在用的端点）；通知复用 `internal/notify` 与共享的 `[notifications]` 设置。\n- 状态栏图标成为协议而非绑定。此前托盘设置经 Wails 绑定读写配置文件，折叠数来自同进程喂养的 Tracker，第二个外壳只能自带一份副本。现在三条路由分别是「人设的偏好」「图标画的折叠」「写入两者的唯一入口」：偏好是持久意图，写入后直接回答它变成了什么；折叠是投影，每次读都重算，丢一帧下次读就补回来，所以是拉取而非事件。文案在有数字和词条表的地方按桌面语言组装，画图标的外壳不再各存一份格式化逻辑。\n- 目录选择器成为 `HostPort` 动词，三种回答互不折叠：路径、`\"\"`（面板被取消）、`null`（该外壳没有选择器）——把后两者当成一件事的调用方会把面板开两次。面板从哪个目录打开由内核经 `/workspaces` 回答，外壳不自存副本；可新建目录，否则「只能打开已存在目录」读起来就是「这个应用没法开新项目」。\n- 一个数据主目录只允许一个 Studio，无论哪个外壳持有窗口。同一主目录两个窗口就是每个会话文件的两个写者，而两个写者正是把 transcript 分叉成一长串恢复副本的原因；此前这条规则写在 Wails 外壳里，另一个外壳没有。身份移到 `internal/instanceid`——它一直就是「规范化后的数据主目录」而不是「一个应用」，安装版、便携版与 canary 因此能互相找到，经软链到达的主目录归位到它指向的那个。Electron 的锁键在 profile 目录上，于是 profile 放到该身份下，由平台回答「已在运行」。\n- 远程主机能力从 Wails 外壳搬到 `internal/remotehost`，两个宿主由同一个 broker 构建同一份实现。拨号、在远端装内核、持有链路、给失败命名都不是窗口的事，而持有它们的正是要退役的那个外壳——Electron 此前根本打不开远程工作区。`remotehost` 被归类为宿主适配器而非豁免分层：它实现前端驱动的端口、只由宿主装配，内核/控制器/工具层一律不得触达，三个用例钉住这一点。\n- 被阻断的远程拨号，其提问成为规范状态。首见主机密钥或加了口令的私钥会让拨号停下等人回答，此前这个提问活在 Wails 总线上、经绑定返回。现在按三重身份定址（epoch 是内核生命期、operation 是哪次拨号、ask id 是哪个问题），重复回答同一件事幂等成功，回答别的不行；取消是独立状态而非「不存在」。不建 hub 级事件流：唯一订阅者是一个人几秒内就答完的模态框。\n- 版本面板经 `GET /studio/versions` 与 `POST /studio/pin` 回答，内核里的 `update.Hub` 读目录，外壳只陈述自己的 install。这是内核确实算不出来的部分——Electron bundle 里 `os.Executable()` 指的是宿主二进制而非应用，版本烙在派生它的进程上。目录地址是常量而非 install 携带，否则一个外壳就能把它指向另一条产品线，那里的条目会把 Studio 更新成别的产品。\n- 安装某个版本成为两个外壳都能说的动词：`POST /update/install` 起编排（在 `internal/appupdate`），`GET /update/install` 是它的进度投影。进度是拉取而非流：一次成功的安装最后做的事就是结束那个本该在推流的进程。路由 202 返回而不等待——接管发生后已没有可用来发送后续回答的东西。\n- macOS 自更新补上第三个所有者。它本是三方而非两方：旧应用授权交接、helper 执行替换、新应用证明自己健康并了结事务；替换方可以执行替换，但不能宣布替换是健康的。这个所有者随老外壳一起丢了，于是第一次成功的自更新会把 `pending-update.json` 与回滚 bundle 留在原地，而 `ensureNoPendingUpdate` 把这堆残留读成一笔合法事务——之后每一次更新都被「已存在待处理更新」拒绝。`UpdateHealthWitness` 在启动时读一次待处理事务，自身不带路径与版本，所以调用方只可能确认它实际启动自的那一笔。\n\n### 打包与发布线\n\n- `make studio` 走 Electron。它取代的路径按构造就只能在 macOS 上跑——裸 Go 二进制对 LaunchServices 不是 GUI 应用，脚本得先打成 bundle 再启动；Electron 的开发构建本身就是 `.app`，一个脚本服务所有平台。\n- electron-builder 产出安装器、便携压缩包、磁盘映像与 `.deb`，沿用 Wails 线的标识与产物命名——更新清单与发布工作流读的就是这些名字，在这里改名等于发布一个没人会被推送的版本。架构词汇在打包边界翻译：electron-builder 说 `x64`，发布说 `amd64`（更新器跑在 Go 二进制里，问的是 `runtime.GOARCH`）；映射不到的架构直接构建失败，因为静默的结果是一个描述着「没有任何运行中的二进制会去问」的平台的产物。\n- 三平台都在各自的 GitHub 宿主机上打包，并按发布线实际读取的契约校验真实产物：没有产物叫 `x64`、有一个叫发布架构；清单频道旁没有 electron-updater 元数据；内核与 SPA 是 resources 而非归档成员；`studio-manifest` 把产物挂到 runner 所在平台的键下。此前只有 Windows 的包真实存在过，macOS 与 Linux 靠的是一个配置文件加一次交叉编译。\n- 发布线出 Electron 包。Windows 与 macOS 都分两步打包，理由说一次：两步之间必须对 bundle 做点什么——那里是 Authenticode 签名，这里是公证与钉封；Linux 不需要，所以一步。Windows 签名契约点名两个可执行文件而非一个：本外壳既发窗口也发它派生的内核，只签外层容器会让它们在安装后仍以未签名状态躺在磁盘上，而外面那层安装器已经被信任了。\n- `.deb` 的包名、更新 helper 的路径/权限/属主与 polkit 策略由 CI 读真实包校验。helper 的路径不是选择：polkit action 的 `exec.path` 标注的就是它，授权只授给那一个；它同时也是 Wails 包占用的路径，所以一个目标同时满足策略与升级。`--deb-user root` 显式声明——fpm 对 `-s dir` 记录的是构建机的属性，而 polkit 不会执行一个调用者本可写入的 helper，CI runner 的 uid 落在那个文件上等于装得上、更新时拒绝。\n- 桌面模块的 Go 测试首次进 CI，三平台。此前 Studio 工作流只构建外壳，主工作流的套件全是主模块的——也就是说更新引擎、它的提权 helper、发布侧工具与两个外壳，只在维护者恰好本地跑过的地方是绿的，而那正是会替换别人磁盘上运行中应用的代码。\n\n### Plan 生命周期成为宿主态\n\n- Plan 此前是一个原子 bool，同时承载两个问题：用户是否在这个工作流里，以及现在什么可以跑。bool 说不出 `AwaitingApproval`，也说不出「批准授予的是之后的工作、而非已经在途的工作」——翻转它会把模型在规划期间流式产出的每一次调用追溯性地放行。`planmode.Runtime` 持有唯一的 `State{Phase, Epoch}`，`Active` 是派生而非存储；每次被接受的转换都抬高 epoch（`Submit` 与 `Revise` 也在内，因为它们都改变了当前是哪份授权）。每个供应商回合在**采样前**盖上它所处的状态，来源 epoch 已非当前的调用被当作过期拒绝并被告知原因。\n- 规划期间的副作用改在效果轴上判定。Plan 向模型承诺宿主会拒绝写入、有副作用的 shell、能力安装、记忆修改与可写委派，而委派没有被拒绝：边界测的是 `mutates`，而 `task`、`run_skill`、`use_capability` 自身不记录任何变更——写发生在子代理里。在 auto 或 yolo 审批档下它们照跑，子代理还握着完整工具集。`planmode` 是叶子包，零值读作「有副作用」，所以一个 fail-open 的屏障发不出去。委派按是否具备写能力拆分，`read_only_task`、`parallel_tasks` 与只读子代理继续跑——那正是一个计划做调研的方式。\n- 「规划期间这个能不能跑」此前有两个回答者（阶段门，以及一条测变更记账的回合策略），各自都不算错，洞在两者之间，而委派的修复只落到了其中一个。判定收敛到唯一所有者：`taskpolicy` 不再执行，`planPhaseEffect` 成为唯一分类器。阶段判定移到第一个效果之前而非仅在权限之前——代理只有在解析之后才说得出真实目标，而 `ResolvedCall.Commit` 按其自身契约位于宿主检查之后，此前它跑在检查前，于是一次被拒的规划调用仍可能留下一条已提交的账本条目。\n- 宿主拥有的决定成为投影。想要一份「等你处理」清单的前端，此前只能从事件里自己拼并记住看过什么——而那正是把前几步刚分开的所有权重新揉回去的做法：一个面板、一对 Allow/Deny，计划批准开始长得像权限提示。`Decisions` 每次被问时从各自的所有者派生，自身无状态，`Kind` 指明所有者、所有者就是回答者（`plan_approval` 回到 `ResolvePlanDecision`，`ask` 回到 `AnswerQuestion`），刻意没有 `Decision.Approve`。身份是所有者本就发出的 id 原样送回，过期卡片因此天然无害。\n- Studio 渲染宿主拥有的计划生命周期。此前它把计划卡的三种结果折成一个 approval 布尔，再自行设置 plan 模式——本就有损（修订与退出是不同的转换），生命周期成为宿主态之后还会跟内核自己的动作抢：前端的 `SetPlanMode(false)` 可能退出一个批准刚刚带进执行的工作流。现在两端都把结果整个经 `ResolvePlanDecision` 送出。为此 serve 增加 `POST /plan-decision`，宿主不再持有该决定时回 409 与带码的拒绝——这是并发而非客户端错误。窗口持有的、宿主已不再列出的卡片被**封存**而非删除：它不再可回答，但作为「发生过什么」的记录留在屏幕上。\n- 待办的写入被区分成「改计划」与「推进执行」。宿主此前只持有一个事实——任务清单变了——于是每轮重写同样两步的回合，与真正完成它们的回合产生同一个信号；这项工作背后的会话花了十二小时、1065 次任务清单写入，完成步数固定在 22。`ClassifyTodoTransition` 从清单本身读出一次写入做了什么，身份取稳定的 `step_id`（没有时取规范化文本），绝不取位置。重新规划刻意不算推进：把它算作推进就等于允许一个停滞的回合靠重写自己的清单来自我续命。\n- `complete_step` 的结论来自任务清单本身。它此前每次签收都以「宿主已推进任务列表，请继续下一步」结尾，而这句话是在不知道是否还有下一步的情况下断言的；宿主早已推进完并知道答案，只是模型唯一会读的那部分——工具结果——没带上它（#8816 就是那个回合：最后一项待办完成，结果仍索要下一步，模型于是发明了一个，回合结束不了）。\n- 宿主持有的步骤 id 投影到模型读得到的地方。`complete_step` 把 `step_id` 标为 PREFERRED，而宿主自计划投影起就为每一项持有一个——模型却从没被展示过：`todoState` 不进提示词，`todo_write` 只回计数，三个清单渲染器全打裸序号。于是模型能引用的只有它被展示的序号，而那恰恰是重新规划在上方插入一步之后会失效的引用。\n\n### `ask` 成为回合屏障\n\n- `ask` 取得的是只有用户能提供的东西。它不是请求权限的方式、不是计划卡、也不能替代代理自己能做的调研——而此前那条准入判据（「无法从请求、代码或合理默认值中解决」）让模型把任何它有看法的事都自行解决了。有推荐意见不等于这个选择归你：当两个合理选项会改变架构、公开 API、数据模型、依赖、UX、兼容性、范围或任何不可逆的东西时，就问，并把推荐放在第一位。\n- 更要命的是时序。写在问题旁边的一切都是在答案存在之前写的：`ask(\"删除还是归档?\")` 与 `write_file(...已删除...)` 在同一批里，无论用户怎么答都会执行那个猜测。工具自行声明屏障（而非按名字匹配），扫描在调度之前跑；只读的同批调用同样停下——共享同一个并行段才是问题，写不写并不是。被推迟的调用会被告知它们没有被带过来，以及为什么。\n- 没人可问的运行不再自己回答自己。旧的回退让模型「用你的最佳判断」，这与唯一会把调用放到这里的规则直接矛盾——决定保持未解决，模型被指向 `conclude_blocked` 而不是一个它还得为之辩护的猜测。任何审批档都不代用户作答。\n\n### 沙盒：外网与宿主授权分成两轴\n\n- `network` 此前扛着两种互不相关的能力。在 Seatbelt 上实测：`(deny network*)` 连 Unix socket 一起挡，于是关掉外网的用户同时失去 ssh-agent——`ssh-add -l` 与 SSH 签名提交都停，而这两件事都不需要互联网。反方向上，默认的 `network = true` 把宿主的 agent socket 交给了每一条命令，探针证实了它值多少：**在磁盘上的私钥已被删除的前提下，受限 shell 仍然让宿主 agent 产出了一个有效签名**。拒绝读取（`ForbidReadRoots`）对此毫无作用——持有密钥与有权使用它是两回事。\n- `Spec` 现在在 `Network` 之外携带 `HostAuthorities`，策略点名服务而非路径，每个后端按各自客户端的方式解析 `ssh_agent`/`docker`/`podman`。默认只授予 `ssh_agent`：签名是编码工作流的日常，而容器守护进程的 socket 是全机执行权。零值 `Spec` 什么都不授，新的调用点在明说之前都是受限的——MCP 服务器因此不再获得任何宿主授权。受治理的是三个点名端点，DBus、Wayland、X11、gpg-agent、keyring 与任意 socket 仍可达，所以主张始终是「这些端点受治理」，绝不是「宿主 IPC 被隔离」。\n- 凭据文件对 bash 也拒绝读取。`read_file` 拒绝 `~/.ssh/id_ed25519`，而 `cat` 照样返回：凭据拒绝表只接到了进程内的读取工具，从未接到 `sandbox.Spec.ForbidReadRoots`，于是 OS 边界放行了每一条 shell 命令——包括 `cp`、`tar` 与任意解释器，这也是它无法在命令分类器里打补丁的原因。出网默认开启、auto 档两半都放行，所以那次读取和随后的 POST 都不需要任何提示。`internal/secrets` 现在持有两个消费者共读的那一份表：只装秘密字节的文件默认拒绝（SSH 私钥、`~/.aws/credentials`、`~/.netrc`、`~/.git-credentials`、`~/.pypirc`、gcloud ADC）。把配置混进秘密的文件**刻意不在其中**，而且是实测而非推定：拒绝 `~/.config/gh/hosts.yml` 会让每一次 `gh` 调用在启动时失败，拒绝 `~/.npmrc` 会静默改掉 npm 的全局 prefix。`[secrets] protect_credential_files = false` 可关闭。\n\n### 上下文维护\n\n- 压缩此前只认一条边界：声明窗口的 `compact_ratio`。一个声明 1,000,000 token 窗口的供应商预设因此把触发点放在 850,000，而一次真实会话跑了 2,150 轮、提示词峰值 321,265——预算的 37.8%，维护一次都没被尝试过。容量与经济性是两条不同的边界：模型支持 1M 上下文，不等于把 300K 的提示词为几百个代理回合反复重放是划算的。自动触发改为两者先到者：窗口的 `compact_ratio`，或可见输入的 `context_soft_limit_tokens`（默认 160000，负值关闭）。\n- 一个回合内可反复折叠其已闭合的前缀。此前回合只能被检查点一次，之后折叠区止于该回合的第一条消息，长到能两次触及边界的回合就得扛上它跑过的每一轮——推动这项工作的那次会话在**一个**回合内持有 321K token、2150 轮，而第一次折叠只够到它之前的 30K。现在检查点能够到的是该回合**已闭合的事务**：止于 `closedPrefixEnd`（该回合发出的每一次调用都已有结果的最后一点），所以在途事务永不被劈开，开启该回合的那条请求由 `keepIndexes` 逐字保留。\n- `recall` 可以检索，而不只是定址。此前它只能读别的东西已经命名过的位置，而命名者都会衰减：折叠索引被限制在窗口的 1%、会裁掉最旧的行；`canonicalOriginFor` 对任何位于先前投影内部的东西返回 -1，二次折叠的消息根本没有可推导的规范位置。底下什么都没丢——压缩重写的是模型看见的东西，从不触碰规范 transcript。所以 `recall` 增加了查询，在 `canonical[:CoveredCount]`（后备存储，绝非投影）上走与 history 相同的 BM25 原语。检索与读取共用一份预算，空结果不计费也不算错误。检索成本线性且足够小以致不需要索引：1k 条已折叠消息 2.3ms，5k 条 11ms，20k 条 44ms。\n- 摘要漏掉的改动由宿主写回。折叠索引与摘要分工：`buildFoldIndex` 基于摘要会携带它们的承诺而跳过「有路径且命令失败」的改动。两条路径打破了这个承诺——`mustFree` 下 `repairFoldCoverage` 量完覆盖率就返回（正确，硬上限不是再叫一次摘要器的地方），以及摘要器彻底失败时 `degradeFoldSummary` 装上一份什么都不带的机械摘要。两种情况下改动都同时缺席于摘要和索引，却仍在规范 transcript 里：**数据留着，地址丢了**。现在宿主用同一批回执自己写回路径与命令签名，只写摘要漏掉的部分。\n\n### 子代理\n\n- 只读子代理按写者的方式汇报。写者子代理以 `complete_subtask` 结束，宿主会拿它的每一条引用与自己观察到的行为对账；只读子代理此前以散文结束，回执仍进入父账本，但语义那一半以一句无法验证的话到达，两者之间没有任何连接。工具附加的**顺序**是要点：`readOnlySubRegistry` 先构建工具、证明子代理确实能调查点什么，然后才附上汇报方式——先附上的话，一个没有任何调研工具的子代理会因为握着提交发现的工具而通过能力检查，然后就它做不到的工作汇报。\n- 完成报告得到的是裁决，而不是一个词兼两义。`complete_subtask` 此前对两种结果都回「accepted」：宿主能背书的报告，与宿主刚刚下调过其主张的报告，拿到同一个词，差别留在一句尾随的话里。回放显示子代理会怎么处理：首份报告被下调则继续干活，10/10；首份报告完好则停下，4/4，两边都无例外。契约中「exactly once，作为你的最后一次工具调用」被移除——它在写下之前就已被证伪：一个用「再去做」来回应被下调主张的宿主，不可能同时被一个只调用一次的子代理遵守。\n- 子代理的审计通路端到端接通。统计「子代理是否按被要求的方式收尾」的通道此前接到了空处：全树没有任何类型实现 `SubagentHandoffSink`，它也从未在 `capabilityContracts` 里注册，于是 `RecordSubagentHandoff` 内部的类型断言在第一个包装器上就匹配不到，审计被丢弃——生产者有结构体、有接口、有绿色单测，这恰恰是没人发觉的原因：一致性说明方法存在，只有调用栈能说明值到达了。另一处：每个子代理都发往 `subagentProgressTracker.wrap()`，而它返回 `event.FuncSink`，函数类型不实现任何可选能力，于是那个 sink 丢掉了全部十二条通道。在 `benchmarks/fanout-width` 上实测前后：`subagent_handoff` 0→4，`contract_shadow` 1→5，`completion_report` 1→5，`protocol_recovery` 0→6，`outcome_progress` 4→39。\n\n### 其他\n\n- `grep` 会在别处都没匹配时，去 ignore 规则指向别处的地方找一次。此前它遵守 `.gitignore` 且无从绕过、也无从得知这条规则生效过：`dist/`、`node_modules/` 或任何生成目录里的匹配不可达，而返回的是一句光秃秃的「没有匹配」——由此唯一能得出的读法是「不在这里」，而那是比这次搜索实际能作出的主张更强的一句话。现在有三种回答：匹配、来自被忽略路径的匹配，以及「这里也没有，所以是真的不存在而非被过滤掉了」。放宽只放宽 ignore 规则：限制在 switch 之上检查，VCS 存储目录仍被剪掉，隐藏文件仍隐藏。\n- 响应边界在回合提交之前被分类。被输出上限截断的响应，此前以「bash 的参数无效；它需要 \"command\"」到达模型——宿主知道原因（`finish_reason` 是 length），但只把它发给 sink。一次真实会话从中学到的教训是**不要再批量发独立调用**，而这与整棵树的要求正相反，代价是每次调用一个往返。截断只可能切掉最后一次调用，所以只有它、且只在其参数解析失败时被丢弃。参数报错现在把解析器停下的字节引出来并在下面加脱字符标注。\n- 后台任务完成会唤醒拥有它的会话。执行层本就是异步的，代理的控制流不是：后台任务跑完、排入一句话，然后要等用户开口模型才学得到它已经完成（#7948）。这里没有为此另建运行时——会话收件箱本身就是一个。`jobs` 发布 `CompletionEvent`（一个身份而非一句话），控制器把它翻译成宿主续写。哪条投递路径生效绝不靠读「是否有回合在跑」来决定：回合可能恰好在读与入队之间结束，steer 尝试本身会报告身处哪个世界。\n- `task_token_budget` 补齐三条轴中缺的那条。`TaskBudget` 自轮次计数下线后就带着三条轴，token 那条是唯一一条 boot 从未映射的，没有任何键能设置它：轴存在、被执行、却打不开。它计的是模型做的工作量——`usage.PromptTokens` 含 `CacheHitTokens`，一轮里 160,000 提示词有 159,900 来自缓存，仍然累计 160,000；推动这项工作的那次会话以 99.9% 命中率把 393.7M 输入 token 中的 393M 走了缓存，若按缓存未命中计分，任何上限都会让它永远跑下去。默认关闭。\n- Reasonix 主目录像工作区根一样可被陈述。此前每一层都从环境变量里回读它，于是绑定一个主目录的唯一办法是改进程状态——这也是为什么第二个主目录意味着第二个进程，以及为什么 `internal/boot` 里没有东西能并行跑。`config.Roots` 是这个绑定，`boot.Options.Home` 是入口。\n\n## 修复\n\n- **桌面窗格的提问没人接**（#9509、#9527）。三个入口把 runtime 放进 Hub，只有两个到达时是接好的：`Open` 接自己的，`RunGracefulListener` 在去服务的路上扫掉被收养的，而桌面窗口两条路都不走——它收养自己的第一个窗格并经 `Handler` 服务它。`desktop/` 下从没有任何东西调用过 `EnableInteractiveApproval`。于是那个窗格承载的对话没有 Asker，每一次提问都在有人正坐在屏幕前的情况下用「模型自行假定」的回退自答。之后打开的窗格走 `Open` 因而正常，这正是它读起来像「只有新会话能提问」的原因，也是回退到旧构建没用的原因——缺口是结构性的，不是回归。不变量移到发布边界：Hub 发布的本地 runtime 按定义就是由交互式前端驱动的。\n- **桌面版本锁定从未落盘**。`SetDesktopPinnedVersion` 把值放到配置对象上而 `SaveTo` 从不写出：`[desktop]` 渲染器逐个手写相邻的键——`close_behavior`、`tray`、`check_updates`——而这一个不在其中。于是被按在旧构建上的机器下次启动就自由了，更新回它刚刚回滚掉的那个版本，而这正是锁定存在的唯一目的。\n- **被阻塞的卡片能在 250ms 内自我封存**：按钮消失、内核仍在等、下面那行还声称用户允许了他们从没看见的东西，运行随后等一个没人给得出的回答。两处缺陷同一个成因——`Decisions()` 只投影计划批准与提问，普通工具权限被跳过（注释说它有自己的所有者和自己的卡片），而前端把那份清单读成「还开着的全集」并封存其中缺席的一切。补全投影是必要但不充分的：在提示存在之前拍的快照，与在它已解决之后拍的，漏掉它的方式一模一样，所以按轮询封存是构造性地有竞态。封存现在骑在内核记录每一次决定所用的那条有序流上，该回执同时带着结果——卡片说出被决定了什么，而不是对它叫不出名字的一切都猜「已允许一次」。\n- **`/plan-decision` 在桌面里没有路由**。内核注册了它、`sse.ts` 也调用了，但外壳的 API 表与 dev 代理都不知道，于是端点回的是 `index.html` 而非 JSON：桌面应用里的计划决定不起作用，`pnpm dev` 对着活内核也一样。\n- **未完成的计划仍被要求继续**（#8816）。见上「`complete_step` 的结论来自任务清单本身」。\n- **收窄性的转换会丢掉在途工作**。epoch 过期此前被写成「一次转换使先前授权下产出的一切失效」，强于它要防的东西——它防的是早先的工作继承它当时不具备的能力。打开 Plan 做的恰恰相反：它收窄可运行的范围，在途的东西什么也没多拿到，而拒绝它会在每次有人碰开关时丢掉该回合的其余部分（只读调用也一样），该给出文件的地方给出「计划授权已过期」。现在只在**放宽**方向的转换上拒绝。\n- **批处理扫描看不见的决定不会结束回合**。屏障扫描的是模型写下的调用，在调度之前；而扩展会在 `executeOne` 内部替换调用，即在那次扫描之后——于是一个被变成提问的读取工具，让扫描看着一个已不存在的调用，模型写在它之后的一切照跑。该调用现在自己报告：结果的工具是决定屏障时，回合就在它执行的地方结束。\n- **`go test -race` 在本分支上长期是红的**。`acknowledgeUpdateHealth` 在它启动的 goroutine 内部读 `updateProbation` 与 `commitUpdateHealth`，而没有任何东西等待该 goroutine，于是在 cleanup 里恢复它们的测试写的正是仍在运行的等待所读的。三个 CI job（desktop、desktop-macos、race）一直挂在这上面。在武装等待的地方读它们也正是它们的语义。此前一直可复现，只是 pre-push 清单跑桌面模块时不带 `-race`，而那是唯一看得见它的开关。\n- **`internal/control` 整包 panic，把覆盖率闸门堵死**。三个测试把 executor 装配成 `&agent.Agent{}`，而 `New` 才是 sink 不再为 nil 的地方（回退到 `event.Discard`），于是被种下的计划观察到的第一件事就解引用了那个 nil。`covergate` 会跑每条敏感路径的测试，`internal/control/approval.go` 是其中之一，退出 1 的包会把整个闸门带下去——一个永远是红的闸门不是闸门，它的下限停在它停止运行那天读到的值上。panic 消除后：sandbox 69.4→73.5，shellparse 63.6→64.5，shellsafe 59.3→61.1，approval.go 93.9→94.3。\n- **serve 的唤醒测试是先 flake 后 race**。`Ask` 在锁下注册问题、释放后才通知（正确——宿主回调若持在那把互斥锁下会阻塞其他每一个问题），但这意味着 `raise()` 等待的轮询可能在回调运行之前就返回。\n- **Windows 上的 TempDir 拆解**约四分之一的运行失败，每次是不同的测试，永远表现为「刚清空的目录删不掉」。不是迟到的写者：在观察到失败的同一条命令里抓取，幸存目录里什么都没有，几分钟后仍然没有，然后干净地删掉了。仍开着的句柄会以另一种方式失败——Windows 根本不允许删除打开的文件，回答的是共享冲突而非目录非空。剩下的解释是尚未安定的拆解。契约改为时间性的：测试拥有的目录必须在短界限内变得可删，泄漏是活过截止时间的内容。\n- **`.deb` 闸门对一个正确的包报红**。helper 在那儿、在 polkit action 点名的路径上、权限 0755、属主 uid 0——正是 `--deb-user root` 所要求并得到的。失败的是断言：`dpkg-deb` 打印 `0/0` 而模式要 `root/root`。打印哪一种是**读包的机器**的属性而非包的属性。这是标准规则警告的那种词表判断的微缩版：一个匹配事物拼写而非事物本身的判断。\n- **Linux 包构建不起来、macOS 的 blockmap 关不掉**，两个都来自 CI，也都是 Windows 宿主够不到的平台。fpm 要一个项目主页，electron-builder 没有它就报错，于是 Linux 那条腿在打包之前就失败——这也意味着上一步加的、用 `dpkg-deb` 回读包的闸门此前一次都没跑过。macOS 的 zip 会带一个 blockmap 而没有选项能关掉它：`differentialPackage: false` 是 nsis 选项，Windows 吃下了它，这就是 Windows 那条腿绿的原因。而 `.blockmap` 带着发布前缀，那个用来拒绝残缺发布的产物计数会把它算作一个，从而掩盖一个缺失的产物。\n- **界面说发生了什么，而不是它怎么评价自己**（#9524）。字体设置解释说找不到的名字「不会弄花」界面——那是没人有过的担忧——却从没说下面那行是干什么的；空会话开在一句口号上，副标题用的是实现自己的词汇，而那是新用户看到的第一屏。两处都按同样三件事重写：你能做什么、你会观察到什么、有限制时限制是什么。以同样三条规则扫过 `src/ui`，取提示、描述、空状态与引导文案，按钮与短标签不动，共 51 处，英文同步更新。\n\n## 性能\n\n- **不再为答不出东西的效果走查付费**。实测而非猜测：17 次录制会话、393 次真实 bash 调用，总体 p50 472ms，但 46% 的调用是宿主无法分类的，这些跑 957ms，其余 387ms。差距来自两次全工作区走查（命令前一次、命令后一次），而走查本仓库的 2 万个条目热态约 300ms：570ms 的差距，600ms 的走查。三处都是白付：后置走查在不可能有结果时也照走（`changed()` 拒绝被截断或缺席的前置扫描，而后台调用的前置扫描是刻意跳过的）；超过 5 万条目的上限之后整件事纯亏损（两次 5 万条目走查换不到任何东西，每次不可分类调用都来一遍——现在任务级记住第一次）；而且它停不下来（`scanWorkspace` 不接 context，于是按停止会迅速杀掉命令，然后卡在一次不可中断的走查上——这就是「停止没用」在足够大的树上的样子；现在每 512 个条目检查一次）。\n- **环境探针按决定它的东西做 key**。`prompt.go` 写明了这一段的用途：「这段前缀对机器上的每个项目和会话都相同，它们共用一个缓存条目。」而指纹里含 `DenyRoots`——也就是工作区根——于是机器上每个项目各拿一个条目、把十一个探针全重跑一遍，与同一个文件里写明的意图相悖。测量先于假设：`internal/boot` 的测试要 160s，我最先怀疑的临时目录清理在 359 次删除里只占 0.9s，CPU profile 里 98.96% 是 `runtime.cgocall`。PATH 决定探针解析到什么，deny roots 只在之后决定要不要跑已解析的东西——昂贵的那一半是机器的属性，便宜的那一半是工作区的属性。`internal/boot` 160s→105s。真正的重点是生产环境：打开一个没打开过的项目，启动时要付十一个子进程。\n\n## 安全\n\n- `golang.org/x/crypto` 升到 v0.55.0（GO-2026-6303）：v0.54.0 的 ssh 包对非公钥认证回调不强制 source-address 关键选项，govulncheck 经 `sshtest.Server.handleConn` 追到调用，扫描在每个分支上都失败。\n- **重定向守卫合三为一，信任决定保持三份**。同一个判断存在三处：`validateCLIUpgradeRedirect`、`validateOfficialRedirect` 与 update 包的 `TrustedRedirect`。第一和第三除错误前缀与主机判定函数名外逐行相同，第二是同样的规则折进一个条件。而第三个**从未接到任何客户端**——这正是此类重复失败的形状：没人在看的副本，在有人注意到它不再被调用之前，就先停止被维护了。`internal/redirectguard` 持有机制（仅 HTTPS、无凭据、无端口、跳数上限、调用方点名的主机表），`ErrRefused` 给拒绝一个身份。主机表刻意保持分离：一次下载信任哪些主机是那条路径自己的安全决定。\n- 更新器移入内核并接上它找到的那个守卫。Electron 外壳的宿主二进制由根模块构建，而 Go 的 internal 规则管的是导入路径而非模块：`reasonix/desktop/` 之外的任何东西永远无法导入 `reasonix/desktop/internal/update`。搬迁过程中 `TrustedRedirect` 暴露为孤儿，而它不是死代码——它是更新客户端**必须**使用的 `CheckRedirect`，自带注释说明重定向可能把一次已认证的下载带到另一台主机上，却从未被引用。外壳从 `netclient` 组装客户端而后者不设重定向策略，所以每一次目录读取与产物下载都在跟着重定向随便去哪。minisign 校验是挡在这与「已安装的产物」之间的东西，所以这是**缺了一层**而非一扇敞开的门。\n\n## 内部\n\n- **`frontend-parity`**：REASONIX.md 说行为放到控制器上、三个前端因而都继承，而没有任何东西回读这一点。serve 拿到的 `SessionAPI` 声明了 `SwitchBranch` 却从不调用——会话分支最后变成只有 chat TUI 有，是意外而非决定，另有 149 条边处于同一状态。矩阵从 `go/types` 的编译导出数据读出，绝不从选择器名字读：`Close` 与 `Status` 既是能力也是标准库方法，按名字匹配会把 `os.File.Close` 记成 serve 在驱动 `Lifecycle.Close`——一个掩盖债务的假「已接线」，而这是棘轮唯一不能失败的方向。\n- **工具 schema 预算成为棘轮**。它守的数字是真的：某次实测运行的 5,577 个提示词 token 里有 3,995 是内建工具 schema，每个会话在做任何事之前就先付掉。机制不是：测试里一个手改的常量没有更新路径、也不留下它为何移动的痕迹，于是一次九个 token 的文档改进唯一能做的就是把它绊倒。改为 `schema_budget.json` + `-update-schema-budget` + `-allow-schema-widen`，记录在 5590（低于常量里的 5600——树本来就已经让出了一些，而没人看得见）。\n- **依赖全量升级，并支付 go 1.26 的账单**。`mvdan.cc/sh` v3.14.0 要求 go 1.26.0，指令随之移动，而指令正是把 modernize 的 `newexpr` 规则在全树打开的东西；那 75 处发现是这次升级的价格而非它继承的债务（同一棵树在低一个版本上 lint 报 0）。fixer 写出的 `//go:fix inline` 指令被丢弃而非保留，因为 govet 会把它读成「内联每一个调用点」的要求——那会删掉承载语义的名字。\n- **上下文检索基准**：一整套实验设施（语料只持有问题从不持有答案、模板占位符按运行生成、污染闸门只认带本次运行熵的代号、fixture 在代理读过之后离开磁盘、按模型回合而非工具事件顺序判定路由）、检索漏斗分级（`NoRetrieval`/`SearchMiss`/`HitNotRead`/`ReadButAnswerWrong`/`CueRead`/`Recovered`）、查询审计（序号、轮次、排名、与前一条的差异、遗漏了宿主探针的哪些词）、超时分类（`PostTargetRunaway` 与 `SearchSpiral` 要的是完全不同的修法）、以及按充分性而非命中来衡量停止。前两次试点都被同一种方式污染：模型 grep 出本仓库的 `corpus.go` 并读到了答案。\n- 桌面 Go 门禁、真实产物打包契约、`todo_progress` 语义进度语料提取器与重规划分段器进树，readiness 的两个零生产者审计信号删除，Goal 接受时冻结的项目声明契约（仅影子，不改判定），以及沙盒三个保护维度（完整性/机密性/权威）与 macOS 宿主代理面未测量的记录进文档。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.11.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.11.0",
+        "zh": "Reasonix Studio v2.11.0"
+      },
+      "summary": {
+        "en": "本版把 Studio 的外壳从 Wails 换成 Electron：窗口、打包、发布线、三平台自更新与全部 OS 能力都重新落到内核与传输层上，两个外壳跑同一份前端。另有三条主线：Plan 生命周期成为带授权世代的宿主态，`ask` 成为回合屏障；沙盒把外网与宿主授权拆成两轴，凭据文件对 bash 也拒绝；上下文维护改由经济边界触发，长回合内可反复折叠，`recall` 可检索已折叠区。自 2.10.0 起 131 个提交。",
+        "zh": "本版把 Studio 的外壳从 Wails 换成 Electron：窗口、打包、发布线、三平台自更新与全部 OS 能力都重新落到内核与传输层上，两个外壳跑同一份前端。另有三条主线：Plan 生命周期成为带授权世代的宿主态，`ask` 成为回合屏障；沙盒把外网与宿主授权拆成两轴，凭据文件对 bash 也拒绝；上下文维护改由经济边界触发，长回合内可反复折叠，`recall` 可检索已折叠区。自 2.10.0 起 131 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.11.0",
+            "zh": "Reasonix Studio v2.11.0"
+          },
+          "body": {
+            "en": "本版把 Studio 的外壳从 Wails 换成 Electron：窗口、打包、发布线、三平台自更新与全部 OS 能力都重新落到内核与传输层上，两个外壳跑同一份前端。另有三条主线：Plan 生命周期成为带授权世代的宿主态，`ask` 成为回合屏障；沙盒把外网与宿主授权拆成两轴，凭据文件对 bash 也拒绝；上下文维护改由经济边界触发，长回合内可反复折叠，`recall` 可检索已折叠区。自 2.10.0 起 131 个提交。",
+            "zh": "本版把 Studio 的外壳从 Wails 换成 Electron：窗口、打包、发布线、三平台自更新与全部 OS 能力都重新落到内核与传输层上，两个外壳跑同一份前端。另有三条主线：Plan 生命周期成为带授权世代的宿主态，`ask` 成为回合屏障；沙盒把外网与宿主授权拆成两轴，凭据文件对 bash 也拒绝；上下文维护改由经济边界触发，长回合内可反复折叠，`recall` 可检索已折叠区。自 2.10.0 起 131 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.11.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.11.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.10.0",
+      "date": "2026-08-28",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "本版三条主线：交付证据的出处改由宿主掌握；远程连接失败可诊断、远端目录可直接选择；Studio 的 Windows 产物开始走 Authenticode 签名。另修复一处并行数据竞争，以及会话侧栏在窄屏下折叠后无法恢复的缺陷（#9507）。自 2.9.0 起 25 个提交。\n\n## 新增\n\n### 交付证据的出处由宿主掌握\n\n关闭五处「被审计方可以回答审计门」的路径：\n\n- here-doc 正文中的 `go test ./...` 被当作已执行的项目检查。`SplitOutsideHereDoc` 现丢弃正文，仅保留其旁边的命令。\n- 含 here-doc 的命令此前无法分解，导致同批执行的测试被判为未执行，且 `python - <<PY` 可绕过拒绝 `python -c` 的 Delivery 门。shell 判定改为复用 permission 已有的解析结果。\n- `cd backend && go test ./...` 与根目录执行共用同一身份，一次通过的根测试会清除子目录的失败。规范化现保留 check 之前的上下文段，仅丢弃拼写与管道差异。\n- 未分类回执把管道退出码当作检查结果，`go test ./... | tail` 可掩盖其覆盖的失败。\n- `missingMutation` 已接通但从未计数。无法证明的改动现记为债务，仅可由观察结清。\n\n其余变更：\n\n- 义务由账本差分导出，不可自行声明或抹除；差分随产生它的结果一并返回模型。\n- Delivery 不再拒绝不透明解释器，改为记为「未证实并欠账」。\n- 声明检查保留任务起始时的基线，当前声明无法回收。测试判据在任何可能覆盖它的调用前从前像捕获，并通过 `go test -overlay` 对替换后的代码求值。\n\n### 远程连接失败可诊断\n\n- `internal/remote/bootstrap` 为每种安装失败定义 sentinel：npm 缺失、npm 不在登录 PATH、本地二进制平台不匹配、无可用安装路线、落地二进制无法执行、serve 未上报端口。`desktop/next` 经统一映射表转为点分错误码。此前均为无错误码的英文句子（`HostState.Err` 为 string，refusal-path 守卫仅覆盖 `internal/serve`）。\n- 主机表单新增安装策略、跳板机、口令环境变量三项控件。三者此前已可存储并随保存传输，仅缺 UI。\n- 新增 `Probe`：单次会话内读取首连所依赖的全部信息，不修改远端状态；不可用的安装路线返回与真实失败一致的错误码。`reasonix remote test` 及窗口内每行主机的按钮均调用它。\n- 两处基于错误文本匹配的测试改为按错误身份匹配。\n\n### 远端目录直接选择（#9475）\n\n- `attach.Pool.Browse` 仅持有链路：不安装 reasonix、不启动 serve、不挂转发，经文件协议列目录，在未部署内核的机器上可用。应答后连接按定时器释放，避免逐级进入时重复拨号（带口令私钥会重复索要口令）。\n- `GET /remotes/{host}/dirs` 仅返回目录，路径、名称与上级目录均由远端机器给出，不在本地推断路径语法。超出上限时截断并明确告知。\n- 选择后即打开，并将**远端解析后的路径**写入主机簿（`~` 在远端展开，记录输入值会导致同一目录重复列出）。已存在则跳过写入。\n- 侧栏可移除本机记录的目录；远端 tree 上报而本机未记录的行不提供该操作。\n- 设置页路径输入框接入同一选择器，条件为该行已保存。\n\n### 运行带显示余额与计划\n\n- 钱包余额改走独立路由，触发时机为面板挂载、回合结束、点击标签。此前搭载 `GET /status`（回合运行时每秒轮询 4 次）。四个数值分列展示；无 `balance_url` 的供应商返回 204 且不渲染；超出保鲜期的值标注时间；读取失败返回错误码而非 0。\n- `internal/billing` 按端点主机选择解码器。修复 Moonshot 钱包：其响应可被 DeepSeek 解码器无错解析为空余额，导致有余额账号显示为不可用。无法匹配任何形状的响应现返回 `ErrUnreadable`。\n- `Plan.tsx` 与 `panels/Overview.tsx` 无任何导入者。Plan 恢复挂载至设计位置（改动文件旁）；Overview 及其专用的六条翻译删除。\n- 新增两道守卫：`route_parity` 校验 `internal/serve` 路由与 `vite.config.ts` 代理清单一致；`orphan.test.ts` 使无导入者的 `.tsx` 失败。\n\n### Windows 产物 Authenticode 签名\n\n- 分两阶段签名：先签散文件形态的 `reasonix-studio.exe`，再基于该字节重建安装包并签名容器，由 artifact configuration 校验载荷签名。仅签容器会使安装后落盘的可执行文件无签名。\n- `studio-build.sh` 拆出 `--windows-payload` 与 `--windows-package`；一次性平台路径由两者组合，未签名构建与本地构建的产物逐字节不变。\n- `.signpath/` 声明本线契约（分支 `studio`、工作流 `release-studio.yml`），`cmd/signpath-contract` 在构建前验证并取指纹。分支名钉死为 `studio`，不从被检查文件读取。\n- 签名需同时满足 `SIGNPATH_API_TOKEN` 与 `STUDIO_SIGNING_ENABLED`。前者为仓库级 secret，单独启用会使下一个 tag 请求到策略尚不信任的签名。\n- 重写 `scripts/verify-windows-authenticode.ps1`：原脚本描述已退役的桌面线产物布局，且被从未为真的 `HAS_SIGNPATH` 挡住。现校验载荷可执行文件、安装器、以及便携 zip 内副本（按哈希与已签名载荷比对，防止打包自更早的已签名构建）。已在真实 Windows 主机验证三种情形。\n\n## 修复\n\n- **窄屏下折叠的会话侧栏无法恢复**（#9507）。宽度 ≤1200px 时侧栏折叠，`[data-fold~=\"rail\"] .gutter-l { display: none }` 同时隐藏其分隔条，而该分隔条上的把手是唯一入口（`keys.ts` 无对应快捷键）。1920×1080 在 175% 缩放下为 1097 逻辑像素。该规则基于「左栏被整块移除」的错误前提：实际是 `.app[data-rail=\"off\"]` 将其收窄至 0px，且已有专门针对收起态分隔条的定位样式。右栏为同类问题——展开为横跨一行时隐藏分隔条正确，收起时错误，规则现按状态区分。\n- **并行工具调用竞写检查基线**。每个调用结束时查询本回合债务，该查询内含一次惰性写入（首次查询时捕获基线）。并行工具在各自完成时同时到达该写入，`-race` 在 `checkContract` 报出读写竞争，两份基线可互相覆盖。捕获移至回合开始处（单线程执行），查询变为纯读取；这同时更符合其自身约束：基线应取自任何调用改写声明之前的前像。\n- **同一检查换外壳被计为两项**。验证身份保留检查之前的所有段，`cd /w && ls -la && go test ./...` 与 `cd /w && go test ./...` 成为两项且互不取代。身份现仅保留决定执行上下文的段（`cd`、`export`、变量赋值）。\n- **闲置窗口的装饰动画持续占用 CPU**（#9481）。`.glowring` 停止时仅 opacity 归零，内部 150px 径向渐变仍以 60fps 沿 `offset-path` 运行并在 `mask-composite: exclude` 层重新光栅化；`offset-distance` 非合成器属性，开销全部落在主线程。400 回合会话、空闲窗口实测主线程 44.0% / 渲染进程 1.11 核，移除动画后为 11.4% / 1.02 核。改为默认 `animation-play-state: paused`，仅在 `.pane[data-run=\"running\"]` 下运行。空闲态 44.0% → 11.4%（4x 降频）、9.8% → 2.9%（不降频），运行态不变。\n- **外部服务连接失败以整块红色呈现**。改为仅状态点着色，原因行使用运行带次要行的统一字号字重，移除左侧内嵌竖线。\n- **shell 未路由 `/balance`**。钱包拆分路由时调用加入了 `sse.ts` 但遗漏 `apiPaths`，请求落到静态资源，运行带读回 404。路由 parity 测试已捕获，但位于根 `go test ./...` 不可见的嵌套模块中。`make test` 现覆盖 shell 与 SDK。\n- **基线求值为未变更判据重复构建**。范围较大的改动会捕获全部测试文件，未重写任何文件的回合仍为每个文件付出一次构建。工作区仍逐字节持有的判据不再产生构建；首次实际执行的求值会声明进入检查阶段。\n\n## 内部\n\n- **能力端口拆分为六个**。`Capabilities` 单接口包含 56 个方法（skills、hooks、MCP、网络、shell、权限、沙箱、配置修复、扩展 UI、供应商目录），使驱动端口失去隔离作用。按前端实际用法拆为 `SlashDispatch`、`Skills`、`Hooks`、`MCPControl`、`RuntimeSettings`、`Extensions`；`CapabilityScope` 移入 `Lifecycle`。ACP 的 `EditorAPI` 原嵌入整个接口，现仅声明其驱动的三个端口，隔离守卫未用计数由 3 降至 0。无实现变更。\n- **回合请求由方法名改为值**。六个正交部分（输入、@-ref 行、显示文本、编辑前原文、resolver、输出格式）加 sync/guarded 开关，此前展开为 40 个入口方法，选择逻辑为两条 if 中对三个变量赋闭包。折叠后剩 27 个入口方法，端口公开形状不变。此过程发现 `runEditedGoalLoopWithImageRefsRawDisplay` 为 `runTurnLoopWithPreparedTurn` 的副本，e4e6936b1 的修复只应用于其一，导致重新提交的编辑在未完成验证时仍显示「继续」卡片；由 `TestEditedResubmitFinishesWhatItOwes` 覆盖。`turnLoopRunner` 编辑分支未绑定输出格式的不对称保留未动。\n- **临时目录清理重试**。Windows 上被删文件保留目录项直至最后一个句柄关闭，`t.TempDir` 单次删除会因「非空」失败；实测约 2% 的会话保存触发，均在 10ms 内。`testenv.TempDir` 重试 `RemoveAll` 并记录未释放项。desktop 模块无法导入它，其 15 个文件保留 `t.TempDir`。\n- **词表守卫此前恒为红**。中文是合法 JS 标识符，`en_storage.ts` 写作 `占用: \"Space used\"`，而 `perf/i18n.mjs` 仅匹配带引号写法，17 个键不可见、其中 6 个被误报为缺翻译。修复后读出 1276 个键，与 `Object.keys(EN).length` 一致。新增「无法解析的行」上报并计入退出码。\n- **acp 的 31 处等待改用 `rpcCallBudget`**。该助手已存在，其注释已说明「两秒在整棵树同时被测时会失败」，但仅用于一个调用点。31 处均为「等不到即失败」的挂起探测，无一为负向断言。`TestE2EDeleteActiveSessionDoesNotRecreateFiles` 曾因此在 Windows CI 失败。\n- **新增 `perf/fold.mjs`**：折叠的列必须仍可达——自身在屏，或其把手可点击。判定读结构（沿父链检查 display/visibility/opacity，再经 `elementFromPoint` 确认未被遮挡），左栏跟踪至点击后确认恢复。`panels.mjs` 原断言 `shown(\".gutter-l\") === false`，即断言了该缺陷本身，已改为断言不变量。\n- **新增 `perf/idle.mjs`**：运行中的动画其元素必须可见；动画在闲置窗口的净开销（同机关闭动画后相减）须在预算内。已接入 `selfcheck.mjs`。\n- **`ask` 到用户的通路纳入测试**（#9509）。该通路仅一条：`EnableInteractiveApproval` 装在执行器上的 Asker。此前无任何断言覆盖，装配失效时每个提问都会得到无人应答的回退且无守卫报告。两个方向均覆盖：已接入审批的控制器必须递出问题并收回答案，未接入的必须返回回退且不得发出无人可答的提问。当前版本两项均通过，即该通路本身完好。\n- **wire-parity 纳入 `port/remote.ts`**：`RemoteHostView`、`RemoteListing`、`RemoteFolder` 与桌面端手写副本声明为对。`RemoteHostEdit` 有意排除——内核仍接受旧行的单数 `workspace`，写入页面有意只发送列表。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.10.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.10.0",
+        "zh": "Reasonix Studio v2.10.0"
+      },
+      "summary": {
+        "en": "本版三条主线：交付证据的出处改由宿主掌握；远程连接失败可诊断、远端目录可直接选择；Studio 的 Windows 产物开始走 Authenticode 签名。另修复一处并行数据竞争，以及会话侧栏在窄屏下折叠后无法恢复的缺陷（#9507）。自 2.9.0 起 25 个提交。",
+        "zh": "本版三条主线：交付证据的出处改由宿主掌握；远程连接失败可诊断、远端目录可直接选择；Studio 的 Windows 产物开始走 Authenticode 签名。另修复一处并行数据竞争，以及会话侧栏在窄屏下折叠后无法恢复的缺陷（#9507）。自 2.9.0 起 25 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.10.0",
+            "zh": "Reasonix Studio v2.10.0"
+          },
+          "body": {
+            "en": "本版三条主线：交付证据的出处改由宿主掌握；远程连接失败可诊断、远端目录可直接选择；Studio 的 Windows 产物开始走 Authenticode 签名。另修复一处并行数据竞争，以及会话侧栏在窄屏下折叠后无法恢复的缺陷（#9507）。自 2.9.0 起 25 个提交。",
+            "zh": "本版三条主线：交付证据的出处改由宿主掌握；远程连接失败可诊断、远端目录可直接选择；Studio 的 Windows 产物开始走 Authenticode 签名。另修复一处并行数据竞争，以及会话侧栏在窄屏下折叠后无法恢复的缺陷（#9507）。自 2.9.0 起 25 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.10.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.10.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.9.0",
+      "date": "2026-08-27",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "这一版有两条线。一条是窗口本身：那条什么读数都往里塞的运行带拆成了面板，窗口不再从一张白纸开始，设置变成盖在工作区上的一张纸而不是第二个全屏窗口，而侧栏里列出的一处改动现在能给出它背后的 diff。另一条是几处「界面报的不是真在跑的那件事」——沙箱面板报的是配置文件里的词而不是生效的那一档，停在提问上的一轮把问题从屏幕上擦掉了，输入框下面那排控件把自己的标签拆成了两行。自 2.8.0 起 13 个提交。\n\n## 新增\n\n**运行带拆成面板**\n\n- `RunStrip` 是一条带子，每一项读数都往里挤。它拆成 Overview、Runtime、Cache、Cost、Context、Agents、Files、Jobs 八块，`derive.ts` 在面板里把那趟遍历只走一次，`kit.tsx` 收着它们共用的形状——于是一项读数变长的时候，不必把每一项都得住的那一行撑宽。\n- 同一批里：Sky 画的是主题包要求的背景而不是摆一张图；Nav 接手图标栏；Timeline 和 Task 分别给轨迹和一个子代理自己的视图；AccountRow 管账号；prefs/keys/trailing 收起各个面板此前各自私藏的状态、按键绑定和尾巴。\n\n**窗口在自己身上打开**\n\n- 窗口此前开在一张白纸上。`index.html` 现在在它本来要等的那份 bundle 存在之前就先画出开场：字标一个字母一个字母以金写出、落定为墨，主题包画的天光，以及一行说正在接内核。`main.tsx` 在开场演完之后才把窗口交出去，而不是数着一个固定的延时——所以内核快的时候不会闪一下，慢的时候这段开场正是为它准备的。它自带一套配色，因为 `tokens.css` 是打包进来的，在那个时刻还不存在。\n- 设置变成盖在工作区上的一张纸，不再是第二个全屏窗口。这去掉了一处重复：`.prefs-hd` 此前也是一条标题栏，有自己的拖拽区、自己的红绿灯内缩和自己的窗口按钮。\n\n**列出的改动能给出它背后的 diff**\n\n- 侧栏一直在列这棵树差在哪儿，而它此前只能说出一个路径和一个 porcelain 字母。文件到底差了什么只活在写它那一轮的工具事件里，于是**这次会话之前**做的改动——或者某条没有任何事件描述的 shell 命令做的改动——只能被点名，不能被读。\n- `gitstatus.Diff` 回答单个路径。它对着 HEAD 量，所以一处暂存的编辑和一处未暂存的编辑，读起来就是它们对人而言的那一处改动。未跟踪的文件在 HEAD 里没有可比的东西，改成对空设备做 diff：那是让 git 打印出它、又不必先写 index 的唯一办法，而一次读取不该写 index。\n- 路径是客户端送来的，所以 `safeRel` 把三种形状挡在 git 之外。\n\n**cloudsea-gilt 成为内置主题包**\n\n- Studio 的设计是照着这套配色、这片不用图片的天光和这组光带／云的色调画的。现在它由内核直接供给，而不是要用户先装一个包才能看到这个应用被设计成的样子。\n\n**远程主机的 bootstrap 收成一条路径**\n\n- 探测、安装、启动、以及 Windows 那个 shell 的特例，收进一个 bootstrap 之下；配上加固测试和纯函数测试，让它不必真有一台机器在另一头也能被跑；hub 和 CLI 两个入口都接到它。\n\n**一台机器可以有多个项目**（#9459）\n\n- 底下每一层其实早就支持了：attach 池按 workspace 给 space 建索引，转发也是按 workspace 命名的；远端内核记得每一个被打开过的文件夹，`/tree` 会把它们全都答回来。只有主机簿说得出一个目录，于是没有任何入口能说出第二个——而在冷启动、还没有面板可以借道去问的时候，侧栏就只剩那一行。\n- `RemoteHostEntry` 在 `workspace` 旁边多了 `workspaces`，由 `WorkspaceList` 折成一份**默认在前**的列表：只写过旧字段的那一行是长度为一的列表，而不是每个读者都要重写一遍的特例；一次 upsert 会把列表的头写成默认，也就是 CLI 仍然连过去的那一个。\n- 侧栏把主机簿和远端的 tree 一起画：在这边加了、还没在那边打开过的文件夹留着，在那边打开过、这边没记过的也会出现。\n\n## 修复\n\n- **沙箱面板报的是真在跑的那一档，不是配置文件里的词**（#9454）。`SandboxSettings` 在 `effectiveWriteRoots` 旁边多带一个 `effectiveBash`，于是面板画的是约束器将要做的事：一个没写的值在除 Windows 之外的每台机器上都是 enforce，而 Windows 无论文件怎么写都不受限地跑。这台机器跑不了的那一档现在看得出来是死的，并且自己带着原因——只有一个 `disabled` 的时候，它保留着活控件的 hover 亮度，然后把点击吞掉，那正是被报成「坏了」的东西。在没有后端的机器上存 enforce，现在按代码拒绝而不是按一句手写的话。\n- **一个运行正停在上面的问题，挺得过转录重建**。内核会把挂起的提问／审批重放给每一个接上来的客户端，而窗口随后用 `/history` 重建的内容覆盖了自己的条目——而 ask 这次工具调用在转录里是被**故意**画成空的，因为携带 id 的是 `ask_request`。于是面板停在「等你决定」，屏幕上却没有任何可以决定的东西，排在它后面的那一轮永远发不出去。一个提问不属于记录，它是运行停下来在等一个回答，所以它跟着重建一起过去。同时提问按内核给的 id 认领：重放来的那一帧是同一张卡片而不是第二张可答的，已经答过的那张也不会被帧日志重新打开。\n- **输入框下面那排控件不再拆断自己的标签**（#9455）。这排 pill 是普通的 flex 子项，于是一行只差一点点放不下的时候，它压缩它们而不是换行——而中文任意两字之间都可断行，「计划」就此断成两行，把整排的基线一起带歪。现在一颗 pill 要么是它标签的宽度、要么就不存在：这排改为换行（`.row` 本来就允许），发送按钮的自动外边距让它始终待在所在那行的右端。从 980px 一路核到 320px：一行、两行、再三行，每一档都没有任何东西被拆断。模型那颗是这排里唯一没有自己宽度的控件——中转站可以发布比整排还长的 id——所以它先让出字符，整排才让出一行，被缩掉的完整 ref 留在悬停提示里。\n- **断掉的推理流被重放而不是丢掉**。OpenAI 与 Anthropic 两侧的 `reasoning_replay`、h2 reset 那个情形、`stream_failure` 以及围着它们的重试路径；doctor 会报出供应商实际做了什么，于是一条坏掉的流是可诊断的，而不只是慢。\n- **一次拒绝会说明自己是什么**。`errmsg` 和那条 refusal-hint 测试、instruction 的 resolver，以及这两者共同读的那几张 i18n 消息表。\n- **连接提示的遮罩只有模糊、没有压暗**。它引用的 `--bg` 从来没有存在过；CSS 遇到一个解析不出来的 `var()` 会把整条声明丢掉，属性于是回落到继承来的值，而那读起来像是设计。用量面板的 `--fg` 是同一回事，它的文字颜色从来没落地过。\n\n## 内部\n\n- perf 多了两道守卫，各自对应一种在其它门全绿时保持沉默的失败。`tokens.mjs`：一个没有回退值的 `var(--x)` 必须指向某处真的有人赋值的东西；两份清单都从源码里读——样式表自己的 `--x:`，以及 JSX 写进 `style` 的那些逐元素变量——因为手抄的清单会烂。`shipped.mjs`：`dist` 必须比 `src` 下的一切都新；一次构建可以成功、打出对勾、然后编译的是别的东西。\n- perf 另外多了三个脚本：`selfcheck` 往每一道守卫里塞一个假的断言，证明这道守卫还能变红；`sourcemap` 把一个压缩过的栈帧翻回源码位置；`switchprof` 采样打开一个长会话的开销。`look` 和 `verify` 补上了各自缺的断言。\n- wire-parity 现在也盯着 `port/boundary.ts`：`wireMirror` 带上它对应的 TS 文件，`control.SandboxSettings` 与桌面那份手抄的副本被声明成一对。这是一份画安全边界的类型，它读不到的字段就是一种它会画错的姿态。\n- 一处符号链接用例改成问文件系统，而不是问操作系统的名字。它此前问 `runtime.GOOS`，而且是在断言 `resp.OK` **之后**才问——于是一台建不了符号链接的机器，是在工具正确报出的那次拒绝上失败，而不是跳过。Windows 只在开发者模式或提权下允许符号链接，平台名分不出这跟一个普通账户的区别；现在用的是这份文件里另外三个用例早就在用的读法：试一下，按文件系统给回来的错误跳过。一台建得了的 Windows 机器现在会真的跑它，而不是被跳过。\n- `[remote]` 那一段的渲染搬进 `render_remote.go`。这一段是一件事，而它原先所在的那个函数已经是这个包里最长的一个——顺带把它欠下的一部分预算还了回去。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.9.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.9.0",
+        "zh": "Reasonix Studio v2.9.0"
+      },
+      "summary": {
+        "en": "这一版有两条线。一条是窗口本身：那条什么读数都往里塞的运行带拆成了面板，窗口不再从一张白纸开始，设置变成盖在工作区上的一张纸而不是第二个全屏窗口，而侧栏里列出的一处改动现在能给出它背后的 diff。另一条是几处「界面报的不是真在跑的那件事」——沙箱面板报的是配置文件里的词而不是生效的那一档，停在提问上的一轮把问题从屏幕上擦掉了，输入框下面那排控件把自己的标签拆成了两行。自 2.8.0 起 13 个提交。",
+        "zh": "这一版有两条线。一条是窗口本身：那条什么读数都往里塞的运行带拆成了面板，窗口不再从一张白纸开始，设置变成盖在工作区上的一张纸而不是第二个全屏窗口，而侧栏里列出的一处改动现在能给出它背后的 diff。另一条是几处「界面报的不是真在跑的那件事」——沙箱面板报的是配置文件里的词而不是生效的那一档，停在提问上的一轮把问题从屏幕上擦掉了，输入框下面那排控件把自己的标签拆成了两行。自 2.8.0 起 13 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.9.0",
+            "zh": "Reasonix Studio v2.9.0"
+          },
+          "body": {
+            "en": "这一版有两条线。一条是窗口本身：那条什么读数都往里塞的运行带拆成了面板，窗口不再从一张白纸开始，设置变成盖在工作区上的一张纸而不是第二个全屏窗口，而侧栏里列出的一处改动现在能给出它背后的 diff。另一条是几处「界面报的不是真在跑的那件事」——沙箱面板报的是配置文件里的词而不是生效的那一档，停在提问上的一轮把问题从屏幕上擦掉了，输入框下面那排控件把自己的标签拆成了两行。自 2.8.0 起 13 个提交。",
+            "zh": "这一版有两条线。一条是窗口本身：那条什么读数都往里塞的运行带拆成了面板，窗口不再从一张白纸开始，设置变成盖在工作区上的一张纸而不是第二个全屏窗口，而侧栏里列出的一处改动现在能给出它背后的 diff。另一条是几处「界面报的不是真在跑的那件事」——沙箱面板报的是配置文件里的词而不是生效的那一档，停在提问上的一轮把问题从屏幕上擦掉了，输入框下面那排控件把自己的标签拆成了两行。自 2.8.0 起 13 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.9.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.9.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.8.0",
+      "date": "2026-08-26",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "这一版有两条线。一条是调度开始说真话：排队的节点会说是谁在挡它，争用的名额给挡住最多工作的那个，扇出被计价而不只是计数。另一条是把老桌面退役时留下的孤儿逐个找回来——托盘、系统通知、崩溃日志、last-known-good 快照，它们的调用者跟着那个窗口一起没了，而没有任何一道门会说。这一版也补上了会说的那几道门。自 2.7.0 起 27 个提交。\n\n## 新增\n\n**一个排队的节点会说是哪条约束在挡它**\n\n- 「排队中」此前是三种约束共用的一个词，而它们只有两种解法：两个是会话设置（子代理总数上限，以及并发写者上限——后者会在总容量还空着的时候就卡住一个写者），第三个是别人已经持有的写路径，没有任何设置能放开它，只有互不相交的路径或者一条给这两者排序的边。调度器是唯一分得清的地方，而它此前的回答是一句为某一个调用方的错误消息写的话，下游拿不到。\n- `WaitCause` 进入图的词汇表，和 `NodeState`、`Grant` 并列。原因在运行开始后仍然保留：状态说「现在在跑」，它说「之前等的是什么」。\n- 扇出的计价跟着分开。此前一个数字把 ready 到 running 之间所有的等待加在一起，名字却说这是并发上限造成的——于是一个卡在写声明上的成员，被引述成「把上限调高」的理由，而调高根本不会让它动。现在是两个数字，因为答案本来就有两个。\n\n**争用的名额给挡住最多工作的那个**\n\n- fleet 的计划早就证明了依赖 DAG 并发布了它，而真正决定谁跑的调度器从来没看到过：一个 `AcquireRequest` 只带写声明和标签，不带它在图里的位置。于是名额按先来后到发放——最长链的头部排在什么都解锁不了的叶子后面，这个等待一比一地落在整次运行的完工时间上。\n- 计划现在测量每个条目的秩（它下方最长的依赖链），并带到 acquire；泵按权重从重到轻放行，同权重内保持到达顺序。会话名额满了之后的每一次授予都被覆盖到——扇出宽于上限时，那几乎就是全部。\n- 第一次填充没有被覆盖，把启动循环排序也做不到：一批 goroutine 里谁先到达调度器是 Go 运行时的决定。实测在上限为 2 时，按最重优先启动只拿到理想首填权重的 41.8%，声明顺序反而是 51.9%，上限为 1 和 3 时打平——从不更好，有时更差，因为运行时偏向最后创建的那个 goroutine。循环原样保留，并写明了原因。\n- 一次运行现在先排队再构建。此前它会把整个子代理造完——注册表、运行时、以及持有存储租约的那份轨迹——然后才去排队，于是宽于会话上限的扇出会为每个还没开始的条目占着一份，而那段构建的每一毫秒都被记在一个并非肇因的并发上限账上。\n\n**扇出被计价，而不只是计数**\n\n- 图里早就带着基准需要的每一个时间戳，却没有任何东西折叠它们，于是委派只被报成「有几个子代理」，从来没被报成「这个形状买到了什么」。工作量对墙钟是加速比；关键路径是声明的依赖强加的地板，超出它的墙钟是调度损失；名额等待是并发上限向那些已经无所可等的成员收取的费用——那是图上任何一条边都画不出来的等待。\n- 效果测试现在钉住时间戳本身。没有它们，上面每一个数字都会折叠成零，而那读起来像是「这次扇出没花时间」，不像「这次测量根本没发生」。\n\n**parallel_tasks 的节点会说自己以什么身份在跑**\n\n- `parallel_tasks` 每个任务各带模型与 effort，所以同一组里的两个成员未必是同一种工人。图此前把它们画得一模一样：fleet 节点带着 profile、模型、effort 和授权，而这些只带一个标签。一个想知道「为什么扇出的这条臂比那条贵」的读者，在图上找不到任何可以回答的东西——工具提供了这个区别，图把它抹掉了。\n\n**记忆的修订历史可以打开了**\n\n- 记忆面板一直告诉读者，保存「会记录一条新修订，旧的还在」。而界面里没有任何东西能展示这段历史或者退回去：`GET /memory/revisions` 和 `POST /memory/restore` 两个端点都在服务，两个都有 Controller 端口方法，前端一个都没叫过——承诺在那里，且无法验证。\n- 一条已有第二次修订的条目会出现历史入口，列出当前之前的每一条修订及其日期和正文，逐条可恢复。恢复是追加一条修订而不是回退到某一条，面板会这么说明：一次会丢掉后续修订的恢复，销毁的恰好是读者打开历史想要对照的那个版本。\n\n**三道会说话的门**\n\n- **导出的内核 API 没有调用者就失败**。last-known-good 快照之所以死掉，是因为删掉一个前端之后，它的被调用方连同实现、测试和文档注释都完好地留了下来。CI 里没有任何东西读「它有没有调用者」，于是这棵树绿了八天，而一条恢复路径读的是一个不再有人写的文件。这条规则跨整棵树统计调用者——`desktop/` 是独立模块，也是 `internal/` 的真实消费者，只扫根模块会把它的 API 判成死的。测试和文档注释都不算调用者，因为它们正是让孤儿保持温热和看起来接线正常的东西。现有 328 个孤儿记为棘轮基线。\n- **声明为敏感的路径守住自己的覆盖率**。REASONIX.md 把这些路径称作「改错了不是功能有 bug，而是边界上有个洞」。量出来才发现它们是内核里测得最差的部分而不是最好的：shellsafe 59.3%、shellparse 63.6%、sandbox 69.4%、netclient 47.2%，而全树中位数是 76.5%。门读的就是运行时读的那份 `sensitive:` 清单，声明一次拿到两个效果，没有第二份清单会走样。地板按声明路径逐个测量，且按文件而非按包——`internal/control/approval.go` 是敏感的而它所在的包不是，单独测它是 93.9%，任何包级数字都显示不出来。\n- **桌面端那份线协议类型的副本被对齐到内核**。`agentgraph` 存在的理由就是每个消费者折叠同样的增量，于是无头运行报出的图就是桌面画出的图。而桌面那份折叠是手写的第二份副本——类型和合并都是——没有任何东西检查两边带的字段一致。这一周往内核加一个字段，意味着要记得在另外两个地方手工加上；下一个人不会记得，而两套工具链都不会说，因为它们分开编译、只在运行时通过 JSON 相遇。\n\n**并发这项声明现在有一条量得动它的基准臂**\n\n- 委派做了三项声明，而 upstream-edge 只能结算其中一项：它的两个任务都是严格链条，加速比按构造就是 1.00x，里面观察不到任何调度决策。fanout-width 固定了一个三项研究互不相干的形状，于是会话并发上限成了唯一决定它们是否重叠的东西。\n\n## 修复\n\n- **切过模型之后，托盘、系统通知和用量计数就永久失聪**（#9448）。宿主给每个面板的事件流装饰一次——状态图标的折叠、桌面通知、用量计数器——然后用它构建控制器。而这层装饰只活在构建的调用点上，于是每一条重建控制器的路径都把替代品接到了裸广播器上：切模型、切 effort、重载扩展、换工作区，以及保存供应商凭据——那正是新装机做的第一件事。而且不会自愈：有活跃工作时重建会被拒绝，所以那些观察者看到的最后一个事件必然是上一轮的 TurnDone，此后它们就停在那里过完这个面板的余生。托盘曾经在一次十四分钟的回合里一直显示「没有在跑的」。现在由重建者持有它自己发射进去的那个 sink，而不是由碰巧最先构建的那个调用点。\n- **两个面板同时变化时，图标会停在一个已经过去的状态上**（#9448）。折叠在锁内取、上报在锁外做，于是两份上报可能反序到达图标；输掉的那次会把图标留在追踪器早已越过的状态上，而且没有东西纠正它——折叠只上报变化，所以一次画错会一直挂到下一次真正的变化。上报现在串行化，并且描述的是它落笔那一刻的折叠。\n- **Windows 任务栏标识没有被设置**。Windows 按进程的 AppUserModelID 给任务栏按钮分组、给 toast 路由，而开始菜单快捷方式必须带同一个，否则通知会被丢弃。设置这两者的调用住在已退役的那个外壳里；它走之后这两个函数失去了调用者，随后被「删掉无引用导出」的清扫带走——留下 `internal/notify` 用一个没人认领的身份发 toast。恢复，并从窗口自己的启动路径调用，在第一个窗口存在之前，那正是 Windows 读它的时刻。\n- **窗口没能活下来的崩溃留不下任何可读的东西**（#9408）。Studio 根本没有调用过 crashreport，只有 CLI 调用了，所以连一个 Go panic 都没被记录下来。而那还是小的一半：迄今为止上报的每一次 Studio 崩溃都是 GTK 或 WebKit 内部的致命信号，任何 recover 都够不着——运行时把那份 trace 直接写进文件描述符，所以在 `os.Stderr` 上做 tee 会留下每一行日志，唯独丢掉唯一值钱的那行。于是改成重定向而不是包装：窗口在 `<home>/logs` 下开一份日志并 dup 到描述符上，原来有终端时先留一份副本，所以从 shell 里跑 Studio 仍然会打印。\n- **last-known-good 快照没有写入者**。恢复读的是一份自 Wails 外壳被删之后就没人再写过的快照。那个外壳持有仅有的两处 `RecordHealthyConfig` 调用，于是从 908bc3ec0 起，两条读路径一直在把「当天恰好是什么配置」当成已知良好还原回去。在这台机器上那个文件陈旧了 16 天、161 行差异，而 `doctor repair --apply` 会把它盖回活配置上且不作声。外壳用「窗口可见了」证明健康，那是只有 Wails 才有的信号；一次成功的装配对每个前端都证明同一件事，于是这条记录改骑在 `BuildRuntime` 上。两条恢复路径现在都会说明自己打算信任的东西有多旧。\n- **重开窗口后运行图丢掉了依赖**。面板本来就会把轨迹重放进图的 reducer，但线协议日志在落盘途中把每一条 `graph_delta` 都丢了，于是重开的窗口画出的是一次什么都没等过的运行。依赖和被采纳的答案不存在于流里的任何其它地方——和工具标记不同，它们无法被重新推导。\n- **委派回执被那个同时看两种事件的包装器吞掉**。`inboxEventSink` 手工转发七种可选 sink 能力，漏了三种，于是每个子运行的回执都死在负责记账的那个 sink 下面一层。一次基准因此把四个 fleet 成员报成「一个 agent 独自解决的任务」，整个委派小节渲染成空的，而它自己的测试全绿。\n- **停在提问上的一轮被当成还欠着工作**。`addTurnExitTools` 注册了两种按模型自己的条件结束一轮的方式：向用户提问，以及 `conclude_blocked`。而宿主自己那份「有哪些出路」的说明里只写了后者。于是一轮以「把问题交给用户」结束之后被直接推着继续，而那次运行——被用宿主的口吻告知恰好有三扇门、且没有一扇是「等」——自己回答了那个问题，还写进了记录里。\n- **两条续跑提示指向的不是同一批门**。续跑一轮有两条宿主提示：readiness 续跑，和 Goal 状态机的「声称完成但仍有问题」。只有第一条被教过完成守卫放行哪些动作。Goal 那条仍然以「用 todo_write/complete_step 标记完成」结尾——那恰好是守卫拒绝的那个动作。\n- **字段类型错了，回答用的是宿主的词汇**。参数契约此前只读一次调用提供了哪些字段，从不读里面放了什么。一个名字对、类型错的字段因此既不算未知也不算缺失：它通过了宿主做的每一项检查，答案来自 Go 的反序列化器——「cannot unmarshal string into Go struct field .evidence of type []agent.blockedEvidence」。那说的是宿主的类型而不是调用方的错误，而且要花掉一次发现它的往返。schema 本来就声明了每个属性的类型，参数本来就带着一个，比较它们和契约已经在名字上做的是同一种结构化读取。\n- **一次改动在被 review 覆盖之前一直留在 review 的范围内**。review 门用一个索引回答两个问题——改动集是什么，以及对它的 review 要多新——于是后来一次无害的写入把窗口推过了它之前的一切。一次敏感编辑后面跟一次 README 写入，评分会掉到 Low 并丢掉整个结构化 review 要求。\n- **两个生成的 grader 在非 POSIX 上给出同样的判定**。自语料落地以来，它们让 CI 的 windows-latest 作业每一次都挂，而且都不是 flake：一个用 `signal.alarm` 计时，而 Windows 的 Python 没有 SIGALRM；另一个把 `cli.py` 的标准输出和期望串直接比较，而 Windows 的 Python 在文本模式下写 CRLF。\n- **gorilla/websocket 1.5.0 升到 1.5.3**。govulncheck 此前报出七条能走到 1.5.0 那批公告的调用路径——飞书适配器的 socket，以及两个经由 `io.ReadAll` 读到压缩帧的读取器。现在它在这份代码调用得到的范围内找不到漏洞。\n\n## 内部\n\n- Controller 按字段生命期拆开：78 个字段里，37 个在 `New` 里绑定一次且再不重新赋值，其余在会话运行期间会变。两类此前混在一张表里，于是 `c.policy` 和 `c.turn` 在每一个调用点读起来都一样，而只有其中一个会在你眼皮底下变——那恰好是任何一个伸手去拿 `c.mu` 的人首先要回答的问题。\n- 清扫掉 57 个全树（含测试）无引用的导出函数，以及跟着死在它们后面的私有助手。\n- 覆盖率门在 Windows 上算出的包模式带着反斜杠：`filepath.Dir` 给出 `internal\\control`，那不是 `go test` 能匹配的模式，而且因为反斜杠排在正斜杠之后，出来的顺序也跟着错——一个根因，同一条断言里两个症状。门本身跑在 ubuntu 上，所以它守的东西没受影响；它的测试跑在整个矩阵上。\n- 收集事件的测试 sink 在第二个发射者出现后仍然成立：inbox 增加变更监听器之后，存储会从自己的 goroutine 通知，六个测试开始在 `-race` 下失败——竞态从来不在控制器里，是这个测试装置没有办法把这件事说出来。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.8.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.8.0",
+        "zh": "Reasonix Studio v2.8.0"
+      },
+      "summary": {
+        "en": "这一版有两条线。一条是调度开始说真话：排队的节点会说是谁在挡它，争用的名额给挡住最多工作的那个，扇出被计价而不只是计数。另一条是把老桌面退役时留下的孤儿逐个找回来——托盘、系统通知、崩溃日志、last-known-good 快照，它们的调用者跟着那个窗口一起没了，而没有任何一道门会说。这一版也补上了会说的那几道门。自 2.7.0 起 27 个提交。",
+        "zh": "这一版有两条线。一条是调度开始说真话：排队的节点会说是谁在挡它，争用的名额给挡住最多工作的那个，扇出被计价而不只是计数。另一条是把老桌面退役时留下的孤儿逐个找回来——托盘、系统通知、崩溃日志、last-known-good 快照，它们的调用者跟着那个窗口一起没了，而没有任何一道门会说。这一版也补上了会说的那几道门。自 2.7.0 起 27 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.8.0",
+            "zh": "Reasonix Studio v2.8.0"
+          },
+          "body": {
+            "en": "这一版有两条线。一条是调度开始说真话：排队的节点会说是谁在挡它，争用的名额给挡住最多工作的那个，扇出被计价而不只是计数。另一条是把老桌面退役时留下的孤儿逐个找回来——托盘、系统通知、崩溃日志、last-known-good 快照，它们的调用者跟着那个窗口一起没了，而没有任何一道门会说。这一版也补上了会说的那几道门。自 2.7.0 起 27 个提交。",
+            "zh": "这一版有两条线。一条是调度开始说真话：排队的节点会说是谁在挡它，争用的名额给挡住最多工作的那个，扇出被计价而不只是计数。另一条是把老桌面退役时留下的孤儿逐个找回来——托盘、系统通知、崩溃日志、last-known-good 快照，它们的调用者跟着那个窗口一起没了，而没有任何一道门会说。这一版也补上了会说的那几道门。自 2.7.0 起 27 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.8.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.8.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.7.0",
+      "date": "2026-08-25",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "委派这一版从一张清单变成一张图：谁在等谁、谁在排队等名额、哪一步是真跑过的，都画了出来，点一个节点就落到它对应的那次调用上。待发队列也换成了内核持有的那一份。自 2.6.0 起 23 个提交。\n\n## 新增\n\n**运行图**\n\n- 此前面板只能数出「四个子代理在跑」，说不出其中哪个在等哪个——因为它拿到的那份清单早就把结构丢掉了：`depends_on` 活在一次 Execute 调用里，从没离开过进程；落盘的 sidecar 只记了一条父子链接；事件流靠 id 前缀暗示其余部分。结构现在由内核发布（`internal/agentgraph`），不再由前端从形状上猜。\n- 一列就是一个秩：里面的节点在那一刻都可以跑。宽度是并发、长度是链条——这正是清单渲染不出来的区别。\n- 边按线型区分而不是颜色：实线实心箭头表示上游的答案进了下游的上下文；虚线空心箭头表示只排了先后、什么都没传。消融测量臂产出的正是后者，两种画成一样就等于说这两次运行是同一次。复用是节点上的标记，因为被采纳的条目根本没跑。状态在卡片上是一个词，不只是一个颜色。\n- 排版不再只有秩。此前节点在列里的行号由增量到达顺序决定，连线毫无理由地交叉，跨列的边直接压过中间的卡片，同一次运行重画一遍还不一样。现在补上了 Sugiyama 缺的两步：按邻列行号中位数扫排（只保留让交叉数下降的那一轮），长边在它跨越的每一秩预留一条细行，于是它从卡片之间穿过而不是压上去。列按最高的一列居中，而不是从顶端吊下来——孤零零一个节点此前读起来像「跑得早」，其实是「只有它」。\n- 点一个节点就跳到那次调用本身：它的参数、输出、周围的推理。此前只有用户消息在 DOM 里带锚点，因为只有回退轨需要找东西。工具卡片现在带上图里称呼它的那个 id，嵌套的子调用也带——扇出的节点实际就住在那儿。\n\n**一个节点会说它什么时候跑的、在等什么**\n\n- 图上早就声明了 `StartedAt` / `EndedAt`，却从来没有生产者填过，于是每个消费者的时间回退分支都是死代码，一次运行的先后只剩下「增量碰巧按什么顺序发布」。\n- 「在等名额」和「拿到名额」此前是同一个词。被会话并发上限限流的扇出，和所有条目同时开跑的扇出，画出来一模一样——而这两者的区别，正好决定把上限调高有没有用。现在 `StateQueued` 与 `QueuedAt` 分开，详情条上「等名额」和「实际运行」并排。\n- 一个条目在它自己结束的那一刻就结束，而不是等整组结束。长扇出此前会把每个跑完的 worker 一直画成还在跑，直到最慢的兄弟返回——那正是有人在盯着看的全部时间。\n\n**待发队列面板**\n\n- Studio 早就能在一轮进行中插话，但看不见队列：屏幕上那些待发行是客户端自己造的，只说明「这个窗口发过什么」。刷新一下就没了，而条目还在清单里，仍然会在下一个工具边界送出去。CLI 排的一行、另一个窗口排的一行，从来没出现在屏幕上过。\n- 内核有十个 inbox 端点，前端只读了三个。编辑、重排、重试被拦下的条目、重新冻结它引用的文件、暂停投递——全都存在，只是没有入口。composer 上方这块面板就是入口。\n- 队列的到达方式和工作区树、检查点列表一样：事件只说「它动了」，内容整份读回。事件本身不带快照——带上就等于让每个客户端的队列取决于它碰巧收到了哪些帧，漏一帧的重连会留下一块过期的面板。\n\n**菜单栏 / 任务栏图标就是输入框里那个 R**\n\n- 此前画的是一个带缺口和角标的圆角方块——这个记号在产品里别处不存在，于是托盘成了 Reasonix 唯一一处用着另一个 logo 的地方。现在是 composer 那个 R，原样搬过来。\n- 状态只改颜色，每个色沿用配色里它唯一的含义：灰是中性，蓝是它自己在跑，琥珀是需要你。明度不取浅色也不取深色主题的值——通知区的底色这个进程问不到——三个色对白底和近黑底都不低于 3:1。\n\n## 修复\n\n- **多次双击启动图标会开出多个实例**（#9414）。Studio 从来没配过单实例锁，于是每次双击都在同一个数据目录上再起一个进程，几个窗口互相抢同一批会话文件的写租约。锁按数据目录标识，而不是按可执行文件：安装版、便携版、canary 写的是同一批会话，必须互相认得；显式设 `REASONIX_HOME` 仍然是独立实例，那是并行跑两个的正当方式。\n- **新开的对话偶发不继承工具批准档位**（#9414）。新面板的档位读的是 hub 里排第一的那个运行时。于是把设成「自动」或「全放行」的那个对话关掉，下一个就回到「询问」——对一个你已经放行过的工具再弹一次框，屏幕上没有任何解释；把所有面板都关掉，更是没人可读了。现在由 hub 持有这个立场：宿主接管运行时时播种，composer 切换时写入（同一次切换本来就已经写进配置供下次启动读），与哪些面板还开着无关。\n- **拖进来的 .md 被当成图片**（#9412）。`droppedRef.Image` 带着 `omitempty`，而 `false` 正是 bool 的零值，于是「不是图片」这个答案恰好从 JSON 里消失了。页面把这份沉默读成了图片——判断写的是 `image === false`，而 `undefined` 不是 `false`——于是在一个 .md 上画了一张标着「图片」的空缩略图。\n- **窗口背后的壁纸看不见**。三条背景规则是无条件的，而侧轨 + 面板 + 右栏正好铺满窗口，图片被封在下面。两条专为它写的规则因此一次都没生效过。面板让开之后它们终于显形，而它们做的事并不是想要的：侧轨降到一层薄霜，空页光晕不再从 `--surface` 取色（深色下那是一团黑雾），正文自带阴影而不是在图片上切出一块板子。顺带：侧轨 54px 的命中区盖住了正文右缘，任何往右排的控件（回退入口就是一个）都会丢掉右半边。\n- **关掉的度量栏下次启动又开着**。没有任何地方把这个选择写下来。而且即使在同一次会话里，把窗口收窄再拉宽，也会重新打开一个读者已经关掉的栏——折叠助手把宽窗口下的值存在一个初值为 `true` 的 ref 里。现在只有「读者主动关闭」会被记下来；因为窗口不够宽而折叠，不动宽窗口下的选择。\n- **委派出去的运行自问自答**。表现为 Studio 从不弹出提问卡，模型反复回答「ask 无交互响应（fallback）」并让你去修——它读的是自己的工具结果。子代理的提问找不到提问者，返回了为自主运行写的那句兜底文案。根执行器有提问者（`EnableInteractiveApproval` 把控制器接了进去），子代理从来没有。现在从调用上下文继承：被委派的运行有一个正阻塞在它上面的父级和一个等着的人；fleet 条目和并行任务刻意丢掉提问者，因为多个之中某一个提的问题没有读者知道是谁在问；后台任务跑在根本没有调用的上下文里。三种情况本来就在关键处不同，不需要额外的开关。\n- **远端拒绝被报成「这次请求没能送到内核」**。请求到了，内核也长篇回答了，两层把这个回答扔掉了。传输失败和「远端内核明确拒绝」是两个不同的问题、两条不同的下一步，只有编码能承载这个区别——现在分别是 `remote.unreachable` 和 `remote.kernel_refused`，后者带上主机名和它实际说的话。另一半是 hub 端口只认 JSON、其余一概丢弃，于是每一条纯文本回答到窗口都只剩状态码和路径。\n- **MCP 服务器全部显示「未连接」**。十二个启用的服务器，每个都列着自己带来的工具，每个都写着未连接并配一个「重连」按钮。什么都没坏——配置里的 MCP 本来就是目录优先：启动时注册缓存的工具集作占位、不起进程，第一次真实调用才握手。现在由目录而不是宿主来回答：一个服务器的工具在本会话注册表里，它此刻就能被调用，不管它的进程在做什么。面板对这种情况说「待命 · 首次调用时启动」，并提供「立即连接」而不是「重连」——没有东西失败过，也就没有东西在重试。\n- **升级后存储位置被重置回 C:，而原来的位置再也选不回来**。两个缺陷，后一个才是把人困住的那个。重置来自安装器：`studio.nsi` 请求管理员权限，完成页又由它自己启动 Studio，于是应用继承了安装器的令牌；在用别人凭据提权的账户上，`%APPDATA%` 因此解析到那个管理员的配置文件。现在改由 `explorer.exe` 启动。困住人的是「搬迁只记录在一处」：目录现在自己说明身份——搬迁在拷贝被验证之后、配置被告知之前写下 `.reasonix-root.json`。目标已经装着本根自己的数据时，预检规划成「接管」而不是拒绝。判定靠结构而不是相似：要么有标记文件指名这个根，要么该根声明了自己拥有哪些条目且文件夹里只有这些。独占且无标记的文件夹无法与陌生人的文件夹区分，因此拒绝而不是猜。\n- **bash 对拖进来的外部文件说「No such file or directory」**。从工作区外拖入一个文件夹会铸一个令牌，注册给读工具的解析器——映射到真实目录的地方在那儿，而且这个授权是只读的，把真实路径交给 bash 就等于开了一条可写的进去的路。所以令牌不是路径，bash 对它的回答就是 shell 自己的那句。同一轮里拿到令牌的模型会信这句话：它对令牌跑 `ls`，再对整个主目录跑 `find`，得出「这个引用是虚拟的、文件不存在」的结论——而文件一直躺在桌面上，`read_file` 从头到尾都读得到。bash 现在在执行前认出令牌，说明它是什么、哪些工具能解析它。是「认出」而不是「猜某个词可能是什么意思」：去问解析器，它的键是宿主铸的。\n\n## 隐私\n\n- **可选遥测不再携带安装 id**。这个匿名 id 此前随指标一起上报，为的是仪表盘能按信号显示去重后的日活。留着这个答案就意味着留着「每个安装 × 每个信号 × 每天」一行——约 2800 万行——而其上的 30 天 `COUNT(DISTINCT install_id)` 是这个数据库全部的读取账单：主键以 `date` 打头，每次查询只能裁掉窗口、其余全表扫描，八个信号每小时一轮，一个仪表盘模块一天约 54 亿行读取。客户端不再发送这个 id，服务端不再写也不再创建这些表，为了让那条查询活下来才存在的每小时 rollup 一并撤掉。聚合表保留同样的信号，以事件计数的形式、总共约 18 万行。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.7.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.7.0",
+        "zh": "Reasonix Studio v2.7.0"
+      },
+      "summary": {
+        "en": "委派这一版从一张清单变成一张图：谁在等谁、谁在排队等名额、哪一步是真跑过的，都画了出来，点一个节点就落到它对应的那次调用上。待发队列也换成了内核持有的那一份。自 2.6.0 起 23 个提交。",
+        "zh": "委派这一版从一张清单变成一张图：谁在等谁、谁在排队等名额、哪一步是真跑过的，都画了出来，点一个节点就落到它对应的那次调用上。待发队列也换成了内核持有的那一份。自 2.6.0 起 23 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.7.0",
+            "zh": "Reasonix Studio v2.7.0"
+          },
+          "body": {
+            "en": "委派这一版从一张清单变成一张图：谁在等谁、谁在排队等名额、哪一步是真跑过的，都画了出来，点一个节点就落到它对应的那次调用上。待发队列也换成了内核持有的那一份。自 2.6.0 起 23 个提交。",
+            "zh": "委派这一版从一张清单变成一张图：谁在等谁、谁在排队等名额、哪一步是真跑过的，都画了出来，点一个节点就落到它对应的那次调用上。待发队列也换成了内核持有的那一份。自 2.6.0 起 23 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.7.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.7.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.6.0",
+      "date": "2026-08-24",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "窗口这一版被整备成一台仪器：灰阶回到产品自己的色相，活动流成为一条可扫读的执行轨，菜单栏有了状态图标。自 2.5.0 起 25 个提交。\n\n## 破坏性变更\n\n- **关闭按钮不再总是退出**。`[desktop] close_behavior` 早就可配置、可迁移、可编辑，却没有任何代码读它——`quit|background` 是一个没有兑现的承诺。现在有状态图标时，关闭把窗口收起，图标把它带回来；没有图标时仍然直接退出，因为一个消失了又找不回来的窗口是两者中最坏的结果。要保持旧行为，把 `close_behavior` 设为 `quit`，或用 `tray = \"off\"` 关掉图标。\n\n## 新增\n\n**状态图标**（菜单栏 / 任务栏）\n\n- 图标说明这台机器上正在发生什么：几轮在等你、几轮在跑、几个后台任务还活着。后台任务是没人会猜到的那一半——一个收起的窗口里跑着 dev server，仍然在替你占着这台机器。\n- 菜单可以唤回窗口、就地切换关闭行为、退出。文案跟随机器的语言。\n- `tray = \"auto\"|\"off\"`（设置 › 桌面）。\n\n**活动流成为执行轨**\n\n- 左侧那条竖线加粗到 2px，并按类别上色——读是中性、写是琥珀、联网是蓝、委派是青。时间线的结构一直写在那里，只是 1px 的浅灰在屏幕上等于不存在。子代理面板里的子步保持窄沟槽，两级同宽就分不出层。\n- 终端输出与 diff 凹进去一档，成为一块面板。此前它们是全屏最占地方的元素，却直接贴在白底上。\n- 等你批准的那张卡从流里浮起来，带一层琥珀底；答复过就撤掉。琥珀在这套配色里只说一件事——需要你——而它此前只到按钮为止。\n- 每一步的墙钟在头部行右端画成一段横条，右端对齐耗时数字。跨度是三个数量级，所以长度按对数映射；一列卡扫下来，左端参差就是这一轮的耗时分布。\n- 每一轮以一条分隔线开始。轮次不编号：回退入口就在那张卡上，没有号需要用眼睛去对。\n- 右栏九个等距堆叠的度量块按成本 · 进度 · 环境 · 产出分成四组，此前读起来像一份没填完的表单。\n\n**窗口的灰阶回到产品自己的色相**\n\n- 整套中性色此前落在色相 255–267，而产品唯一拥有的那个颜色在 75——相差 185 度，这就是它看着像别人家配色的原因。现在是 OKLCH，落在琥珀的色相上，彩度低到仍然是灰，明度逐一沿用被它替换的那个十六进制值。\n\n**排队的行可以撤回**\n\n- 一轮正在跑时打字，这行会排到下一个工具边界。此前没有任何办法取消：持久条目有 id 也有删除路由，但删除拒绝排队这一个状态，而前端把回执丢掉了——屏幕上那一行没有名字可以用来撤销。\n\n**子代理的依赖边携带答案**\n\n- `depends_on` 此前只排先后、不送内容，于是一对「先调研、再实现」的任务把同一份调研付了两次钱。答案现在随边传递，走 `ContextRequest.Upstream`，不塞进目标文本里——目标必须保持交付判定读的那份原文。\n- 失败带身份而不是一句话：429 与 400 分开，上下文溢出与被拒绝分开，调用方据此决定要不要带着已完成的节点重发整张图。没有任何判断读消息文本，来源没有署名的错误就报成未分类，而不是猜。\n\n**配置文件读不了时，说清楚在哪一行**\n\n- 此前设置界面显示的是内建默认值——没人选过的设置，摆在那里像是你的——并且一声不吭，直到某次保存被一句关于列号的解析器报错拒绝。现在它加载最后一份可用快照，并指出坏在哪、怎么修。\n\n## 修复\n\n- **主题开关的第一次点击什么都不变**。循环写死成 `auto → light → dark`，而「跟随系统」和它当前解析出的那一档在屏幕上长得一模一样：浅色机器上默认的 auto 走到 light，一个像素都不动，读起来就是这个开关坏了。下一档现在从系统当前是什么推出来。\n- **一张过大的图片会让会话再也走不下去**。视觉模型把超尺寸图片报成「不支持的格式」，而被拒的那条用户消息留在历史里、每轮重发——一个附件结束一整个会话。限制是单边长度而不是总像素或字节（实测 8192×1000 通过，8193×1000 不通过，8000×8000 通过，12MB 的 PNG 通过）。现在超出预算的图片在本地就被拦下，附上尺寸和该怎么办；模型也被告知存在一个它看不到的附件，不会当作什么都没附。\n- **重试提示会比它报告的那一轮活得更久**。窗口只在文本或推理增量到达时清它，于是首包是工具调用的那一轮，会让「正在重试 1/5」和它的计时器在屏幕上停留整轮，压在一堆跑得好好的调用上面。\n- **中文 Windows 上原生界面是英文**。语言探测读 `REASONIX_LANG` 和 POSIX 区域变量，而 Windows 一个都不设——CLI 自己的文案、文件夹选择器、状态图标的菜单全部退回英文，旁边的网页视图却读浏览器列表并且答对了。同一个应用的两半对同一个问题给出不同答案。\n- **配置损坏的横幅在 Studio 里永远加载不出来**。`/config/problem` 与 `/config/repair` 只走 HTTP 到过内核，而窗口按表路由，于是两者都答 index.html。开发代理上是同一个洞。\n- **提交被拒时屏幕上出现半句中文加一条 API 路径**。内核把「改用 POST /inbox/items」写进了错误详情，而前端对那个编码的文案会把详情原样插进去——内核在告诉客户端该怎么做，客户端把这句话展示给了人。\n- **工作区写入租约被后台任务永久持有**。dev server 永远不会进入终态，于是下一个会话的第一次写入就排在一个永远不会结束的东西后面，只被告知「安全时会自动继续」。\n- **侧栏和顶栏里最弱的一档文字不达 AA**（4.03，需要 4.5）。这一档的明度是按中栏那张纸校准的，而它实际上绝大多数落在侧栏、顶栏那层更暗的底上——出现 768 次对 1 次。\n- **琥珀色当文字用时，浅色下没有一处达标**：在自己的浅色底上 4.07、在侧栏底上 3.91、在浮层上 3.80。这套配色本来就为此准备了两个值——一个用来填充、一个用来阅读——但有 45 处规则用填充值写字。深色下两者本就是同一个值，所以这一项只影响浅色。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.6.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.6.0",
+        "zh": "Reasonix Studio v2.6.0"
+      },
+      "summary": {
+        "en": "窗口这一版被整备成一台仪器：灰阶回到产品自己的色相，活动流成为一条可扫读的执行轨，菜单栏有了状态图标。自 2.5.0 起 25 个提交。",
+        "zh": "窗口这一版被整备成一台仪器：灰阶回到产品自己的色相，活动流成为一条可扫读的执行轨，菜单栏有了状态图标。自 2.5.0 起 25 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.6.0",
+            "zh": "Reasonix Studio v2.6.0"
+          },
+          "body": {
+            "en": "窗口这一版被整备成一台仪器：灰阶回到产品自己的色相，活动流成为一条可扫读的执行轨，菜单栏有了状态图标。自 2.5.0 起 25 个提交。",
+            "zh": "窗口这一版被整备成一台仪器：灰阶回到产品自己的色相，活动流成为一条可扫读的执行轨，菜单栏有了状态图标。自 2.5.0 起 25 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.6.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.6.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.5.0",
+      "date": "2026-08-23",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "远程工作区：一台通过 SSH 连接的机器，其上的文件夹与会话像本地的一样出现在侧边栏。自 2.4.0 起 41 个提交。\n\n## 破坏性变更\n\n- **思考档位按 endpoint 判定，不再按模型名**。中转端点不再被提供厂商专属档位（`max`、`xhigh`）；超出该 API 文档词表的档位降级到最深的标准档，而不是被拒绝。声明了 `supported_efforts` 的端点仍以自己的声明为准。此前一个中转的 deepseek-v4-flash 每轮返回 `field ReasoningEffort invalid, should be one of: low, medium, high, xhigh, none`，且按继续会重发同一设置，该轮无法自行恢复。\n\n## 新增\n\n**远程工作区**（侧边栏 › 主机）\n\n- 主机是一个分区而不是前缀：同一台机器上的所有工作区共享一条 SSH 连接，链接断开时整个分区一起变灰。本地工作区不带标记，所以带标记本身就是信号；同样的标记出现在 pane 标签与面包屑上，因为命令落在焦点标签指向的那台机器上。\n- 连接后的主机列出自己有什么：其上的文件夹与其中的会话，通过已在该机器上打开的 pane 读取，不另开连接、不另起进程。恢复一个远程会话与恢复本地会话是同一个动作。未连接的主机只保留一行，这一行就是连接按钮。\n- 每个 pane 在远端开自己的 runtime。此前两个 pane 打开同一个远程工作区会共用一份对话记录——一份记录，两个写入者，两条流交错。\n- 冷启动会在远端安装内核，安装按步骤逐条显示，而不是一个分不清「正在下载」与「卡住了」的转圈。\n- **主机簿可以在窗口里编辑**（设置 › 主机），此前只能从 CLI 添加。主机簿属于使用者本人，不属于添加时恰好打开的那个文件夹。`~/.ssh/config` 里已有、主机簿里还没有的别名，可一键导入。\n- **首次连接会停下来发问**：不在 known_hosts 中的机器弹出指纹确认，带口令的私钥弹出口令输入。指纹换行显示而不省略中段——中段被省略的指纹无法与任何东西比对；焦点默认落在「取消」上。\n- **Windows 可以作为远程主机**。此前 SSH 之下的一切都假设 POSIX shell，现在收敛到一个接口：用哪个 shell、路径怎么拼写、进程怎么启动与再找到。已对真实 Windows 主机端到端验证：安装、启动、跨 SSH 会话存活、经转发访问 `/status` 与 `/tree`、停止。\n- SSH agent 在 Windows 上通过 OpenSSH 服务固定名字的命名管道使用；`IdentitiesOnly` 的筛选此前整个在 `!windows` 编译标签内，现在三平台共用。\n- 主机密钥变更、指纹被拒、凭据被拒各自带编码，密钥变更携带 known_hosts 中冲突的那一条记录（精确到行）。不能承载内核的远端会说明是哪一半失败，而不是以 502 抵达窗口、暗示链路有问题。\n- 远程会话列表与本地一样上限 30 条，主机可折叠。\n- Windows 路径的两种拼写（SFTP 答复的 `/C:/Users/...` 与其内核接受的 `C:\\Users\\...`）由平台层转换。\n\n**任务等待可以说明在等什么**\n\n- `wait` 新增 `until_output_matches`（RE2 正则）：任务写出匹配内容时立即返回。一个跑一小时的任务因此只花一轮，而不是每看一眼一轮，并且仍会被真正重要的那一行唤醒。\n\n## 性能\n\n- **自动保存不再重扫已经读过的轮次**。每次保存都要遍历整份记录以生成侧栏预览行与用户轮次计数，其中两处模式是关于单轮长度的二次复杂度。\n\n  | 消息数 | 之前 | 之后 |\n  |---|---|---|\n  | 1,000 | 70.0ms | 35.4ms |\n  | 5,000 | 196.1ms | 119.3ms |\n  | 20,000 | 652.3ms | 432.6ms |\n\n- **工具描述减少 256 token**。三个最大的描述都以逐字段复述自己的 schema 结尾，其中一处复述已经与 schema 不一致。升级后各会话首次请求冷启动一次缓存，之后恢复。\n- **只读的能力调用可以同批并行**。此前排除靠一张六个工具名的表，而这张表把「不需要审批」和「不能与别的调用同批」当成了同一个问题。现在每个工具自己声明，多个只读 `use_capability` 调用同批发出，而不是一个接一个。\n\n## 修复\n\n- **网关答 200 却什么都没送**——把流开着足够久以显得健康，然后不带任何内容结束——被当作模型给出了空答案：耗掉三次重试，并在最后指认错了责任方。现在按上游中断处理，由请求层重试并以实际发生的事情结束。只带用量记录的流仍算模型作答，保留该轮重试。\n- **同一条通知重复占屏**，现在折叠成一行加计数。通知在传输中携带的编码此前被会话状态丢弃，本版起有对应文案的通知按读者的语言显示，不认识的编码也仍可读。\n- **正在工作的后台任务被报成「可能卡住」**。把输出重定向到文件的任务在自己的流上是沉默的，看门狗在十五分钟后据此判定停滞——而它正在下载一百兆。`wait` 现在说明任务已运行多久、以及是否有任何输出到达过这一侧，并给出更长的超时而不是又一次短轮询。\n- **历史搜索把主机注入的块当成用户输入来索引**。十一种块中只剥离了五种，于是搜一个路径会匹配到每个会话的每一轮，搜索预览显示的是块而不是消息。索引会在本版首次打开时重建。\n- **界面缩放后，上下文分解气泡跑出窗口右缘**，且缩放越小越靠左。\n- **局域网内的机器从窗口一律不可达**，而 ping 与 CLI 都能到达：macOS 只对在 Info.plist 里声明了用途的应用授予本地网络权限，两个包都没有声明，所以这个授权请求从未被提出过——没有弹窗，隐私列表里也没有条目。开发包另有一处：指向源码树的符号链接使 `codesign --strict` 失败，而 macOS 无法验证的应用拿不到稳定身份，也就挂不住这条授权。\n- **切换到另一台机器上的 pane 会把本窗口重绘成那台机器的主题**。外观属于窗口，此前是跟着焦点 pane 读写的，而远程内核有自己的一份。\n- **远程 pane 的对话没有回声**：事件流没有带 runtime 前缀，于是 pane 把轮次发给自己开的 runtime，却在听对方的默认 runtime——一切正常，什么也不回来。\n- 窗口不再把自己当作可上传到远端的 CLI。远端会收到一个 Wails 应用、探测它的 serve 命令、然后拒绝——在付完传输代价之后。现在退回 npm 安装，再退回带校验的发布包下载。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.5.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.5.0",
+        "zh": "Reasonix Studio v2.5.0"
+      },
+      "summary": {
+        "en": "远程工作区：一台通过 SSH 连接的机器，其上的文件夹与会话像本地的一样出现在侧边栏。自 2.4.0 起 41 个提交。",
+        "zh": "远程工作区：一台通过 SSH 连接的机器，其上的文件夹与会话像本地的一样出现在侧边栏。自 2.4.0 起 41 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.5.0",
+            "zh": "Reasonix Studio v2.5.0"
+          },
+          "body": {
+            "en": "远程工作区：一台通过 SSH 连接的机器，其上的文件夹与会话像本地的一样出现在侧边栏。自 2.4.0 起 41 个提交。",
+            "zh": "远程工作区：一台通过 SSH 连接的机器，其上的文件夹与会话像本地的一样出现在侧边栏。自 2.4.0 起 41 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.5.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.5.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.4.0",
+      "date": "2026-08-23",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "三个新面板（用量、记忆编辑、单文件回滚）、工具并行调用带来的往返下降，以及 DeepSeek 价目表的修正。自 2.3.0 起 62 个提交。\n\n## 破坏性变更\n\n- **成本显示上调 2.25–4.5 倍**。DeepSeek v4-pro 输出价此前记为 6 元/百万 token，实际为谷时 13.5、峰时 27。峰谷时段（北京时间 9–12、14–18，以及 2026-08-23 起的全周末）现已计入。自填价格不受影响——仅确认为厂商官方的价目表套用峰谷。\n- **移除会话分叉**：TUI 的 `/branch <轮次>`、回退面板的 Fork 项、`POST /fork`。`/branch [名字]`（从当前位置建分支）保留。\n- **移除 CLI 命令** `catalogs reindex sessions` 与 `doctor sessions`。二者重建的索引无任何读取方；历史搜索与用量汇总两个索引保留。\n- **厂商识别改为按 endpoint 主机判定**，不再按连接名称。名字带厂商字样的中转站不再套用该厂商价目表；未识别厂商的连接使用你自己的价格表。\n\n## 新增\n\n**用量面板**（设置 › 用量）\n- 按天展示 token 与花费，数据来自 `~/.reasonix/stats` 已累积的记录。\n- 成本按币种分列，不做汇率换算；图表每币种一张。\n- 无价格记录的日期显示为「无」而非 0（金额字段是后期才开始持久化的）。\n- 缓存命中率按输入侧 token 计算。\n\n**记忆编辑**（设置 › 记忆）\n- 可直接修改已保存事实的标题、描述、正文、生效方式、关键词。\n- 每次保存产生新版本，不覆盖旧版本。\n- 身份、版本号、时间戳由服务端从存储读取，不接受前端提交。\n- 编辑在会话中途生效，通过下一轮注入，不改动已缓存的系统提示前缀。\n\n**单文件回滚**（差异卡片标题栏）\n- 将单个文件恢复到**该会话最早的版本**，不回退对话。会话对该文件的其它编辑一并撤销。\n- 分两步：先校验文件是否仍是检查点记录的版本，仅在你手动改过时才要求在两个版本间选择。\n- 不触发会话重载。\n\n**上下文预算**\n- 距压缩阈值 75% 与 92% 时各提醒模型一次。\n- 新增 `context_budget` 工具，模型可主动查询剩余空间（占用前缀 147 token）。\n\n## 性能\n\n- **提示模型可并行调用工具**。执行器一直支持单轮并行 8 个独立调用，此前未告知模型。9 个任务 × 2 轮实测：\n\n  | 指标 | 变化 |\n  |---|---|\n  | 回复数 | −14.6% |\n  | 调用数 | −18.3% |\n  | 墙钟 | −31.4% |\n  | 提示词 token | −15.3% |\n  | 成本 | −9.5% |\n\n  该提示占用缓存前缀 66 token。升级后各会话首次请求会 cold-start 一次。\n- **压缩时丢弃已被取代的状态块**。目标、语言、工作区等每轮重述的块，旧副本在每次折叠时清除；一次性事实（记忆写入、已完成任务、单轮策略）保留。\n- **目标契约从每轮重述改为引用**。1255 字节降至 442，约每轮节省 235 token。\n\n## 界面\n\n- **内嵌 Inter 与思源黑体（可变字重）**。Windows 的 Segoe UI 与微软雅黑无 500/600 字重，导致三档字重塌成两档。子集化后总计 1.6MB。\n- **等宽字体栈补充中文字面**，终端输出、diff、行内代码中的中文不再回退到平台默认衬线体。字符宽度比不变（1.662）。\n- **浅色主题对比度达标**。11 个设置分区中 5 处低于 AA 4.5:1，已修正；`--accent` 与 `--ghost` 色值调整，14 处将底色用作文字色的位置改用对应墨色。深色主题原本合格。\n- **补齐 79 处未翻译文本**：JSX 内联中文 31 处、动态 key 11 处、内核拒绝文案 37 条。\n- 900px 窄窗下插件行与服务行不再塌陷，名称保留最小宽度并省略。\n- 9 处截断文本补充 `title`，可读取完整内容。\n- 从菜单选取后焦点归还触发按钮（此前仅 Esc 有此行为）。\n\n## 修复\n\n- **TUI 退出时的记录丢失**。文件锁被其它实例占用时，退出会丢失自上次自动保存以来的全部内容且无提示。现改用退出专用快照，先将内存记录写入恢复分支。\n- **待办列表无法结束**。系统要求完成待办，而完成守卫拒绝对应操作，形成死循环，此前只能强制停止。现明确给出三个可用出口（`complete_step`、移除条目、`conclude_blocked`）。\n- **侧边栏出现未创建的会话**。保存冲突产生的恢复副本不再列为会话（仍保留在磁盘并被索引）；GC 回收链条中间节点后不再拆成多行。\n- **小米 MiMo 无法选择思考档位**（旧版本表现为 500）。该端点实测支持 none/low/medium/high，`max` 与 `xhigh` 返回 400，选择器已相应调整。\n- **子代理计数错误**。嵌套步骤被计为子代理数量（显示「64 个子代理」），同时委派面板显示为零。批量派发现在分别报告批次大小与步骤数。\n- **能力 id `task:subagent` 被目录否认**，导致隔离静默失效、无任何报错。\n- 内核不可达时发送失败，消息内容退回输入框（含引用），错误提示不再显示 `/submit: 500`。\n- 被拒绝的开关显示拒绝原因，此前仅弹回原位。\n- 声明了验证命令的运行可将输出通过管道传递（如 `| tail`），主机读取被声明段的退出状态。\n- 首屏 provider 配置显示各厂商控制台地址；探测失败细分为 9 种带编码的结果。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.4.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.4.0",
+        "zh": "Reasonix Studio v2.4.0"
+      },
+      "summary": {
+        "en": "三个新面板（用量、记忆编辑、单文件回滚）、工具并行调用带来的往返下降，以及 DeepSeek 价目表的修正。自 2.3.0 起 62 个提交。",
+        "zh": "三个新面板（用量、记忆编辑、单文件回滚）、工具并行调用带来的往返下降，以及 DeepSeek 价目表的修正。自 2.3.0 起 62 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.4.0",
+            "zh": "Reasonix Studio v2.4.0"
+          },
+          "body": {
+            "en": "三个新面板（用量、记忆编辑、单文件回滚）、工具并行调用带来的往返下降，以及 DeepSeek 价目表的修正。自 2.3.0 起 62 个提交。",
+            "zh": "三个新面板（用量、记忆编辑、单文件回滚）、工具并行调用带来的往返下降，以及 DeepSeek 价目表的修正。自 2.3.0 起 62 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.4.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.4.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.3.0",
+      "date": "2026-08-21",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "DeepSeek 视觉模型支持、长会话每轮开销与会话长度解耦，以及三处「当前选中的是哪一个」的可读性修复。自 2.2.0 起 30 个提交。\n\n## ⚠️ Windows 用户：本次需手动安装\n\n当前版本为 **2.2.0 或更早**时，自动更新会在最后一步失败，请**手动下载安装包覆盖安装**。\n\n原因：Studio 安装在 `Program Files` 并写入 HKLM，安装包因此声明需要管理员权限，而旧版用于启动它的调用无法启动此类程序——下载与校验均完成，卡在执行环节。修复包含在本版中，因此仅对**从本版往后**的升级生效。装上 2.3.0 后自动更新会正常弹出 UAC。\n\nmacOS 与 Linux 不受影响。\n\n## 新增\n\n**DeepSeek 视觉模型**\n- `deepseek-v4-flash-vision-exp` 可直接使用。此前 Studio 将整个 DeepSeek 端点视为纯文本，现改为按模型判定：同一连接下视觉模型可勾选「读图」，其余两个不可（端点自身会拒绝）。\n- 已安装用户的模型列表冻结在配置文件中，本版启动时自动补入——仅限**仍为出厂默认**的连接，自行策展过的列表不作改动。\n- 该模型同时支持工具调用与思考档位，可作为主模型使用。\n- 主模型不支持读图时，提示会点名可用模型并指出配置位置（设置 › 模型 › 分工），或明确告知无任何模型支持读图。此前无论何种情况均提示「改由委派的子代理处理」，而未指定「看图」角色时图片实际在发送前已被丢弃。\n- 「看图」角色不会自动指定——那等于代替用户决定将图片与账单发往未经选择的实验模型。\n\n## 性能\n\n- **每轮开销不再随会话长度增长**。折叠（压缩）的目的是让模型不必重读旧历史，但每轮仍会复制整份记录以读取末尾数条。2 万条消息的会话：每轮 2.3ms / 14MB 降至 0.45ms / 3.8KB，且 100 条与 2 万条耗时相同。\n- 单轮请求组装成本从 2.3ms 降至 3.3µs。\n- 多项目共用同一份系统提示前缀缓存，切换项目不再各占一份。\n\n## 界面\n\n- **`/` 与 `@` 菜单中键盘选中项的高亮强于鼠标悬停**。此前相反：选中仅有 6px 圆点，悬停为整行底色——鼠标停在列表上时，最醒目的恰好是回车不会选中的那一行。键盘接管时隐藏悬停态，鼠标移动后恢复。\n- **模型列表支持搜索与直接填写**。中转站返回数百个仅差日期后缀的名称时，编辑面板此前逐行铺开（高度超过四屏，保存按钮在视口外）。搜索框与「填写列表中没有的名称」为同一输入框，已勾选项排在最前。\n- **MCP 连接失败不再撑坏右侧度量栏**。端点返回的错误文本长度不受控制，此前被放入为「耗时」设计的槽位，导致服务名被压至 0 像素、整栏横向溢出 451px。现改为名称一行、原因一行（最多两行），连接失败以左侧红条标识。\n\n## 修复\n\n本批统一改为**按错误身份判定，而非匹配错误文本**——文本匹配在切换语言或供应商后即失效。\n\n- 流式响应中断在发生处即被命名，不再回溯推断文本含义。\n- 跨盘移动文件、启动步骤失败、插件迁移、会话停止改为读取错误码或哨兵值。\n- HTTP 层每条拒绝携带点分编码；前端无法表述的编码将导致构建失败。\n- 「本次改动未经任何验证」的提示会附上已执行但未被识别为检查的命令。\n- 参数名错误可定位到具体层级，包括数组元素内部。\n\n## 其它\n\n- 最大化图标跟随窗口实际状态，而非最后一次点击。\n- 新接入的订阅者不再被误判为「丢失了一段事件」。\n- 更换状态目录时，写入其下的数据一并迁移；迁移中断（清单未完成即开始搬运）不会丢失文件；迁移面板会列出未取到的项及其位置。\n- Studio 打包时 `hdiutil` 失败会输出原因，不再仅返回退出码。\n- 更新目录地址由各发布线自行声明，不再回落到默认值（该默认地址不发布任何内容）。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.3.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.3.0",
+        "zh": "Reasonix Studio v2.3.0"
+      },
+      "summary": {
+        "en": "DeepSeek 视觉模型支持、长会话每轮开销与会话长度解耦，以及三处「当前选中的是哪一个」的可读性修复。自 2.2.0 起 30 个提交。",
+        "zh": "DeepSeek 视觉模型支持、长会话每轮开销与会话长度解耦，以及三处「当前选中的是哪一个」的可读性修复。自 2.2.0 起 30 个提交。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.3.0",
+            "zh": "Reasonix Studio v2.3.0"
+          },
+          "body": {
+            "en": "DeepSeek 视觉模型支持、长会话每轮开销与会话长度解耦，以及三处「当前选中的是哪一个」的可读性修复。自 2.2.0 起 30 个提交。",
+            "zh": "DeepSeek 视觉模型支持、长会话每轮开销与会话长度解耦，以及三处「当前选中的是哪一个」的可读性修复。自 2.2.0 起 30 个提交。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.3.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.3.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.2.0",
+      "date": "2026-08-21",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "> 这一版主要在两件事上：**看得清**和**看得见**。汉字在这套界面里一直偏细偏小，壁纸会一路透到文字底下，窗口一窄面板的开关就整个消失——三件都是「界面自己挡住了自己」。另外，改模型时冒出来的那个重复会话没了。\n\n## 文字终于是给汉字排的\n\n- **界面默认按语言选字重**。汉字笔画密，同字号下比拉丁字母更早糊，现在中文界面整体重一档。设置 → 外观里多了一档「文字粗细」，就在「文字对比度」旁边——以前只有「整体放大」一个旋钮，而它连边距和控件一起放大，并不解决「细」。\n- **最弱的那一档文字色也够 AA 了**。次要文字过去在它实际所在的底色上只有 3.4:1，把对比度拉到最强也才 4.1:1——也就是说「调设置」这条路本来就走不通。四档文字色重新切过，最淡的一档现在从 4.6:1 起步。\n- **中文标签不再套用西文的小型大写排版**。侧栏、度量栏里那些标签过去是等宽字体加字距加全大写，而等宽字体栈里根本没有汉字字形；现在中文界面下它们用界面字体、11px、不加字距。英文那套原样保留。\n\n## 壁纸只铺在该铺的地方\n\n- **两栏、标签条、转录不再让图透到文字底下**。样式表里本来就写着「卡片和面板保持不透明」，但那些面从来没有自己的底色，一直借窗口的——于是壁纸一开，图就一路透到侧栏和度量栏的每一行字下面。\n- **设置页的半透明现在带模糊**。过去是照片本身直接顶在密集正文后面。\n- **空白页仍然透出图**——那是唯一该透的地方，欢迎语下面垫了一层柔和的底，字不会被图吃掉。\n\n## 面板的开关不再消失\n\n- **窗口窄到放不下时，栏是收起，不是被拿掉**。以前 1200px 以下工作区栏连同它的把手一起消失，`⌘\\` 按下去画面毫无反应；现在缝和把手留在原处，点一下就回来。\n- **度量栏横过来时把手跟着横过来**。它以前会换成栏内一个很淡的 `▾`，位置和形状都变了，看起来就是「没了」。现在左右两边任何一档都是同一枚东西。\n- **把手静止时就看得见**：缝上三个点，鼠标靠近变箭头，收起后是一枚带箭头的标签。\n- 两栏窄档下的行为统一了：都自动收起、都留把手，拖回宽窗口时各自恢复你原来的选择。\n\n## 第一次打开说得清\n\n- **没选过项目时，主区直接说该做什么**，而不是让人去左下角找。窗口总有一个根目录——没选过项目时那只是它碰巧启动的地方，而侧栏过去把它画得和真项目一模一样。\n- **「打开项目」回到分组标签旁边**，无边框、停下来才出底色，用真图标而不是全角的「＋」。\n\n## 会话与模型\n\n- **改模型不再冒出一个重复会话**。那个副本的内容和原文逐字节相同，只是运行时一时认不出自己的文件；现在它写过去并留下被替换的字节，不再分叉出第二段对话。\n- 上下文超出时会折叠后重放，而不是让这一轮直接失败。\n- 上下文窗口跟着模型走，不再跟着谁提供它走。\n- 端点没有思考档位时会直说，不再报一个 500。\n- 计划列表往前走一步就是一张卡，不再一步铺一张。\n\n## 其它\n\n- MCP 服务器中途退出时，报的是「它起来过、这次调用中途走了，下次会自动重开」，而不是一条读起来像「从没启动」的 EOF。\n- 主机知道但过去说不出口的几处补上了：参数名写错在数组项里也能说清是哪一层的参数；「没有任何东西验证这次改动」现在会带上那条跑过但没被读作检查的命令。\n- Windows 安装包的编码问题修了（`makensis` 现在被告知脚本是什么编码）。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.2.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.2.0",
+        "zh": "Reasonix Studio v2.2.0"
+      },
+      "summary": {
+        "en": "> 这一版主要在两件事上：**看得清**和**看得见**。汉字在这套界面里一直偏细偏小，壁纸会一路透到文字底下，窗口一窄面板的开关就整个消失——三件都是「界面自己挡住了自己」。另外，改模型时冒出来的那个重复会话没了。",
+        "zh": "> 这一版主要在两件事上：**看得清**和**看得见**。汉字在这套界面里一直偏细偏小，壁纸会一路透到文字底下，窗口一窄面板的开关就整个消失——三件都是「界面自己挡住了自己」。另外，改模型时冒出来的那个重复会话没了。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.2.0",
+            "zh": "Reasonix Studio v2.2.0"
+          },
+          "body": {
+            "en": "> 这一版主要在两件事上：**看得清**和**看得见**。汉字在这套界面里一直偏细偏小，壁纸会一路透到文字底下，窗口一窄面板的开关就整个消失——三件都是「界面自己挡住了自己」。另外，改模型时冒出来的那个重复会话没了。",
+            "zh": "> 这一版主要在两件事上：**看得清**和**看得见**。汉字在这套界面里一直偏细偏小，壁纸会一路透到文字底下，窗口一窄面板的开关就整个消失——三件都是「界面自己挡住了自己」。另外，改模型时冒出来的那个重复会话没了。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.2.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.2.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.1.0",
+      "date": "2026-08-20",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "> 这一版把界面里几处「明明在那儿却看不见、或者看见了也读不懂」的地方收拾了一遍：拖文件不再复制副本，收起面板的把手一直看得见，主机自己的话不再挤进对话。\n\n## 拖进来的是位置，不是副本\n\n- **任意文件或文件夹拖进输入框都能接住**。以前只认图片，拖一个 `.py` 或 `.pdf` 进去没有任何反应。\n- **引用的是文件本来在的地方**，工作区里不再多出一份副本。这修掉的是「让它改一个文件，它改了副本还回报改好了」——现在它拿到的是那个文件本身。\n- 工作区外的文件也能引用，路径带空格、带盘符都不再把引用截断。\n- **拖歪了不会毁掉界面**：以前落在输入框以外，webview 会直接导航到那个文件，整个界面被文件内容替换，只能重开。\n- 剪贴板和「添加图片」按钮仍然存字节——那两条本来就没有路径可用。\n\n## 面板与分隔条\n\n- **收起面板的把手静止时就看得见**：缝上一根短竖条，鼠标靠近变成箭头，收起后是边缘的一颗药丸。以前它是一个 45% 透明度的箭头，不悬停基本等于没有。\n- **一个面板只有一个收起按钮**。标题栏里那个重复的去掉了（只在栏横过来、没有缝可抓的那一档保留）。\n- 分隔条的拖拽热区现在正骑在接缝上，不再偏 1px。\n\n## 界面说的话\n\n- **主机对自己的汇报不再进对话正文**。像 `guardian enabled · model=…` 这种装配期的话，以前会以「agent 跑了个命令」同样的规格插进你正在看的那段对话；现在它归到轨迹，真出问题的警告落在输入框下方一条可关掉的横条里。\n- **回合结束的验证回执默认不显示了**。它报告这一轮有什么没被验证——值得读，但每轮都来一次太吵。要看的话在开发者控制台 `localStorage.setItem('rx-turn-receipt','on')`；核对本身照跑，终端里也照样打印。\n- 回执卡真显示时也能读了：分组标题、缺了什么、关于哪个文件，三种字面分得开；一条命令是等宽单行，不再把四十行 heredoc 铺成段落。\n- 会话侧边栏里，**被外部程序改写留下的恢复副本折进它来自的那条对话**，不再各自占一行。\n\n## 模型与扩展\n\n- MCP 服务器在设置里会说明自己是什么、带了哪些工具；关掉的服务器也能从缓存里答。\n- 服务端跑的 web search 会显示出来，出错时说的是服务端给的原因。\n- Anthropic 兼容网关只收它自己声明过的 reasoning 字段。\n- 插件的常驻进程崩了会重连，不再一直报 EOF。\n- 钩子写成 shell 语法时会交给能跑它的 shell；坏掉的钩子会说是哪一个、该怎么办，而且只报一次。\n\n## 已知限制\n\n- **Windows 包仍未签名**，安装时会看到 SmartScreen 警告。\n- 没有 windows/arm64 构建。\n- 1.x 桌面版读的是另一份版本目录，不会自动升级到 Studio。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.1.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.1.0",
+        "zh": "Reasonix Studio v2.1.0"
+      },
+      "summary": {
+        "en": "> 这一版把界面里几处「明明在那儿却看不见、或者看见了也读不懂」的地方收拾了一遍：拖文件不再复制副本，收起面板的把手一直看得见，主机自己的话不再挤进对话。",
+        "zh": "> 这一版把界面里几处「明明在那儿却看不见、或者看见了也读不懂」的地方收拾了一遍：拖文件不再复制副本，收起面板的把手一直看得见，主机自己的话不再挤进对话。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.1.0",
+            "zh": "Reasonix Studio v2.1.0"
+          },
+          "body": {
+            "en": "> 这一版把界面里几处「明明在那儿却看不见、或者看见了也读不懂」的地方收拾了一遍：拖文件不再复制副本，收起面板的把手一直看得见，主机自己的话不再挤进对话。",
+            "zh": "> 这一版把界面里几处「明明在那儿却看不见、或者看见了也读不懂」的地方收拾了一遍：拖文件不再复制副本，收起面板的把手一直看得见，主机自己的话不再挤进对话。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.1.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.1.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
+      "product": "studio",
+      "version": "2.0.0",
+      "date": "2026-08-18",
+      "channel": "stable",
+      "sourceNotes": {
+        "language": "zh",
+        "markdown": "> Reasonix Studio 是重写的桌面端：新的工作区、可扩展的面板、三平台原生安装与自更新。这是 Studio 线的第一个发布。\n\n## 工作区\n\n- **按可用空间折叠的布局** —— 侧轨可以拖动改宽，折叠状态看得见；布局按它实际拥有的空间折叠，而不是按窗口尺寸猜。界面缩放也不再停在 1080p 窗口够用的那个上限。\n- **回到你说过的话** —— 右侧导航轨取代滚动条，列出这次对话里你的每一次发言，点一下就跳回去；模型说过的话可以删掉。\n- **轨迹** —— 一个回合里发生了什么按活动逐条展开，模型轮次只是其中一种活动；轨迹可以离开主窗口单独放。\n- **输出读得懂** —— 数学公式、emoji 和富文本都会正常渲染；长文件读取折叠成行数，shell 命令显示退出状态。\n- **压缩不再是一分钟的沉默** —— 折叠时能看见摘要正在写入，事后能看到这次折叠花了多少、摘要保留了什么。\n- **@ 和 / 背后是同一个补全引擎**，两者行为一致。\n\n## 模型与账户\n\n- **粘贴一个 URL 和一个密钥就能加模型源**；源可以改名和编辑，名字在别处也认得出。\n- **模型选择器按账户和「门」分组**，同一个账户开第二扇门会复用它的密钥。\n- **能力是声明出来的** —— 哪些模型能读图、谁负责哪种任务、web search 挂在真正支持它的门上。\n- **连接会自己说还能不能用**；首次连接不再默认你用的是 DeepSeek。\n\n## 扩展与主题\n\n- **插件包、扩展视图槽位与主题令牌** —— 扩展可以在侧轨占一个固定位置，可以重绘卡片，也可以替换面板的解释器。\n- **外观是装上去的，不是编译进去的** —— 主题作为包安装，自带配图。\n- **MCP 服务器和技能可以从任意前端开关**；服务器按它文档给的任意形式安装，也能卸掉。\n\n## 少操心的地方\n\n- 一个回合没做完的事会自己做完，**不用再打「继续」**。\n- 网络断了会说清是哪一层断的，而不是在对话里干等超时。\n- 记忆存下的那一刻就能看见，**并且带着撤回**；上一回合真正用到了哪些记忆也会标出来。\n- 机器上没有 git 也能安装，并且会告诉你为什么某些功能不可用。\n\n## 安装与更新\n\n- macOS 的 `.dmg`、Windows 的安装器、Linux 的 `.deb` —— 三平台给的都是装得上的包。\n- **三平台都能自更新**：Linux 走自己的包，Windows 运行下一个安装器，macOS 替换自身 bundle。\n- 版本面板可以**回滚到上一个版本**。\n\n## 已知限制\n\n- **Windows 包未签名**，安装时会看到 SmartScreen 警告。\n- 没有 windows/arm64 构建。\n- 已经装了 1.x 桌面版的用户读的是另一份版本目录，不会自动升级到 Studio，需要手动下载。\n",
+        "sha": "580339980fc36c4f7c5a0312c9dbe5541426acde",
+        "path": "release-notes/studio/2.0.0.md"
+      },
+      "title": {
+        "en": "Reasonix Studio v2.0.0",
+        "zh": "Reasonix Studio v2.0.0"
+      },
+      "summary": {
+        "en": "> Reasonix Studio 是重写的桌面端：新的工作区、可扩展的面板、三平台原生安装与自更新。这是 Studio 线的第一个发布。",
+        "zh": "> Reasonix Studio 是重写的桌面端：新的工作区、可扩展的面板、三平台原生安装与自更新。这是 Studio 线的第一个发布。"
+      },
+      "surfaces": [
+        "desktop"
+      ],
+      "guides": [],
+      "highlights": [
+        {
+          "kind": "improved",
+          "title": {
+            "en": "Reasonix Studio v2.0.0",
+            "zh": "Reasonix Studio v2.0.0"
+          },
+          "body": {
+            "en": "> Reasonix Studio 是重写的桌面端：新的工作区、可扩展的面板、三平台原生安装与自更新。这是 Studio 线的第一个发布。",
+            "zh": "> Reasonix Studio 是重写的桌面端：新的工作区、可扩展的面板、三平台原生安装与自更新。这是 Studio 线的第一个发布。"
+          }
+        }
+      ],
+      "changes": {
+        "new": [],
+        "improved": [],
+        "fixed": []
+      },
+      "upgrade": [],
+      "risks": [],
+      "contributors": [],
+      "links": {
+        "github": "https://github.com/esengine/DeepSeek-Reasonix/releases/tag/studio-v2.0.0",
+        "compare": "https://github.com/esengine/DeepSeek-Reasonix/blob/580339980fc36c4f7c5a0312c9dbe5541426acde/release-notes/studio/2.0.0.md",
+        "download": "https://reasonix.io/#start"
+      }
+    },
+    {
       "version": "1.39.2",
       "date": "2026-09-27",
       "channel": "stable",
