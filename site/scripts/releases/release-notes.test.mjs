@@ -233,3 +233,12 @@ test("publication marker is bound to reviewed version, channel, SHA, and builds"
     /candidateSha/,
   );
 });
+
+test("Studio tag lookup and verbatim rendering stay separate from CLI records", async () => {
+  const { studioRecord } = await import('./sync-releases.mjs');
+  const source = '中立发布说明。\n\n## 改进\n\n- 窗口布局\n';
+  const studio = studioRecord({ tag_name: 'studio-v2.24.0', published_at: '2026-09-30T00:00:00Z' }, source, 'a'.repeat(40));
+  const catalog = validateCatalog({ schemaVersion: 1, releases: [studio] });
+  assert.equal(releaseForVersion(catalog, 'studio-v2.24.0').product, 'studio');
+  assert.equal(renderGitHubRelease(studio, 'en'), source);
+});

@@ -15,7 +15,7 @@ test("every release uses the version-ledger hero", () => {
   assert.doesNotMatch(component, /isThematicTitle|isThematic/);
   assert.doesNotMatch(component, /release-hero--compact|release-hero__actions|<blockquote>/);
   assert.match(component, /<header class="release-hero">/);
-  assert.match(component, /<h1>Reasonix v\{release\.version\}<\/h1>/);
+  assert.match(component, /<h1>Reasonix\{isStudio \? ' Studio' : ''\} v\{release\.version\}<\/h1>/);
   assert.match(component, /<p class="release-lede">/);
   assert.doesNotMatch(css, /\.release-hero--compact|\.release-hero__actions|\.release-hero blockquote/);
 });
@@ -43,4 +43,16 @@ test("reviewed exact-version routes redirect safely until their publication mark
   assert.match(versionPage, /if \(!published\)/);
   assert.match(versionPage, /return Astro\.redirect/);
   assert.match(versionPage, /Astro\.redirect\('\/changelog\/'\)/);
+});
+
+test('product navigation exposes both lines and labels original Chinese Studio notes', () => {
+  assert.match(component, /aria-label="Products"/);
+  assert.match(component, /\/changelog\/studio\//);
+  assert.match(component, /lang="zh"/);
+  assert.match(component, /Chinese source notes/);
+});
+
+test('the Studio tab points its canonical at the release page it mirrors', async () => {
+  const studio = await readFile(new URL('../pages/changelog/studio.astro', import.meta.url), 'utf8');
+  assert.match(studio, /canonical=\{new URL\(`\$\{base\}\$\{releasePath\(latest\.version\)\}`, Astro\.site\)\.href\}/);
 });

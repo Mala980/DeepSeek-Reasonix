@@ -1,0 +1,75 @@
+name: Sync website changelog
+
+on:
+  # Timed and API-sent triggers only fire from the default branch, and this
+  # file lives on website, so the sync is started by hand from there.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: website-changelog-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: website
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '22'
+      - name: Decide what to do with an existing batch branch
+        id: review
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node site/scripts/releases/sync-batch.mjs
+      - name: Import published releases into a review draft
+        id: import
+        if: steps.review.outputs.action == 'sync'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_MODEL: deepseek-v4-pro
+        run: |
+          set -euo pipefail
+          git fetch origin studio main-v2 --tags
+          node site/scripts/releases/sync-releases.mjs
+          node site/scripts/releases/release-notes.mjs validate
+          node --test site/scripts/releases/*.test.mjs
+          git add site/src/data/releases.json
+          if git diff --cached --quiet; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c website-release-notes/sync
+          git commit -m 'docs(release): sync published changelog notes'
+          git push -u origin website-release-notes/sync
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+      - name: Open a batch for human review
+        if: steps.review.outputs.action == 'open-pr' || steps.import.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/site-release-review.md" <<'BODY'
+          ## Summary
+          Import missing published releases from both product lines.
+          Studio notes preserve the Chinese source from the studio branch; CLI bilingual drafts reuse the existing model generator.
+
+          ## Review and publication
+          Review the catalog diff, sources, and translations before merging.
+          This workflow never merges or deploys. The existing website deployment follows a human merge.
+          Missing source files and CLI drafts without a model key are retried after this review branch is merged and deleted.
+
+          ## Verification
+          Release catalog validation and release-script tests passed when the batch was created.
+          BODY
+          gh pr create --base website --head website-release-notes/sync --title 'docs(release): sync published changelog notes' --body-file "$RUNNER_TEMP/site-release-review.md"

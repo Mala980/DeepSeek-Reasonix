@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [website]
     paths:
+      - ".github/workflows/sync-site-changelog.yml"
       - "site/src/data/releases.json"
       - "site/scripts/releases/**"
       - "site/scripts/release-event.mjs"
@@ -24,4 +25,4 @@ jobs:
         with:
           node-version: "22"
       - run: node site/scripts/releases/release-notes.mjs validate
-      - run: node --test site/scripts/releases/release-notes.test.mjs
+      - run: node --test site/scripts/releases/*.test.mjs

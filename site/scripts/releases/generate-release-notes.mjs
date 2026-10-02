@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
-import { loadCatalog, upsertRelease, validateCatalog } from "./release-notes.mjs";
+import { compareVersionsDesc, loadCatalog, upsertRelease, validateCatalog } from "./release-notes.mjs";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const apiBase = process.env.DEEPSEEK_API_BASE || "https://api.deepseek.com";
@@ -247,6 +247,13 @@ Every highlight, change, upgrade note, and risk must have a non-empty \"targets\
   }
 }
 
+export function previousCLIRelease(catalog, version) {
+  return catalog.releases.find((release) =>
+    release.product !== "studio" && release.channel === "stable" &&
+    compareVersionsDesc(release.version, version) > 0,
+  );
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args.version) throw new Error("--version is required");
@@ -255,13 +262,13 @@ async function main() {
   const channel = version.includes("-") ? "prerelease" : "stable";
   const baseVersion = version.split("-")[0];
   const previousRecord = channel === "stable"
-    ? catalog.releases.find((release) => release.version !== version && release.channel === "stable")
+    ? previousCLIRelease(catalog, version)
     : catalog.releases.find(
         (release) =>
           release.version !== version &&
           release.channel === "prerelease" &&
           release.baseVersion === baseVersion,
-      ) || catalog.releases.find((release) => release.channel === "stable");
+      ) || catalog.releases.find((release) => release.product !== "studio" && release.channel === "stable");
   const previous = args.from || previousRecord?.version;
   if (!previous) throw new Error("--from is required when no previous release exists");
   const previousVersion = normalizeVersion(previous);
@@ -289,6 +296,7 @@ async function main() {
     documentationUrls: docLinks,
   };
   const release = await askDeepSeek(source);
+  release.product = "cli";
   release.targetingVersion = 1;
   release.version = version;
   release.releaseId = version;

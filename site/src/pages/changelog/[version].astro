@@ -1,6 +1,6 @@
 ---
 import ChangelogPage from '../../components/ChangelogPage.astro';
-import { allReleases, publishedReleases, releases } from '../../data/releases';
+import { allReleases, publishedReleases, releases, studioReleases } from '../../data/releases';
 
 export function getStaticPaths() {
   const publishedVersions = new Set(publishedReleases.map((release) => release.version));
@@ -15,4 +15,4 @@ if (!published) {
   return Astro.redirect('/changelog/');
 }
 ---
-<ChangelogPage release={release} releases={releases} />
+<ChangelogPage release={release} releases={release.product === 'studio' ? studioReleases : releases} />
