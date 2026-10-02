@@ -1,5 +1,6 @@
 ---
 import "../styles/community.css";
+import CommunityJoin from "../components/CommunityJoin.astro";
 const { title, description, active } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 ---
@@ -86,6 +87,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <slot />
   </main>
 
+  <CommunityJoin />
   <footer class="foot">
     <div class="foot-inner">
       <a class="brand" href="/"><span class="mark">R</span>Reasonix</a>

@@ -1,0 +1,63 @@
+---
+import { QQ_GROUP, DISCORD_URL } from '../lib/community-links.mjs';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<section class="join" aria-labelledby="join-title" data-community-join>
+  <div class="join-card">
+    <div class="join-head">
+      <h2 id="join-title"><span class="l-en">Join the community</span><span class="l-zh">加入社区</span></h2>
+      <p><span class="l-en">Get setup help, share workflows, and talk to other Reasonix users.</span><span class="l-zh">安装答疑、分享工作流，和其他 Reasonix 用户交流。</span></p>
+    </div>
+    <div class="join-body">
+      <div class="join-qq">
+        <a class="join-qr" href={QQ_GROUP.joinUrl} target="_blank" rel="noreferrer" data-qq-join>
+          <img src={`${base}${QQ_GROUP.qrPath}`} width="132" height="132" alt="QQ group QR code" loading="lazy" decoding="async" />
+        </a>
+        <div class="join-info">
+          <span class="join-label">QQ</span>
+          <strong class="join-name">{QQ_GROUP.name}</strong>
+          <span class="join-num"><span class="l-en">Group</span><span class="l-zh">群号</span> <code>{QQ_GROUP.number}</code></span>
+          <a class="join-link" href={QQ_GROUP.joinUrl} target="_blank" rel="noreferrer"><span class="l-en">Join the QQ group</span><span class="l-zh">加入 QQ 群</span> ↗</a>
+        </div>
+      </div>
+      <div class="join-discord">
+        <span class="join-label">Discord</span>
+        <span class="join-note"><span class="l-en">Bilingual server with help channels and feature ideas.</span><span class="l-zh">双语服务器，有答疑频道和功能讨论。</span></span>
+        <a class="join-link" href={DISCORD_URL} target="_blank" rel="noreferrer" data-discord-join><span class="l-en">Join Discord</span><span class="l-zh">加入 Discord</span> ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .join { max-width: 1180px; margin: 0 auto; padding: 36px 40px 8px; }
+  .join-card {
+    background: var(--bg-soft); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 24px 28px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px 40px; align-items: center;
+  }
+  .join-head h2 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); margin: 0 0 6px; }
+  .join-head p { font-size: 13.5px; line-height: 1.6; color: var(--ink-2); margin: 0; max-width: 34ch; }
+  .join-body { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
+  .join-qq { display: flex; gap: 18px; align-items: center; }
+  .join-qr { display: block; line-height: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; background: #fff; flex: none; }
+  .join-qr img { width: 132px; height: 132px; display: block; }
+  .join-info, .join-discord { display: flex; flex-direction: column; gap: 5px; align-items: flex-start; font-size: 13.5px; color: var(--ink-2); }
+  .join-label { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-3); }
+  .join-name { font-size: 15px; font-weight: 600; color: var(--ink); }
+  .join-num code { font-family: var(--font-mono); font-size: 14px; color: var(--ink); }
+  .join-note { max-width: 24ch; line-height: 1.5; }
+  .join-link { color: var(--accent-deep); font-weight: 600; text-decoration: none; margin-top: 4px; }
+  .join-link:hover { text-decoration: underline; }
+  @media (max-width: 900px) {
+    .join { padding: 28px 24px 4px; }
+    .join-card { grid-template-columns: 1fr; }
+    .join-head p { max-width: none; }
+  }
+  @media (max-width: 480px) {
+    .join { padding: 24px 16px 4px; }
+    .join-card { padding: 20px 18px; }
+    .join-qq { flex-direction: column; align-items: flex-start; }
+    .join-body { gap: 22px; }
+  }
+</style>
