@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import CommunityJoin from './CommunityJoin.astro';
 import SiteHeader from './SiteHeader.astro';
 import type { ReleaseItem, ReleaseRecord, ReleaseTarget } from '../data/releases';
 import { releasePath, releaseTargetCount } from '../data/releases';
@@ -429,6 +430,7 @@ const description = release.summary.en;
     </div>
   </main>
 
+  <CommunityJoin />
   <footer class="release-footer">
     <a class="brand" href={`${base}/`}><img src={`${base}/logo.svg`} alt="" /><span>Reasonix</span></a>
     <span>© 2026 Reasonix · MIT</span>

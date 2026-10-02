@@ -1,5 +1,6 @@
 ---
 import Community from "../../layouts/Community.astro";
+import { QQ_GROUP, DISCORD_URL } from "../../lib/community-links.mjs";
 ---
 <Community title="Reasonix Community" description="Ask questions, share skills, and shape a DeepSeek-native agent." active="discussions">
   <section class="head">
@@ -52,6 +53,14 @@ import Community from "../../layouts/Community.astro";
         <h4 style="margin-bottom:14px"><span class="l-en">Guidelines</span><span class="l-zh">社区规范</span></h4>
         <p class="lead"><span class="l-en">Be kind, search first, and keep code in fenced blocks. New accounts unlock links and more as they participate.</span><span class="l-zh">友善、先搜索、代码放进围栏块。新账号随参与逐步解锁发链接等权限。</span></p>
         <a class="btn btn-ghost sm" href="/community/guidelines/"><span class="l-en">Read the guidelines</span><span class="l-zh">阅读规范</span></a>
+      </div>
+      <div class="card">
+        <h4 style="margin-bottom:14px"><span class="l-en">Join the community</span><span class="l-zh">加入社区</span></h4>
+        <p class="lead"><span class="l-en">QQ group</span><span class="l-zh">QQ 群</span> {QQ_GROUP.name} · <code>{QQ_GROUP.number}</code></p>
+        <p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <a class="btn btn-ghost sm" href={QQ_GROUP.joinUrl} target="_blank" rel="noreferrer"><span class="l-en">Join QQ group</span><span class="l-zh">加入 QQ 群</span></a>
+          <a class="btn btn-ghost sm" href={DISCORD_URL} target="_blank" rel="noreferrer">Discord</a>
+        </p>
       </div>
     </aside>
   </div>
