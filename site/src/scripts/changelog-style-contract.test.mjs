@@ -42,17 +42,25 @@ test("reviewed exact-version routes redirect safely until their publication mark
   assert.match(versionPage, /publishedVersions\.has\(release\.version\)/);
   assert.match(versionPage, /if \(!published\)/);
   assert.match(versionPage, /return Astro\.redirect/);
-  assert.match(versionPage, /Astro\.redirect\('\/changelog\/'\)/);
+  assert.match(versionPage, /release\.product === 'studio' \? '\/changelog\/' : '\/changelog\/cli\/'/);
 });
 
 test('product navigation exposes both lines and labels original Chinese Studio notes', () => {
   assert.match(component, /aria-label="Products"/);
-  assert.match(component, /\/changelog\/studio\//);
+  assert.match(component, /\/changelog\/cli\//);
   assert.match(component, /lang="zh"/);
   assert.match(component, /Chinese source notes/);
 });
 
-test('the Studio tab points its canonical at the release page it mirrors', async () => {
-  const studio = await readFile(new URL('../pages/changelog/studio.astro', import.meta.url), 'utf8');
+test('/changelog/ is the Studio default and the CLI tab has its own stable URL', async () => {
+  const read = (name) => readFile(new URL(`../pages/changelog/${name}`, import.meta.url), 'utf8');
+  const studio = await readFile(new URL('../components/StudioChangelog.astro', import.meta.url), 'utf8');
   assert.match(studio, /canonical=\{new URL\(`\$\{base\}\$\{releasePath\(latest\.version\)\}`, Astro\.site\)\.href\}/);
+  for (const name of ['index.astro', 'studio.astro']) assert.match(await read(name), /<StudioChangelog \/>/);
+  const cli = await read('cli.astro');
+  assert.match(cli, /latestStableRelease/);
+  assert.match(cli, /canonical=\{canonical\}/);
+  for (const name of ['stable.astro', 'preview.astro']) assert.match(await read(name), /Astro\.redirect\('\/changelog\/cli\/', 301\)/);
+  assert.match(component, /href=\{`\$\{base\}\/changelog\/cli\/`\} aria-current=\{!isStudio/);
+  assert.match(component, /href=\{`\$\{base\}\/changelog\/`\} aria-current=\{isStudio/);
 });

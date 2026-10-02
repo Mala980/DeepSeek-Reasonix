@@ -296,7 +296,7 @@ import { initMobileNav } from "./mobile-nav.js";
         return;
       }
       const path = model?.changelogURL ? new URL(model.changelogURL).pathname
-        : surface === "desktop" && desktopDownloadVersion ? "changelog/" + desktopDownloadVersion + "/" : "changelog/";
+        : surface === "desktop" ? (desktopDownloadVersion ? "changelog/" + desktopDownloadVersion + "/" : "changelog/") : "changelog/cli/";
       link.href = new URL(path, window.location.origin + "/").href;
     });
 

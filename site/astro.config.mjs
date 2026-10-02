@@ -9,7 +9,7 @@ export default defineConfig({
   compressHTML: false,
   build: { assets: 'static' },
   integrations: [sitemap({
-    filter: (page) => !/\/changelog\/(?:stable|preview)\/?$/.test(page) &&
+    filter: (page) => !/\/changelog\/(?:stable|preview|studio)\/?$/.test(page) &&
       !/\/changelog\/v\d+\.\d+\.\d+-/.test(page) &&
       !/\/(?:login|register|forgot|reset|account|device|u)\/?$/.test(page),
   })],

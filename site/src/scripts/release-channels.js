@@ -164,7 +164,7 @@ export function cliReleaseModel(releases, requestedChannel) {
   const exactChangelogURL = `https://reasonix.io/changelog/${parsed.tag}/`;
   const changelogURL = release.release_notes_url === exactChangelogURL
     ? exactChangelogURL
-    : "https://reasonix.io/changelog/";
+    : "https://reasonix.io/changelog/cli/";
   return {
     channel,
     version: parsed.tag,
