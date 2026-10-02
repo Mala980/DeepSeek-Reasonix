@@ -71,21 +71,23 @@ const refQuery = `query($owner: String!, $name: String!, $number: Int!) {
   }
 }`;
 
-function person(author) {
+function person(author, owner) {
   if (!author) return { login: null, bot: true };
-  return { login: author.login, bot: isBotAccount(author.login, author.__typename) };
+  const bot = isBotAccount(author.login, author.__typename);
+  const isOwner = !bot && String(author.login).toLowerCase() === String(owner).toLowerCase();
+  return isOwner ? { login: author.login, bot, owner: true } : { login: author.login, bot };
 }
 
 // An issue's fixers are the merged pull requests GitHub links to it as closing
 // it: the one that closed it, and any linked by a closing keyword or by hand.
 // A mere mention is not a fix, so cross-references are not read.
-function issueFixes(issue) {
+function issueFixes(issue, owner) {
   const closer = issue.timelineItems?.nodes?.[0]?.closer;
   const candidates = [...(issue.closedByPullRequestsReferences?.nodes || [])];
   if (closer?.__typename === "PullRequest") candidates.push(closer);
   const fixes = new Map();
   for (const pull of candidates) {
-    if (pull?.merged && !fixes.has(pull.number)) fixes.set(pull.number, { number: pull.number, ...person(pull.author) });
+    if (pull?.merged && !fixes.has(pull.number)) fixes.set(pull.number, { number: pull.number, ...person(pull.author, owner) });
   }
   return [...fixes.values()].sort((a, b) => a.number - b.number);
 }
@@ -107,7 +109,7 @@ function retryDelay(response, payload, attempt) {
   return after > 0 ? Math.min(after * 1000, 60_000) : backoff;
 }
 
-// Returns an async lookup: number -> { kind: "pull", login, bot } |
+// Returns an async lookup: number -> { kind: "pull", login, bot, owner? } |
 // { kind: "issue", fixes: [{ number, login, bot }] } | { kind: "discussion" } |
 // { kind: "missing" }.
 export function githubRefLookup({
@@ -148,8 +150,8 @@ export function githubRefLookup({
     const payload = await query(ref);
     const repositoryNode = payload.data?.repository;
     const node = repositoryNode?.issueOrPullRequest;
-    if (node?.__typename === "PullRequest") return { kind: "pull", ...person(node.author) };
-    if (node?.__typename === "Issue") return { kind: "issue", fixes: issueFixes(node) };
+    if (node?.__typename === "PullRequest") return { kind: "pull", ...person(node.author, owner) };
+    if (node?.__typename === "Issue") return { kind: "issue", fixes: issueFixes(node, owner) };
     const errors = payload.errors || [];
     if (repositoryNode && errors.every((error) => error.type === "NOT_FOUND")) {
       return { kind: repositoryNode.discussion ? "discussion" : "missing" };
@@ -208,8 +210,9 @@ export function unresolvedError(failures) {
   );
 }
 
+// The repository owner is never credited or thanked, so they read as no one.
 function humanLogin(person) {
-  return person.login && !person.bot ? person.login : null;
+  return person.login && !person.bot && !person.owner ? person.login : null;
 }
 
 export function creditedLogins(credit) {
@@ -220,7 +223,7 @@ export function creditedLogins(credit) {
 
 // " by @a" for a pull request, " fixed in #2 by @a and #3" for an issue.
 export function creditSuffix(credit) {
-  const by = (person) => (humanLogin(person) ? ` by @${person.login}` : "");
+  const by = (person) => (humanLogin(person) ? ` by @${humanLogin(person)}` : "");
   if (credit?.kind === "pull") return by(credit);
   if (credit?.kind !== "issue" || !credit.fixes.length) return "";
   return ` fixed in ${credit.fixes.map((fix) => `#${fix.number}${by(fix)}`).join(" and ")}`;

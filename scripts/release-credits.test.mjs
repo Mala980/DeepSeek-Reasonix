@@ -216,3 +216,26 @@ test("the token comes from the environment, then gh, else a coded error", () => 
     { code: CreditErrorCode.noToken },
   );
 });
+
+test("the repository owner is never credited, however the work reached them", async () => {
+  const { fetchImpl } = fakeGitHub({
+    1: pull("EsEngine"),
+    2: pull("alice"),
+    3: issue([linked(30, "esengine"), linked(31, "bob")]),
+    4: issue([linked(40, "esengine")]),
+  });
+  const lookup = githubRefLookup({ repository: "esengine/DeepSeek-Reasonix", fetchImpl });
+  const { credits } = await resolveCredits([1, 2, 3, 4], lookup);
+  assert.equal(creditSuffix(credits.get(1)), "");
+  assert.equal(creditSuffix(credits.get(2)), " by @alice");
+  assert.equal(creditSuffix(credits.get(3)), " fixed in #30 and #31 by @bob");
+  assert.equal(creditSuffix(credits.get(4)), " fixed in #40");
+  assert.deepEqual(contributorLogins([1, 3, 2, 4, 1], credits), ["bob", "alice"]);
+  assert.deepEqual(contributorLogins([1, 4], credits), []);
+});
+
+test("another repository's owner is derived from its own slug", async () => {
+  const { fetchImpl } = fakeGitHub({ 1: pull("esengine") });
+  const lookup = githubRefLookup({ repository: "other/repo", fetchImpl });
+  assert.equal(creditSuffix(await lookup(1)), " by @esengine");
+});
