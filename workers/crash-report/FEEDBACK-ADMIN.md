@@ -46,6 +46,13 @@ trusted). No block status or expiry is included in body or headers; temporary
 and permanent blocks use the same code path. Submission replay still recovers
 the original receipt/token before new-admission gates.
 
+New submissions require the install token when any report, trust grant or release
+ledger entry identifies the install, including after report retention. A release
+entry alone proves prior registration, not active trust. Existing receipt/key
+replays still recover a lost token. When Turnstile is enabled, new submissions
+must pass the same challenge gate before either ordinary or blocked admission;
+blocked callers also perform verification when supplying a challenge token.
+
 ## Deployment and client follow-up
 
 A schema addition is required in `migrate-feedback-triage.sql`:

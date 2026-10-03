@@ -15,6 +15,16 @@ export async function tokenMatches(secret: string, installId: string, presented:
   return presented !== "" && (await constantTimeEqual(presented, await installToken(secret, installId)));
 }
 
+// Trust and release evidence can outlive reports; neither proves the caller owns
+// the install. Retained identity evidence still requires the original token.
+export async function isKnownInstall(env: Env, hash: string): Promise<boolean> {
+  return (await env.DB.prepare(
+    `SELECT 1 AS x WHERE EXISTS (SELECT 1 FROM feedback WHERE install_hash = ?)
+       OR EXISTS (SELECT 1 FROM feedback_trust WHERE install_hash = ?)
+       OR EXISTS (SELECT 1 FROM feedback_releases WHERE install_hash = ?)`,
+  ).bind(hash, hash, hash).first()) !== null;
+}
+
 export async function verifyInstall(request: Request, env: Env): Promise<{ installHash: string } | Response> {
   if (!feedbackEnabled(env) || !env.FEEDBACK_TOKEN_SECRET) return refuse("feedback.disabled", "feedback is unavailable");
   const id = request.headers.get("x-install-id") ?? "";

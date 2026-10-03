@@ -1,7 +1,7 @@
 import type { Env } from "./env";
 import { sendAlert } from "./alert";
 import { decodeAttachment, deleteAttachments, storeAttachment } from "./feedback_attachments";
-import { feedbackEnabled, tokenMatches } from "./feedback_auth";
+import { feedbackEnabled, isKnownInstall, tokenMatches } from "./feedback_auth";
 import { readCappedText } from "./feedback_body";
 import { installHash, installToken, ipHash, newReceipt } from "./feedback_crypto";
 import { jsonResponse, refuse, windowDetails } from "./feedback_http";
@@ -42,10 +42,6 @@ function tripsSpamGate(body: string): boolean {
 
 async function findByKey(env: Env, hash: string, key: string): Promise<FeedbackRow | null> {
   return env.DB.prepare("SELECT * FROM feedback WHERE install_hash = ? AND idempotency_key = ?").bind(hash, key).first<FeedbackRow>();
-}
-
-async function isKnownInstall(env: Env, hash: string): Promise<boolean> {
-  return (await env.DB.prepare("SELECT 1 AS x FROM feedback WHERE install_hash = ? LIMIT 1").bind(hash).first()) !== null;
 }
 
 function receiptBody(row: FeedbackRow, token: string) {
@@ -127,7 +123,7 @@ export async function handleSubmit(request: Request, env: Env): Promise<Response
     installDaily: trusted ? TRUSTED_PER_INSTALL_DAILY : PER_INSTALL_DAILY,
   };
   const blocked = await isBlocked(env, [`install:${hash}`, `ip:${ipKey}`], now);
-  if (!blocked && !(await challengePassed(env, input.turnstileToken, ip))) return refuse("feedback.challenge_required", "verification required");
+  if (!(await challengePassed(env, input.turnstileToken, ip))) return refuse("feedback.challenge_required", "verification required");
   if (await ipLimited(env, ip, trusted)) return refuse("feedback.rate_limited", RATE_LIMITED_MESSAGE, windowDetails("ip_hourly", now));
   if (blocked) {
     return refuse("feedback.rate_limited", RATE_LIMITED_MESSAGE, await concealedLimit(env, { ipKey, installHash: hash }, now, limits));

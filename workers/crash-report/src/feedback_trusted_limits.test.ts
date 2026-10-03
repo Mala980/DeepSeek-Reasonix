@@ -54,7 +54,109 @@ beforeEach(async () => {
   hash = (db.prepare("SELECT install_hash FROM feedback").get() as any).install_hash;
   db.exec("DELETE FROM feedback_quota");
 });
-afterEach(() => { vi.useRealTimers(); db.close(); });
+afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); db.close(); });
+
+describe("retained identity ownership", () => {
+  it.each(["established", "manual"])("requires proof after %s trust outlives reports", async (tier) => {
+    if (tier === "manual") expect((await act("trust")).status).toBe(200);
+    else {
+      for (let i = 0; i < 5; i++) {
+        db.exec("DELETE FROM feedback_quota");
+        const r = i === 0 ? receipt : (await (await submit()).json() as any).receipt;
+        expect((await act("release", {}, r)).status).toBe(200);
+      }
+    }
+    vi.setSystemTime(new Date(Date.parse(NOW) + 32 * 86400000));
+    await purgeStaleFeedback(env);
+    expect(db.prepare("SELECT * FROM feedback").get()).toBeUndefined();
+    ipAllowed = false;
+    const ownedToken = token;
+    for (const presented of ["", "wrong-fixture-token"]) {
+      token = presented;
+      const denied = await submit();
+      expect(denied.status).toBe(401);
+      expect((await denied.json() as any).error.code).toBe("feedback.bad_token");
+      expect(db.prepare("SELECT * FROM feedback").get()).toBeUndefined();
+      expect(db.prepare("SELECT * FROM feedback_quota").get()).toBeUndefined();
+    }
+    token = ownedToken;
+    const key = `retained-${tier}-replay`;
+    const accepted = await submit({}, key);
+    expect(accepted.status).toBe(201);
+    const original = await accepted.json() as any;
+    expect(original.status).toBe("received");
+    expect(original.installToken).toBe(ownedToken);
+    block(null);
+    expect((await submit()).status).toBe(429);
+    const { ipHash } = await import("./feedback_crypto");
+    db.exec("DELETE FROM feedback_blocks");
+    db.prepare("INSERT INTO feedback_blocks VALUES (?, 'fixture', ?, NULL)")
+      .run(`ip:${await ipHash("fixture-secret", "unknown")}`, NOW);
+    expect((await submit()).status).toBe(429);
+    token = "";
+    env.FEEDBACK_TURNSTILE_SECRET = "fixture-challenge";
+    const replay = await submit({}, key);
+    expect(replay.status).toBe(200);
+    expect(await replay.json()).toEqual(original);
+    const stranger = await submit({ installId: "install-bbbbbbbbbbbbbbbb" });
+    expect(stranger.status).toBe(403);
+    delete env.FEEDBACK_TURNSTILE_SECRET;
+    expect((await submit({ installId: "install-bbbbbbbbbbbbbbbb" })).status).toBe(429);
+  });
+
+  it("keeps release identity proof after trust revocation and report retention", async () => {
+    await act("release");
+    await call(`/v1/admin/feedback/${receipt}/trust`, undefined, admin, "DELETE");
+    vi.setSystemTime(new Date(Date.parse(NOW) + 32 * 86400000));
+    await purgeStaleFeedback(env);
+    const ownedToken = token;
+    token = "";
+    expect((await submit()).status).toBe(401);
+    token = ownedToken;
+    const accepted = await submit();
+    expect(accepted.status).toBe(201);
+    expect((db.prepare("SELECT status FROM feedback").get() as any).status).toBe("held");
+  });
+});
+
+describe("enabled challenge concealment", () => {
+  it.each(["missing", "rejected", "accepted"])("uses the same %s challenge gate with and without blocks", async (challenge) => {
+    env.FEEDBACK_TURNSTILE_SECRET = "fixture-challenge";
+    quota("ih", 3);
+    const fetcher = vi.fn(async () => new Response(JSON.stringify({ success: challenge === "accepted", action: "feedback" })));
+    vi.stubGlobal("fetch", fetcher);
+    const extra = challenge === "missing" ? {} : { turnstileToken: "fixture-response" };
+    const ordinary = await submit(extra);
+    expect(ordinary.status).toBe(challenge === "accepted" ? 429 : 403);
+    for (const target of [`install:${hash}`, `ip:${await (await import("./feedback_crypto")).ipHash("fixture-secret", "unknown")}`]) {
+      db.exec("DELETE FROM feedback_blocks");
+      db.prepare("INSERT INTO feedback_blocks VALUES (?, 'fixture', ?, NULL)").run(target, NOW);
+      const blocked = await submit(extra);
+      expect(blocked.status).toBe(ordinary.status);
+      expect(await blocked.text()).toBe(await ordinary.clone().text());
+      expect([...blocked.headers]).toEqual([...ordinary.headers]);
+    }
+    expect(fetcher).toHaveBeenCalledTimes(challenge === "missing" ? 0 : 3);
+    expect(db.prepare("SELECT * FROM feedback_quota WHERE bucket LIKE 'g:%'").get()).toBeUndefined();
+    expect((db.prepare("SELECT COUNT(*) AS n FROM feedback").get() as any).n).toBe(1);
+  });
+
+  it("admits valid challenges and preserves replay recovery without another verification", async () => {
+    env.FEEDBACK_TURNSTILE_SECRET = "fixture-challenge";
+    const fetcher = vi.fn(async () => new Response(JSON.stringify({ success: true, action: "feedback" })));
+    vi.stubGlobal("fetch", fetcher);
+    const key = "challenge-fixture-replay";
+    const accepted = await submit({ turnstileToken: "fixture-response" }, key);
+    expect(accepted.status).toBe(201);
+    const original = await accepted.json();
+    block(null);
+    token = "";
+    const replay = await submit({}, key);
+    expect(replay.status).toBe(200);
+    expect(await replay.json()).toEqual(original);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+});
 
 describe("trusted admission and concealment", () => {
   it.each([[false, 3], [true, 12]])("enforces the server tier hourly limit (trusted=%s)", async (trusted, limit) => {
