@@ -32,7 +32,7 @@ func (k *recordingKernel) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	k.mu.Unlock()
 	switch r.URL.Path {
 	case "/models":
-		_ = json.NewEncoder(w).Encode([]map[string]any{{"ref": "alpha/m1", "provider": "alpha", "model": "m1", "answers": "text"}, {"ref": "beta/m2", "provider": "beta", "model": "m2", "answers": "text"}})
+		_ = json.NewEncoder(w).Encode(map[string]any{"current": "alpha/m1", "label": "m1", "default": "alpha/m1", "models": []map[string]any{{"ref": "alpha/m1", "provider": "alpha", "model": "m1", "answers": "text", "active": true}, {"ref": "beta/m2", "provider": "beta", "model": "m2", "answers": "text"}}})
 	case "/skills":
 		_ = json.NewEncoder(w).Encode(map[string]any{"skills": []map[string]any{{"name": "review", "description": "Review changes", "enabled": true}}})
 	case "/mcp":

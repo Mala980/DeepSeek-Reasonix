@@ -14,9 +14,11 @@ type ModelChoice struct {
 }
 
 func (c *Client) Models(ctx context.Context) ([]ModelChoice, error) {
-	var out []ModelChoice
+	var out struct {
+		Models []ModelChoice `json:"models"`
+	}
 	err := c.do(ctx, http.MethodGet, "/models", nil, &out)
-	return out, err
+	return out.Models, err
 }
 
 func (c *Client) SelectModel(ctx context.Context, ref string) error {
