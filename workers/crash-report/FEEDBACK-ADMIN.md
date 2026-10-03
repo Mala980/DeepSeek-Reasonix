@@ -39,12 +39,17 @@ refusals conservatively use the ordinary hourly IP boundary, for blocked and
 ordinary callers alike. Global burst refuses for a conservative 60 seconds.
 These are retry hints, not promises of admission.
 
-Blocked responses use the same tier, limiter precedence and exhausted caller
-counter windows as ordinary limited responses. If no caller counter is exhausted,
-they use the first ordinary hourly window (IP for untrusted, install/reply for
-trusted). No block status or expiry is included in body or headers; temporary
-and permanent blocks use the same code path. Submission replay still recovers
-the original receipt/token before new-admission gates.
+Blocked responses use the same admission decision as ordinary callers: IP
+binding first, then submission burst budget, caller counters and daily budget;
+replies check hourly quota before ownership/status and the per-report cap.
+Only if these gates allow admission is a block concealed behind the first
+ordinary hourly window (IP for untrusted, install/reply for trusted). No block
+status or expiry is included in body or headers; temporary and permanent blocks
+use the same code path. Invalid attachments and reply bodies are validated
+before admission for every caller. Submission replay still recovers the
+original receipt/token before new-admission gates. Late concurrent replays and
+failed storage refund their D1 admission counters; external limiter bindings
+cannot be refunded. Refunds are not crash-atomic with report persistence.
 
 New submissions require the install token when any report, trust grant or release
 ledger entry identifies the install, including after report retention. A release

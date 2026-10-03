@@ -159,6 +159,88 @@ describe("enabled challenge concealment", () => {
 });
 
 describe("trusted admission and concealment", () => {
+  it.each([false, true])("preserves byte-identical global refusals including blocked callers (trusted=%s)", async (trusted) => {
+    if (trusted) trust();
+    for (const ceiling of ["burst", "daily", "zero"]) {
+      db.exec("DELETE FROM feedback_blocks; DELETE FROM feedback_quota");
+      delete env.FEEDBACK_BUDGET_LIMITER;
+      if (ceiling === "burst") env.FEEDBACK_BUDGET_LIMITER = { limit: async () => ({ success: false }) } as any;
+      else if (ceiling === "daily") db.prepare("INSERT INTO feedback_quota VALUES ('g:2026-10-03',?, '2026-10-03')").run(trusted ? 300 : 270);
+      else await call("/v1/admin/feedback/cap", { dailyGlobal: 0 });
+      const ordinary = await submit();
+      expect(ordinary.status).toBe(503);
+      for (const target of [`install:${hash}`, `ip:${await (await import("./feedback_crypto")).ipHash("fixture-secret", "unknown")}`]) {
+        db.exec("DELETE FROM feedback_blocks");
+        db.prepare("INSERT INTO feedback_blocks VALUES (?, 'fixture', ?, NULL)").run(target, NOW);
+        const blocked = await submit();
+        expect(blocked.status).toBe(ordinary.status);
+        expect(await blocked.text()).toBe(await ordinary.clone().text());
+        expect([...blocked.headers]).toEqual([...ordinary.headers]);
+        expect(blocked.headers.get("retry-after")).toBe(ordinary.headers.get("retry-after"));
+      }
+      expect((db.prepare("SELECT COUNT(*) AS n FROM feedback").get() as any).n).toBe(1);
+      expect(db.prepare("SELECT n FROM feedback_quota WHERE bucket LIKE 'ih:%' AND n > 0").get()).toBeUndefined();
+    }
+  });
+
+  it("refunds simultaneous authenticated replay and leaves ordinary replay free", async () => {
+    const base = env.DB;
+    let arrivals = 0;
+    let release!: () => void;
+    const barrier = new Promise<void>((resolve) => { release = resolve; });
+    env.DB = { ...base, prepare: (sql: string) => {
+      const statement = base.prepare(sql);
+      if (!sql.startsWith("SELECT * FROM feedback WHERE install_hash")) return statement;
+      return { ...statement, bind: (...values: unknown[]) => {
+        const bound = statement.bind(...values);
+        return { ...bound, first: async () => {
+          const row = await bound.first();
+          if (++arrivals <= 2) {
+            if (arrivals === 2) release();
+            await barrier;
+          }
+          return row;
+        } };
+      } } as D1PreparedStatement;
+    } } as D1Database;
+    const key = "parallel-fixture-replay";
+    const responses = await Promise.all([submit({}, key), submit({}, key)]);
+    expect(responses.map((r) => r.status).sort()).toEqual([200, 201]);
+    expect(await responses[0].json()).toEqual(await responses[1].json());
+    expect((db.prepare("SELECT COUNT(*) AS n FROM feedback WHERE idempotency_key = ?").get(key) as any).n).toBe(1);
+    expect(db.prepare("SELECT n FROM feedback_quota WHERE bucket NOT LIKE 'alert:%'").all()).toEqual([{ n: 1 }, { n: 1 }, { n: 1 }, { n: 1 }]);
+    expect((await submit({}, key)).status).toBe(200);
+    quota("ih", 3);
+    expect((await submit()).status).toBe(429);
+    expect((db.prepare("SELECT n FROM feedback_quota WHERE bucket LIKE 'g:%'").get() as any).n).toBe(1);
+  });
+
+  it("refunds admission when durable report insertion fails", async () => {
+    db.exec("CREATE TRIGGER fail_report BEFORE INSERT ON feedback BEGIN SELECT RAISE(ABORT, 'fixture'); END");
+    await expect(submit()).rejects.toThrow();
+    expect(db.prepare("SELECT n FROM feedback_quota WHERE n > 0").get()).toBeUndefined();
+    db.exec("DROP TRIGGER fail_report");
+    expect((await submit()).status).toBe(201);
+  });
+
+  it("preserves IP, burst, caller and daily refusal precedence in combined states", async () => {
+    quota("ih", 3);
+    db.prepare("INSERT INTO feedback_quota VALUES ('g:2026-10-03',300,'2026-10-03')").run();
+    env.FEEDBACK_BUDGET_LIMITER = { limit: async () => ({ success: false }) } as any;
+    for (const blocked of [false, true]) {
+      if (blocked) block(null);
+      ipAllowed = false;
+      await expectWindow(await submit(), "ip_hourly", HOUR);
+      ipAllowed = true;
+      const burst = await submit();
+      expect(burst.status).toBe(503);
+      expect((await params(burst)).limit).toBe("global_burst");
+      delete env.FEEDBACK_BUDGET_LIMITER;
+      await expectWindow(await submit(), "install_hourly", HOUR);
+      env.FEEDBACK_BUDGET_LIMITER = { limit: async () => ({ success: false }) } as any;
+    }
+  });
+
   it.each([[false, 3], [true, 12]])("enforces the server tier hourly limit (trusted=%s)", async (trusted, limit) => {
     if (trusted) trust();
     for (let i = 0; i < limit; i++) expect((await submit()).status).toBe(201);
@@ -339,6 +421,44 @@ describe("release ledger and administration", () => {
 });
 
 describe("reply neighbourhood", () => {
+  it("refunds reply admission when the storage transaction fails and allows retry", async () => {
+    trust();
+    await act("ask", { body: "Neutral question" });
+    const headers = { "x-install-id": ID, "x-install-token": token };
+    const reply = () => call(`/v1/feedback/${receipt}/reply`, { body: "Neutral reply" }, headers);
+    db.exec("CREATE TRIGGER fail_reply BEFORE INSERT ON feedback_replies BEGIN SELECT RAISE(ABORT, 'fixture'); END");
+    await expect(reply()).rejects.toThrow();
+    expect(db.prepare("SELECT n FROM feedback_quota WHERE n > 0 AND bucket LIKE 'rh:%'").get()).toBeUndefined();
+    expect((db.prepare("SELECT status FROM feedback WHERE receipt = ?").get(receipt) as any).status).toBe("needs_info");
+    db.exec("DROP TRIGGER fail_reply");
+    expect((await reply()).status).toBe(201);
+    expect((db.prepare("SELECT status FROM feedback WHERE receipt = ?").get(receipt) as any).status).toBe("held");
+  });
+
+  it.each([false, true])("preserves byte-identical item-cap refusals after hourly reset (trusted=%s)", async (trusted) => {
+    if (trusted) trust();
+    await act("answer", { body: "Neutral answer" });
+    const headers = { "x-install-id": ID, "x-install-token": token };
+    const reply = () => call(`/v1/feedback/${receipt}/reply`, { body: "Neutral reply" }, headers);
+    for (let i = 0; i < 10; i++) {
+      vi.setSystemTime(new Date(Date.parse(NOW) + i * 3600000));
+      expect((await reply()).status).toBe(201);
+    }
+    vi.setSystemTime(new Date(Date.parse(NOW) + 10 * 3600000));
+    const ordinary = await reply();
+    await expectWindow(ordinary.clone(), "reply_item", null);
+    for (const target of [`install:${hash}`, `ip:${await (await import("./feedback_crypto")).ipHash("fixture-secret", "unknown")}`]) {
+      db.exec("DELETE FROM feedback_blocks");
+      db.prepare("INSERT INTO feedback_blocks VALUES (?, 'fixture', ?, NULL)").run(target, NOW);
+      const blocked = await reply();
+      expect(blocked.status).toBe(ordinary.status);
+      expect(await blocked.text()).toBe(await ordinary.clone().text());
+      expect([...blocked.headers]).toEqual([...ordinary.headers]);
+      expect(blocked.headers.get("retry-after")).toBeNull();
+    }
+    expect((db.prepare("SELECT COUNT(*) AS n FROM feedback_replies WHERE author = 'user'").get() as any).n).toBe(10);
+  });
+
   it("conceals fresh untrusted reply blocks behind the ordinary IP window", async () => {
     await act("answer", { body: "Neutral answer" });
     const headers = { "x-install-id": ID, "x-install-token": token };

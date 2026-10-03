@@ -4,9 +4,9 @@ import { decodeAttachment, deleteAttachments, storeAttachment } from "./feedback
 import { feedbackEnabled, isKnownInstall, tokenMatches } from "./feedback_auth";
 import { readCappedText } from "./feedback_body";
 import { installHash, installToken, ipHash, newReceipt } from "./feedback_crypto";
-import { jsonResponse, refuse, windowDetails } from "./feedback_http";
+import { jsonResponse, refuse } from "./feedback_http";
 import { publicStatus } from "./feedback_read";
-import { admit, concealedLimit, firstBusyOfDay, ipLimited } from "./feedback_quota";
+import { admit, firstBusyOfDay, refund } from "./feedback_quota";
 import { capOverride, isBlocked, isTrusted } from "./feedback_blocks";
 import { challengePassed } from "./feedback_turnstile";
 import { FeedbackSubmit, type FeedbackSubmitInput } from "./feedback_schema";
@@ -26,7 +26,6 @@ import { scrubSensitiveText } from "./scrub";
 
 const RECEIPT_ATTEMPTS = 5;
 const MAX_LINKS_BEFORE_HOLD = 3;
-const RATE_LIMITED_MESSAGE = "submission limit reached";
 
 function scrubEnv(env: FeedbackSubmitInput["env"]): Record<string, string> {
   const out: Record<string, string> = {};
@@ -124,13 +123,6 @@ export async function handleSubmit(request: Request, env: Env): Promise<Response
   };
   const blocked = await isBlocked(env, [`install:${hash}`, `ip:${ipKey}`], now);
   if (!(await challengePassed(env, input.turnstileToken, ip))) return refuse("feedback.challenge_required", "verification required");
-  if (await ipLimited(env, ip, trusted)) return refuse("feedback.rate_limited", RATE_LIMITED_MESSAGE, windowDetails("ip_hourly", now));
-  if (blocked) {
-    return refuse("feedback.rate_limited", RATE_LIMITED_MESSAGE, await concealedLimit(env, { ipKey, installHash: hash }, now, limits));
-  }
-  if (env.FEEDBACK_BUDGET_LIMITER && !(await env.FEEDBACK_BUDGET_LIMITER.limit({ key: "global" })).success) {
-    return refuse("feedback.busy", "feedback is busy, try again later", windowDetails("global_burst", now));
-  }
   const decoded = input.attachments.map(decodeAttachment);
   for (const d of decoded) {
     if (!d.ok) {
@@ -140,20 +132,20 @@ export async function handleSubmit(request: Request, env: Env): Promise<Response
   }
   if (decoded.length > 0 && !env.TELEMETRY_RAW) return refuse("feedback.disabled", "attachments are unavailable");
 
-  const admission = await admit(env, { ipKey, installHash: hash }, now, limits);
-  if (admission.kind === "limited") return refuse("feedback.rate_limited", RATE_LIMITED_MESSAGE, admission.details);
-  if (admission.kind === "busy") {
-    console.error("feedback: global daily cap reached");
-    if (await firstBusyOfDay(env, now)) await sendAlert(env, `Feedback global daily cap (${limits.globalDaily}) reached or reserved for trusted installs; submissions are refused until 00:00 UTC.`);
-    return refuse("feedback.busy", "feedback is busy, try again tomorrow", admission.details);
+  const admission = await admit(env, { ipKey, installHash: hash }, now, { kind: "submit", limits }, blocked, ip);
+  if (admission.kind === "refused") {
+    if (admission.limit === "global_daily") {
+      console.error("feedback: global daily cap reached");
+      if (await firstBusyOfDay(env, now)) await sendAlert(env, `Feedback global daily cap (${limits.globalDaily}) reached or reserved for trusted installs; submissions are refused until 00:00 UTC.`);
+    }
+    return admission.response;
   }
-
-
-  const stored = await storeAll(env, decoded);
+  let stored: StoredAttachment[] = [];
   const body = scrubSensitiveText(input.body);
   const at = new Date().toISOString();
   let outcome: Awaited<ReturnType<typeof insertWithReceipt>>;
   try {
+    stored = await storeAll(env, decoded);
     outcome = await insertWithReceipt(
       env,
       {
@@ -175,10 +167,12 @@ export async function handleSubmit(request: Request, env: Env): Promise<Response
       input.idempotencyKey,
     );
   } catch (err) {
+    await refund(env, admission.buckets);
     if (env.TELEMETRY_RAW) await deleteAttachments(env.TELEMETRY_RAW, stored);
     throw err;
   }
   if (!outcome || "replay" in outcome) {
+    await refund(env, admission.buckets);
     if (env.TELEMETRY_RAW) await deleteAttachments(env.TELEMETRY_RAW, stored);
     if (!outcome) return refuse("feedback.disabled", "could not allocate a receipt");
     return jsonResponse(receiptBody(outcome.replay, token), 200);
