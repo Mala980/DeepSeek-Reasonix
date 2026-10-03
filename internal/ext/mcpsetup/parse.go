@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"reasonix/internal/base/secrets"
 	"reasonix/internal/contract/config"
 )
 
@@ -94,7 +95,7 @@ func risksFor(entries []config.PluginEntry) []Risk {
 		// starts a process (or talks to a host) before judging the credential.
 		if cmd := strings.TrimSpace(e.Command); cmd != "" {
 			out = append(out, Risk{Server: e.Name, Kind: "shell", Field: "command",
-				Detail: strings.TrimSpace(cmd + " " + strings.Join(e.Args, " "))})
+				Detail: strings.TrimSpace(secrets.RedactConfigValue("", cmd) + " " + strings.Join(secrets.RedactArgs(e.Args), " "))})
 		}
 		if u := strings.TrimSpace(e.URL); u != "" {
 			out = append(out, Risk{Server: e.Name, Kind: "unknown-host", Field: "url", Detail: RedactURL(u)})

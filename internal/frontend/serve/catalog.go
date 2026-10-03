@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"reasonix/internal/base/secrets"
 	"reasonix/internal/base/textutil"
 	"reasonix/internal/contract/config"
 	"reasonix/internal/ext/mcpsetup"
@@ -512,13 +513,18 @@ func (s *Server) mcpEnabled(w http.ResponseWriter, r *http.Request) {
 // draftServer is one server a paste resolved to, in the shape the confirmation
 // card reads: what will run, what it will read, and what is risky about it.
 type draftServer struct {
-	Name      string            `json:"name"`
-	Transport string            `json:"transport"`
-	Command   string            `json:"command,omitempty"`
-	Args      []string          `json:"args,omitempty"`
-	URL       string            `json:"url,omitempty"`
-	Env       map[string]string `json:"env,omitempty"`
-	Headers   map[string]string `json:"headers,omitempty"`
+	Name           string            `json:"name"`
+	Transport      string            `json:"transport"`
+	Command        string            `json:"command,omitempty"`
+	Args           []string          `json:"args,omitempty"`
+	URL            string            `json:"url,omitempty"`
+	Env            map[string]string `json:"env,omitempty"`
+	Headers        map[string]string `json:"headers,omitempty"`
+	DisplayURL     string            `json:"displayUrl,omitempty"`
+	DisplayEnv     map[string]string `json:"displayEnv,omitempty"`
+	DisplayHeaders map[string]string `json:"displayHeaders,omitempty"`
+	DisplayCommand string            `json:"displayCommand,omitempty"`
+	DisplayArgs    []string          `json:"displayArgs,omitempty"`
 }
 
 type draftRisk struct {
@@ -549,6 +555,9 @@ func (s *Server) mcpParse(w http.ResponseWriter, r *http.Request) {
 		servers = append(servers, draftServer{
 			Name: e.Name, Transport: transportOf(e), Command: e.Command, Args: e.Args,
 			URL: e.URL, Env: e.Env, Headers: e.Headers,
+			DisplayURL: mcpsetup.RedactURL(e.URL),
+			DisplayEnv: secrets.RedactConfigMap(e.Env), DisplayHeaders: secrets.RedactConfigMap(e.Headers),
+			DisplayCommand: secrets.RedactConfigValue("", e.Command), DisplayArgs: secrets.RedactArgs(e.Args),
 		})
 	}
 	risks := make([]draftRisk, 0, len(draft.Risks))

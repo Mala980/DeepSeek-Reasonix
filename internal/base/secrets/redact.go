@@ -186,6 +186,10 @@ func RedactCredentials(s string) string {
 	if s == "" {
 		return s
 	}
+	s = endpointPattern.ReplaceAllStringFunc(s, func(endpoint string) string {
+		trimmed := strings.TrimRight(endpoint, ":,.)")
+		return RedactEndpoint(trimmed) + endpoint[len(trimmed):]
+	})
 	s = Redact(s)
 	s = credentialContextPattern.ReplaceAllString(s, "${1}${2}****")
 	s = maskedCredentialPattern.ReplaceAllString(s, "****")

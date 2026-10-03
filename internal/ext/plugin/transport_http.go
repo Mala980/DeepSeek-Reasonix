@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 
+	"reasonix/internal/base/secrets"
 	"reasonix/internal/contract/mcpdiag"
 	"reasonix/internal/contract/tool"
 )
@@ -236,7 +237,7 @@ func (t *httpTransport) do(ctx context.Context, body []byte) (*http.Response, er
 func (t *httpTransport) doOAuth(ctx context.Context, body []byte, refreshed bool, modern http.Header) (*http.Response, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, t.url, bytes.NewReader(body))
 	if err != nil {
-		return nil, err
+		return nil, secrets.DiagnosticError(err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json, text/event-stream")
@@ -268,7 +269,7 @@ func (t *httpTransport) doOAuth(ctx context.Context, body []byte, refreshed bool
 	maps.Copy(req.Header, modern)
 	resp, err := t.client.Do(req)
 	if err != nil || refreshed || resp.StatusCode != http.StatusUnauthorized || !usedOAuth || !t.oauth.canRefresh() {
-		return resp, err
+		return resp, secrets.DiagnosticError(err)
 	}
 	_ = resp.Body.Close()
 	if _, _, err := t.oauth.authorizationHeaderAfterReject(ctx, sent); err != nil {

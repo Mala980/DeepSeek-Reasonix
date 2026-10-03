@@ -3,6 +3,7 @@ package installsource
 import (
 	"encoding/json"
 
+	"reasonix/internal/base/secrets"
 	"reasonix/internal/contract/config"
 	"reasonix/internal/ext/pluginpkg"
 )
@@ -189,6 +190,14 @@ func publicActions(in []action) []action {
 	out := make([]action, len(in))
 	for i := range in {
 		out[i] = in[i]
+		out[i].Source = secrets.RedactConfigValue("", in[i].Source)
+		out[i].Target = secrets.RedactConfigValue("", in[i].Target)
+		out[i].URL = secrets.RedactEndpoint(in[i].URL)
+		out[i].Command = secrets.RedactConfigValue("", in[i].Command)
+		out[i].Args = secrets.RedactArgs(in[i].Args)
+		out[i].Env = secrets.RedactConfigMap(in[i].Env)
+		out[i].Headers = secrets.RedactConfigMap(in[i].Headers)
+		out[i].Error = secrets.RedactCredentials(in[i].Error)
 		out[i].entry = config.PluginEntry{}
 		out[i].skill = skillCandidate{}
 		out[i].preparedRoot = ""
@@ -198,6 +207,11 @@ func publicActions(in []action) []action {
 }
 
 func marshalJSON(v any) string {
+	if result, ok := v.(response); ok {
+		result.Source = secrets.RedactConfigValue("", result.Source)
+		result.Error = secrets.RedactCredentials(result.Error)
+		v = result
+	}
 	b, _ := json.Marshal(v)
 	return string(b)
 }

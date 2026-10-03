@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"maps"
 	"os"
 	"path"
 	"path/filepath"
@@ -1162,24 +1161,6 @@ func (p Package) hookRefs() []HookRef {
 				Description: hook.Description,
 			})
 		}
-	}
-	return out
-}
-
-func (p Package) mcpServerRefs() []MCPServerRef {
-	names := slices.Sorted(maps.Keys(p.Manifest.MCPServers))
-	out := make([]MCPServerRef, 0, len(names))
-	for _, name := range names {
-		server := p.Manifest.MCPServers[name]
-		out = append(out, MCPServerRef{
-			Name:        name,
-			DisplayName: firstNonEmpty(strings.TrimSpace(server.DisplayName), name),
-			Description: strings.TrimSpace(server.Description),
-			Transport:   pluginMCPTransport(server),
-			Command:     strings.TrimSpace(server.Command),
-			URL:         strings.TrimSpace(server.URL),
-			AutoStart:   server.AutoStart == nil || *server.AutoStart,
-		})
 	}
 	return out
 }

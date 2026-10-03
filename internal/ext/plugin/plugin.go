@@ -1526,7 +1526,7 @@ func shortNameHash(s string) string {
 }
 
 func summarizeFailureError(err error) string {
-	msg := strings.Join(strings.Fields(secrets.RedactCredentials(err.Error())), " ")
+	msg := strings.Join(strings.Fields(secrets.DiagnosticError(err).Error()), " ")
 	const max = 500
 	if len(msg) > max {
 		msg = msg[:max] + "..."

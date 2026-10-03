@@ -15,6 +15,7 @@ import (
 	"sync"
 	"time"
 
+	"reasonix/internal/base/secrets"
 	"reasonix/internal/contract/tool"
 )
 
@@ -57,7 +58,7 @@ func newSSETransport(ctx context.Context, s Spec) (*sseTransport, error) {
 	}
 	getURL, err := url.Parse(s.URL)
 	if err != nil || getURL.Scheme == "" || getURL.Host == "" {
-		return nil, fmt.Errorf("sse plugin %q: invalid url %q", s.Name, s.URL)
+		return nil, fmt.Errorf("sse plugin %q: invalid url %q", s.Name, secrets.RedactEndpoint(s.URL))
 	}
 	headers := make(map[string]string, len(s.Headers))
 	maps.Copy(headers, s.Headers)
@@ -172,7 +173,7 @@ func (t *sseTransport) handleEvent(eventName, payload string, baseURL *url.URL) 
 		if err == nil {
 			endpoint = baseURL.ResolveReference(endpoint)
 			if !sameHTTPOrigin(baseURL, endpoint) {
-				err = fmt.Errorf("server announced cross-origin endpoint %s", endpoint)
+				err = fmt.Errorf("server announced cross-origin endpoint %s", secrets.RedactEndpoint(endpoint.String()))
 			}
 		}
 		t.setEndpoint(endpoint, err)
@@ -186,7 +187,7 @@ func (t *sseTransport) setEndpoint(endpoint *url.URL, err error) {
 	t.endpointOnce.Do(func() {
 		t.mu.Lock()
 		t.endpoint = endpoint
-		t.endpointErr = err
+		t.endpointErr = secrets.DiagnosticError(err)
 		t.mu.Unlock()
 		close(t.endpointReady)
 		set = true
@@ -342,7 +343,7 @@ func (t *sseTransport) post(ctx context.Context, body []byte) error {
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint.String(), bytes.NewReader(body))
 	if err != nil {
-		return err
+		return secrets.DiagnosticError(err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json, text/event-stream")
@@ -351,7 +352,7 @@ func (t *sseTransport) post(ctx context.Context, body []byte) error {
 	}
 	resp, err := t.client.Do(req)
 	if err != nil {
-		return err
+		return secrets.DiagnosticError(err)
 	}
 	defer resp.Body.Close()
 	responseBody, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
@@ -362,6 +363,7 @@ func (t *sseTransport) post(ctx context.Context, body []byte) error {
 }
 
 func (t *sseTransport) fail(err error) {
+	err = secrets.DiagnosticError(err)
 	t.endpointOnce.Do(func() {
 		t.mu.Lock()
 		t.endpointErr = err
@@ -372,6 +374,7 @@ func (t *sseTransport) fail(err error) {
 }
 
 func (t *sseTransport) failPending(err error) {
+	err = secrets.DiagnosticError(err)
 	t.mu.Lock()
 	if t.readErr == nil {
 		t.readErr = err

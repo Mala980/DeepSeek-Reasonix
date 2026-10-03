@@ -14,6 +14,8 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+
+	"reasonix/internal/base/secrets"
 )
 
 // ExportSizeLimit caps the packed bytes. A plugin root is arbitrary user
@@ -159,6 +161,22 @@ func stripNode(node any, scope string, required map[string]bool) {
 	}
 	for key, value := range obj {
 		switch key {
+		case "url":
+			if endpoint, ok := value.(string); ok {
+				obj[key] = secrets.RedactEndpoint(endpoint)
+			}
+		case "args":
+			if args, ok := value.([]any); ok {
+				text := make([]string, len(args))
+				for i, arg := range args {
+					text[i], _ = arg.(string)
+				}
+				for i, arg := range secrets.RedactArgs(text) {
+					if _, ok := args[i].(string); ok {
+						args[i] = arg
+					}
+				}
+			}
 		case "mcpServers":
 			servers, ok := value.(map[string]any)
 			if !ok {

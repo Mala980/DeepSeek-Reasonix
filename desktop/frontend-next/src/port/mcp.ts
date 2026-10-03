@@ -87,6 +87,11 @@ export interface McpDraftServer {
   url?: string;
   env?: Record<string, string>;
   headers?: Record<string, string>;
+  displayUrl?: string;
+  displayEnv?: Record<string, string>;
+  displayHeaders?: Record<string, string>;
+  displayCommand?: string;
+  displayArgs?: string[];
 }
 
 // What the confirmation card must show: shell is the command that will run,
