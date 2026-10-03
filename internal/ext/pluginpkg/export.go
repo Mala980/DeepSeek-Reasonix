@@ -161,6 +161,10 @@ func stripNode(node any, scope string, required map[string]bool) {
 	}
 	for key, value := range obj {
 		switch key {
+		case "command":
+			if command, ok := value.(string); ok {
+				obj[key] = secrets.RedactConfigValue("", command)
+			}
 		case "url":
 			if endpoint, ok := value.(string); ok {
 				obj[key] = secrets.RedactEndpoint(endpoint)

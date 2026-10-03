@@ -109,6 +109,7 @@ func sameHTTPOrigin(a, b *url.URL) bool {
 }
 
 func (t *httpTransport) call(ctx context.Context, method string, params any) (result json.RawMessage, err error) {
+	defer func() { err = secrets.DiagnosticError(err) }()
 	id := t.nextRequestID()
 	body, err := json.Marshal(rpcRequest{JSONRPC: "2.0", ID: id, Method: method, Params: params})
 	if err != nil {

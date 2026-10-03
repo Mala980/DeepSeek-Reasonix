@@ -18,6 +18,7 @@ import (
 	"sort"
 	"strings"
 
+	"reasonix/internal/base/secrets"
 	"reasonix/internal/contract/config"
 	"reasonix/internal/contract/tool"
 	"reasonix/internal/ext/pluginpkg"
@@ -166,7 +167,8 @@ func (*Tool) Schema() json.RawMessage {
 // Execute parses args, plans, and (if apply=true and Approval allows)
 // performs the writes. JSON output is always returned on success even when
 // the plan is empty, so the model can read structured `next` hints.
-func (t *Tool) Execute(ctx context.Context, raw json.RawMessage) (string, error) {
+func (t *Tool) Execute(ctx context.Context, raw json.RawMessage) (output string, err error) {
+	defer func() { err = secrets.DiagnosticError(err) }()
 	var req request
 	if err := json.Unmarshal(raw, &req); err != nil {
 		return "", fmt.Errorf("install_source: invalid args: %w", err)
@@ -208,9 +210,8 @@ func (t *Tool) Execute(ctx context.Context, raw json.RawMessage) (string, error)
 		}
 		return "", err
 	}
-	// Marketplace planning may keep one temporary clone alive so apply can
-	// reuse the exact approved snapshot. Clean it on every exit path, including
-	// plan-ID mismatch or host approval denial before executeApply runs.
+	// Marketplace apply reuses the approved snapshot; release its temporary clone
+	// even when approval or plan-ID validation refuses the operation.
 	defer cleanupActionResources(actions)
 	if err := checkExpectedDigest(req.ExpectDigest, actions); err != nil {
 		return "", err
@@ -617,13 +618,9 @@ func (t *Tool) resolvePath(p string) string {
 	return filepath.Clean(p)
 }
 
-// computePlanID hashes the request plus the full public action set so a later
-// apply call with the same planId can be verified to be approving exactly the
-// same plan. It intentionally excludes Apply and PlanID; everything that changes
-// what will be written/connected must live either in req's planning fields or in
-// the action DTO.
+// Approval binds operational material; display projection must never collapse distinct credentials.
 func computePlanID(req request, actions []action) string {
-	public := publicActions(actions)
+	public := append([]action(nil), actions...)
 	sort.Slice(public, func(i, j int) bool {
 		return actionPlanKey(public[i]) < actionPlanKey(public[j])
 	})

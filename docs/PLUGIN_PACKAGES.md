@@ -221,8 +221,10 @@ Expand a plugin row to manage it:
 - **Export** packages the plugin for sharing, with credentials stripped.
 - **Remove** uninstalls the package after confirmation.
 
-MCP displays mask userinfo and credential query/fragment values; parse errors
-display `<redacted>`.
+MCP displays mask userinfo, credential query/fragment values, credential path
+suffixes, and opaque fragments. Credential-bearing or uncertain shell text is
+hidden in display; operational install values remain intact. Parse errors redact
+input values. Approval tickets bind operational credentials before projection.
 
 | Surface | Values |
 | --- | --- |

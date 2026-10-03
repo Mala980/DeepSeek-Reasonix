@@ -44,7 +44,7 @@ func Parse(input string) (Draft, error) {
 		entries, err = parseCommandLine(stripShellPrompt(trimmed))
 	}
 	if err != nil {
-		return Draft{}, err
+		return Draft{}, secrets.DiagnosticError(err)
 	}
 	for i := range entries {
 		if strings.TrimSpace(entries[i].Name) == "" {

@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"reasonix/internal/base/secrets"
 	"reasonix/internal/contract/config"
 )
 
@@ -14,7 +15,8 @@ import (
 //	-- npx -y chrome-devtools-mcp@latest      (name derived from the package)
 //	https://example.com/mcp                   (name derived from the host)
 //	<name> [command...|--http URL] [--env K=V] [--header K=V]
-func ParseArgs(args []string) (config.PluginEntry, error) {
+func ParseArgs(args []string) (entry config.PluginEntry, err error) {
+	defer func() { err = secrets.DiagnosticError(err) }()
 	var e config.PluginEntry
 	if len(args) == 0 {
 		return e, fmt.Errorf("mcp add: missing server name, command, or URL")
@@ -113,7 +115,7 @@ func applyFlags(e *config.PluginEntry, rest []string) error {
 func putPair(dst *map[string]string, flag, pair string) error {
 	k, v, ok := strings.Cut(pair, "=")
 	if !ok || strings.TrimSpace(k) == "" {
-		return fmt.Errorf("mcp add: %s expects KEY=VALUE, got %q", flag, pair)
+		return fmt.Errorf("mcp add: %s expects KEY=VALUE, got %q", flag, secrets.EndpointRedacted)
 	}
 	if *dst == nil {
 		*dst = map[string]string{}
@@ -146,6 +148,7 @@ func NameFromURL(raw string) string {
 // NameFromArgv derives a server name from the command that starts it, looking
 // through the runner (npx/uvx/python -m/…) to the package it actually launches.
 func NameFromArgv(command string, args []string) string {
+	args = secrets.RedactArgs(args)
 	runner := strings.TrimSuffix(strings.TrimSuffix(strings.TrimSuffix(strings.ToLower(filepath.Base(command)), ".exe"), ".cmd"), ".bat")
 	candidate := command
 	switch runner {
@@ -167,6 +170,9 @@ func NameFromArgv(command string, args []string) string {
 				candidate = operand
 			}
 		}
+	}
+	if candidate == secrets.EndpointRedacted || secrets.RedactConfigValue("", candidate) != candidate {
+		return "mcp-server"
 	}
 	base := filepath.Base(candidate)
 	if runner == "uvx" {

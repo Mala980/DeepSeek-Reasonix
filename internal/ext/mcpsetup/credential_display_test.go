@@ -28,7 +28,7 @@ func TestEndpointDisplayFailsClosed(t *testing.T) {
 			}
 		})
 	}
-	for _, raw := range []string{"https://[::1]:8443/mcp?author=neutral", "https://host/mcp?token=", "https://host/mcp#section"} {
+	for _, raw := range []string{"https://[::1]:8443/mcp?author=neutral", "https://host/mcp?token="} {
 		if got := RedactURL(raw); got != raw {
 			t.Errorf("safe endpoint changed: %q -> %q", raw, got)
 		}

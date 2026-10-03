@@ -3,6 +3,7 @@ package serve
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 	"net/http/httptest"
 	"path/filepath"
 	"strings"
@@ -29,7 +30,7 @@ func TestMCPPreviewSeparatesDisplayFromInstallValues(t *testing.T) {
 	input := `{"mcpServers":{"neutral":{"url":"https://host/mcp?%74oken=fixture-secret","env":{"PASSWORD":"fixture-secret"},"headers":{"Authorization":"fixture-secret"}}}}`
 	body, _ := json.Marshal(map[string]string{"input": input})
 	w := httptest.NewRecorder()
-	New(ctrl, NewBroadcaster(), config.ServeConfig{}).mcpParse(w, httptest.NewRequest("POST", "/mcp/parse", strings.NewReader(string(body))))
+	New(ctrl, NewBroadcaster(), config.ServeConfig{}).mcpParse(w, httptest.NewRequest(http.MethodPost, "/mcp/parse", strings.NewReader(string(body))))
 	var response struct {
 		Servers []map[string]any `json:"servers"`
 	}
@@ -52,6 +53,42 @@ func TestMCPPreviewSeparatesDisplayFromInstallValues(t *testing.T) {
 		b, _ := json.Marshal(value)
 		if strings.Contains(string(b), "fixture-secret") {
 			t.Errorf("%s leaked", key)
+		}
+	}
+	for _, input := range []string{
+		"https://host/token/fixturesecret",
+		"https://host/mcp#fixturesecret",
+		"node --header 'Authorization: Bearer fixturesecret'",
+		"node -e KEY=fixturesecret",
+		`{"mcpServers":{"neutral":{"command":"node --header 'Authorization: Bearer fixturesecret'"}}}`,
+		"reasonix mcp add neutral --http https://host/mcp --header 'Authorization: Bearer fixturesecret'",
+	} {
+		body, _ := json.Marshal(map[string]string{"input": input})
+		w := httptest.NewRecorder()
+		New(ctrl, NewBroadcaster(), config.ServeConfig{}).mcpParse(w, httptest.NewRequest(http.MethodPost, "/mcp/parse", strings.NewReader(string(body))))
+		if w.Code == 400 {
+			if strings.Contains(w.Body.String(), "fixturesecret") {
+				t.Fatalf("refusal leaked: %s", w.Body.String())
+			}
+			continue
+		}
+		var wire map[string]any
+		if err := json.Unmarshal(w.Body.Bytes(), &wire); err != nil {
+			t.Fatal(err)
+		}
+		for _, row := range wire["servers"].([]any) {
+			server := row.(map[string]any)
+			operational, _ := json.Marshal([]any{server["url"], server["command"], server["args"]})
+			if !strings.Contains(string(operational), "fixturesecret") {
+				t.Fatal("operational credential lost")
+			}
+			for _, key := range []string{"url", "command", "args", "env", "headers"} {
+				delete(server, key)
+			}
+		}
+		display, _ := json.Marshal(wire)
+		if strings.Contains(string(display), "fixturesecret") {
+			t.Fatalf("preview leaked: %s", display)
 		}
 	}
 }

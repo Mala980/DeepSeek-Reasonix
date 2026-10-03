@@ -1,14 +1,17 @@
 package secrets
 
 import (
+	"errors"
 	"net/url"
 	"regexp"
 	"strings"
+
+	"reasonix/internal/base/shellparse"
 )
 
 const EndpointRedacted = "<redacted>"
 
-var endpointPattern = regexp.MustCompile(`(?i)[a-z][a-z0-9+.-]*://[^\s"'<>]+`)
+var endpointPattern = regexp.MustCompile(`(?i)[a-z][a-z0-9+.-]*://[^\s<>]+`)
 var endpointSchemePattern = regexp.MustCompile(`(?i)^[a-z][a-z0-9+.-]*://`)
 
 func CredentialKey(key string) bool {
@@ -44,19 +47,33 @@ func RedactEndpoint(raw string) string {
 	}
 	changed := u.User != nil
 	u.User = nil
+	segments := strings.Split(u.Path, "/")
+	for i, segment := range segments {
+		if EndpointQueryKey(segment) && i+1 < len(segments) {
+			u.Path = strings.Join(segments[:i+1], "/") + "/" + EndpointRedacted
+			u.RawPath = ""
+			changed = true
+			break
+		}
+	}
 	if redactEndpointQuery(query) {
 		u.RawQuery = query.Encode()
 		changed = true
 	}
 	if u.Fragment != "" {
-		fragment, err := url.ParseQuery(u.Fragment)
-		if err != nil {
-			return EndpointRedacted
-		}
-		if redactEndpointQuery(fragment) {
-			u.Fragment = fragment.Encode()
-			u.RawFragment = ""
+		if !strings.Contains(u.Fragment, "=") {
+			u.Fragment, u.RawFragment = EndpointRedacted, ""
 			changed = true
+		} else {
+			fragment, err := url.ParseQuery(u.Fragment)
+			if err != nil {
+				return EndpointRedacted
+			}
+			if redactEndpointQuery(fragment) {
+				u.Fragment = fragment.Encode()
+				u.RawFragment = ""
+				changed = true
+			}
 		}
 	}
 	if !changed {
@@ -82,8 +99,10 @@ func redactEndpointQuery(query url.Values) bool {
 }
 
 func CredentialValue(value string) bool {
-	key, _, assignment := strings.Cut(strings.TrimSpace(value), "=")
-	return (assignment && CredentialKey(key)) || strings.HasPrefix(strings.ToLower(strings.TrimSpace(value)), "bearer ")
+	trimmed := strings.TrimSpace(value)
+	key, _, assignment := strings.Cut(trimmed, "=")
+	header, _, colon := strings.Cut(trimmed, ":")
+	return (assignment && CredentialKey(key)) || (colon && CredentialKey(header)) || strings.HasPrefix(strings.ToLower(trimmed), "bearer ") || strings.HasPrefix(strings.ToLower(trimmed), "basic ")
 }
 
 func RedactConfigValue(key, value string) string {
@@ -93,7 +112,22 @@ func RedactConfigValue(key, value string) string {
 	if endpointSchemePattern.MatchString(strings.TrimSpace(value)) {
 		return RedactEndpoint(value)
 	}
-	return endpointPattern.ReplaceAllStringFunc(value, RedactEndpoint)
+	projected := endpointPattern.ReplaceAllStringFunc(value, RedactEndpoint)
+	if strings.ContainsAny(projected, " \t\n") {
+		command, err := shellparse.ParseStaticCommand(projected, shellparse.StaticCommandPolicy{})
+		if err != nil {
+			return EndpointRedacted
+		}
+		if len(command.Argv) > 1 {
+			args := RedactArgs(command.Argv)
+			for i := range args {
+				if args[i] != command.Argv[i] {
+					return EndpointRedacted
+				}
+			}
+		}
+	}
+	return projected
 }
 
 func RedactConfigMap(fields map[string]string) map[string]string {
@@ -110,8 +144,15 @@ func RedactConfigMap(fields map[string]string) map[string]string {
 func RedactArgs(args []string) []string {
 	out := append([]string(nil), args...)
 	for i := 0; i < len(out); i++ {
+		if strings.ContainsAny(out[i], " \t\n") {
+			projected := RedactConfigValue("", out[i])
+			if projected != out[i] {
+				out[i] = projected
+				continue
+			}
+		}
 		key, value, inline := strings.Cut(out[i], "=")
-		carrier := key == "-H" || key == "--header" || key == "--headers" || key == "--env"
+		carrier := key == "-H" || key == "--header" || key == "--headers" || key == "--env" || key == "-e"
 		if carrier || (strings.HasPrefix(key, "-") && EndpointQueryKey(strings.TrimLeft(key, "-"))) {
 			if inline {
 				out[i] = key + "=" + EndpointRedacted
@@ -137,7 +178,8 @@ func RedactArgs(args []string) []string {
 type diagnosticError struct{ cause error }
 
 func (e diagnosticError) Error() string {
-	if endpoint, ok := e.cause.(*url.Error); ok {
+	var endpoint *url.Error
+	if errors.As(e.cause, &endpoint) {
 		copy := *endpoint
 		copy.URL = RedactEndpoint(endpoint.URL)
 		copy.Err = DiagnosticError(endpoint.Err)
