@@ -91,6 +91,18 @@ Installed plugin state is stored in:
 ~/.reasonix/plugins/<name>/
 ```
 
+On Windows, copied replacements are validated in a fresh sibling directory
+under `plugins/`, then published by updating the package's recorded `root`.
+
+Directory watches from another process cannot block a rename of the old tree
+because that tree is left intact. Failed publication discards the new copy.
+Use the recorded root to locate the active version after an update.
+
+Previous Windows copies remain on disk so processes still using them keep a
+complete version. Removal deletes the active copy; retained copies require
+manual cleanup after every process using or watching them has stopped.
+An external lock on the package state file can still prevent publication.
+
 ### Manage From CLI
 
 List installed plugins:
