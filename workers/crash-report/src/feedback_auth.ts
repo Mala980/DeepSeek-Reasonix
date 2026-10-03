@@ -1,6 +1,6 @@
 import type { Env } from "./env";
 import { constantTimeEqual, installHash, installToken, ipHash } from "./feedback_crypto";
-import { refuse } from "./feedback_http";
+import { refuse, windowDetails } from "./feedback_http";
 import { take } from "./feedback_quota";
 
 // Endpoints stay off until both secrets exist, so a half-configured deploy never
@@ -42,8 +42,9 @@ export async function requireAdmin(request: Request, env: Env): Promise<Response
   const header = request.headers.get("authorization") ?? "";
   const presented = header.startsWith("Bearer ") ? header.slice(7) : "";
   if (!presented) return refuse("feedback.unauthorized", "admin token missing or invalid");
-  const { bucket, day } = await lockoutBucket(request, env, new Date());
-  if (!(await take(env, bucket, day, LOCKOUT_FAILURES))) return refuse("feedback.rate_limited", "too many failed attempts, try again later");
+  const now = new Date();
+  const { bucket, day } = await lockoutBucket(request, env, now);
+  if (!(await take(env, bucket, day, LOCKOUT_FAILURES))) return refuse("feedback.rate_limited", "too many failed attempts, try again later", windowDetails("admin_attempts", now));
   if (env.FEEDBACK_ADMIN_TOKEN && (await constantTimeEqual(presented, env.FEEDBACK_ADMIN_TOKEN))) {
     await env.DB.prepare("UPDATE feedback_quota SET n = n - 1 WHERE bucket = ? AND n > 0").bind(bucket).run();
     return null;

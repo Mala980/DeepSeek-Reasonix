@@ -3,11 +3,11 @@ import { sendAlert } from "./alert";
 import { decodeAttachment, deleteAttachments, storeAttachment } from "./feedback_attachments";
 import { feedbackEnabled, tokenMatches } from "./feedback_auth";
 import { readCappedText } from "./feedback_body";
-import { installHash, installToken, ipHash, ipPrefix, newReceipt } from "./feedback_crypto";
-import { jsonResponse, refuse } from "./feedback_http";
+import { installHash, installToken, ipHash, newReceipt } from "./feedback_crypto";
+import { jsonResponse, refuse, windowDetails } from "./feedback_http";
 import { publicStatus } from "./feedback_read";
-import { admit, firstBusyOfDay } from "./feedback_quota";
-import { blockKey, capOverride, isBlocked, isTrusted } from "./feedback_blocks";
+import { admit, concealedLimit, firstBusyOfDay, ipLimited } from "./feedback_quota";
+import { capOverride, isBlocked, isTrusted } from "./feedback_blocks";
 import { challengePassed } from "./feedback_turnstile";
 import { FeedbackSubmit, type FeedbackSubmitInput } from "./feedback_schema";
 import {
@@ -17,6 +17,8 @@ import {
   PER_INSTALL_DAILY,
   PER_INSTALL_HOURLY,
   PER_IP_HOURLY,
+  TRUSTED_PER_INSTALL_HOURLY,
+  TRUSTED_PER_INSTALL_DAILY,
   type FeedbackRow,
   type StoredAttachment,
 } from "./feedback_types";
@@ -115,12 +117,23 @@ export async function handleSubmit(request: Request, env: Env): Promise<Response
   }
   // Only a new submission meets the block, after the replay and token answers a
   // blocked install gets exactly as an unblocked one would.
-  if (await isBlocked(env, [`install:${hash}`, `ip:${ipKey}`], new Date())) return refuse("feedback.rate_limited", RATE_LIMITED_MESSAGE);
-  if (!(await challengePassed(env, input.turnstileToken, ip))) return refuse("feedback.challenge_required", "verification required");
-
-  if (env.FEEDBACK_LIMITER && !(await env.FEEDBACK_LIMITER.limit({ key: ipPrefix(ip) })).success) return refuse("feedback.rate_limited", RATE_LIMITED_MESSAGE);
+  const now = new Date();
+  const trusted = await isTrusted(env, hash, now);
+  const limits = {
+    trusted,
+    globalDaily: (await capOverride(env)) ?? GLOBAL_DAILY,
+    ipHourly: PER_IP_HOURLY,
+    installHourly: trusted ? TRUSTED_PER_INSTALL_HOURLY : PER_INSTALL_HOURLY,
+    installDaily: trusted ? TRUSTED_PER_INSTALL_DAILY : PER_INSTALL_DAILY,
+  };
+  const blocked = await isBlocked(env, [`install:${hash}`, `ip:${ipKey}`], now);
+  if (!blocked && !(await challengePassed(env, input.turnstileToken, ip))) return refuse("feedback.challenge_required", "verification required");
+  if (await ipLimited(env, ip, trusted)) return refuse("feedback.rate_limited", RATE_LIMITED_MESSAGE, windowDetails("ip_hourly", now));
+  if (blocked) {
+    return refuse("feedback.rate_limited", RATE_LIMITED_MESSAGE, await concealedLimit(env, { ipKey, installHash: hash }, now, limits));
+  }
   if (env.FEEDBACK_BUDGET_LIMITER && !(await env.FEEDBACK_BUDGET_LIMITER.limit({ key: "global" })).success) {
-    return refuse("feedback.busy", "feedback is busy, try again later");
+    return refuse("feedback.busy", "feedback is busy, try again later", windowDetails("global_burst", now));
   }
   const decoded = input.attachments.map(decodeAttachment);
   for (const d of decoded) {
@@ -131,20 +144,12 @@ export async function handleSubmit(request: Request, env: Env): Promise<Response
   }
   if (decoded.length > 0 && !env.TELEMETRY_RAW) return refuse("feedback.disabled", "attachments are unavailable");
 
-  const trusted = await isTrusted(env, hash);
-  const cap = (await capOverride(env)) ?? GLOBAL_DAILY;
-  const admission = await admit(env, { ipKey, installHash: hash }, new Date(), {
-    trusted,
-    globalDaily: cap,
-    ipHourly: PER_IP_HOURLY,
-    installHourly: PER_INSTALL_HOURLY,
-    installDaily: PER_INSTALL_DAILY,
-  });
-  if (admission === "limited") return refuse("feedback.rate_limited", RATE_LIMITED_MESSAGE);
-  if (admission === "busy") {
+  const admission = await admit(env, { ipKey, installHash: hash }, now, limits);
+  if (admission.kind === "limited") return refuse("feedback.rate_limited", RATE_LIMITED_MESSAGE, admission.details);
+  if (admission.kind === "busy") {
     console.error("feedback: global daily cap reached");
-    if (await firstBusyOfDay(env, new Date())) await sendAlert(env, `Feedback global daily cap (${cap}) reached or reserved for trusted installs; submissions are refused until 00:00 UTC.`);
-    return refuse("feedback.busy", "feedback is busy, try again tomorrow");
+    if (await firstBusyOfDay(env, now)) await sendAlert(env, `Feedback global daily cap (${limits.globalDaily}) reached or reserved for trusted installs; submissions are refused until 00:00 UTC.`);
+    return refuse("feedback.busy", "feedback is busy, try again tomorrow", admission.details);
   }
 
 
