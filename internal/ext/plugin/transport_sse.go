@@ -115,11 +115,11 @@ func (t *sseTransport) readLoop() {
 	defer resp.Body.Close()
 	if resp.StatusCode/100 != 2 {
 		body, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
-		t.fail(fmt.Errorf("GET %s: %w", t.getURL, &httpStatusError{Status: resp.StatusCode, Detail: strings.TrimSpace(string(body))}))
+		t.fail(fmt.Errorf("GET %s: %w", secrets.RedactEndpoint(t.getURL.String()), &httpStatusError{Status: resp.StatusCode, BodyBytes: len(body)}))
 		return
 	}
 	if !strings.HasPrefix(strings.ToLower(resp.Header.Get("Content-Type")), "text/event-stream") {
-		t.fail(fmt.Errorf("GET %s: expected text/event-stream, got %q", t.getURL, resp.Header.Get("Content-Type")))
+		t.fail(errSSEContentType)
 		return
 	}
 
@@ -173,7 +173,7 @@ func (t *sseTransport) handleEvent(eventName, payload string, baseURL *url.URL) 
 		if err == nil {
 			endpoint = baseURL.ResolveReference(endpoint)
 			if !sameHTTPOrigin(baseURL, endpoint) {
-				err = fmt.Errorf("server announced cross-origin endpoint %s", secrets.RedactEndpoint(endpoint.String()))
+				err = errSSECrossOrigin
 			}
 		}
 		t.setEndpoint(endpoint, err)
@@ -334,6 +334,8 @@ func (t *sseTransport) waitEndpoint(ctx context.Context) error {
 }
 
 var errSSEEndpointMissing = errors.New("SSE stream ended before announcing an endpoint")
+var errSSEContentType = errors.New("SSE response has an unexpected content type")
+var errSSECrossOrigin error = hostDiagnosticCause("server announced a cross-origin endpoint")
 
 func (t *sseTransport) post(ctx context.Context, body []byte) error {
 	t.mu.Lock()
@@ -358,7 +360,7 @@ func (t *sseTransport) post(ctx context.Context, body []byte) error {
 	defer resp.Body.Close()
 	responseBody, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
 	if resp.StatusCode/100 != 2 {
-		return &httpStatusError{Status: resp.StatusCode, Detail: strings.TrimSpace(string(responseBody))}
+		return &httpStatusError{Status: resp.StatusCode, BodyBytes: len(responseBody)}
 	}
 	return nil
 }

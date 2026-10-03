@@ -204,7 +204,7 @@ func (t *Tool) Execute(ctx context.Context, raw json.RawMessage) (output string,
 			return marshalJSON(response{
 				OK: false, Status: "blocked", Op: req.Op, Applied: false,
 				Source: req.Source, Kind: "plugin", Scope: req.Scope, Mode: req.Mode,
-				Warnings: warnings, Error: err.Error(),
+				Warnings: warnings, failure: err,
 				Next: "Choose a plugin that exports a supported skill, command, agent, hook, or MCP server.",
 			}), nil
 		}
@@ -299,7 +299,7 @@ func (t *Tool) executeApply(ctx context.Context, req request, actions []action, 
 		if err := t.apply(ctx, req, &actions[i]); err != nil {
 			ok = false
 			actions[i].Status = "failed"
-			actions[i].Error = err.Error()
+			actions[i].failure = err
 			if actions[i].Next == "" {
 				actions[i].Next = nextForError(err)
 			}
@@ -388,7 +388,7 @@ func (t *Tool) executeUninstall(req request) string {
 		if err := t.apply(context.Background(), req, &actions[i]); err != nil {
 			ok = false
 			actions[i].Status = "failed"
-			actions[i].Error = err.Error()
+			actions[i].failure = err
 			actions[i].Next = "Inspect the error, then retry op=uninstall."
 			continue
 		}

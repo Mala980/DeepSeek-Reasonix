@@ -1,79 +1,99 @@
 package secrets
 
 import (
-	"errors"
 	"net/url"
-	"regexp"
 	"strings"
+	"unicode"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/unicode/norm"
 	"reasonix/internal/base/shellparse"
 )
 
 const EndpointRedacted = "<redacted>"
-
-var endpointPattern = regexp.MustCompile(`(?i)[a-z][a-z0-9+.-]*://[^\s<>]+`)
-var endpointSchemePattern = regexp.MustCompile(`(?i)^[a-z][a-z0-9+.-]*://`)
+const projectionDepth = 32
 
 func CredentialKey(key string) bool {
-	key = strings.ToLower(strings.TrimSpace(key))
-	if EnvKeySensitive(key) {
-		return true
+	for depth := 0; ; depth++ {
+		if depth >= projectionDepth {
+			return true
+		}
+		decoded, err := url.QueryUnescape(key)
+		if err != nil {
+			return true
+		}
+		if decoded == key {
+			break
+		}
+		key = decoded
 	}
-	for _, part := range strings.FieldsFunc(key, func(r rune) bool { return r == '_' || r == '-' || r == '.' }) {
+	runes := []rune(norm.NFKC.String(key))
+	var normalized strings.Builder
+	for i, r := range runes {
+		if unicode.IsUpper(r) && i > 0 && (unicode.IsLower(runes[i-1]) || (i+1 < len(runes) && unicode.IsLower(runes[i+1]))) {
+			normalized.WriteByte(' ')
+		}
+		normalized.WriteRune(r)
+	}
+	folded := cases.Fold().String(normalized.String())
+	if folded == "pwd" || folded == "oldpwd" {
+		return false
+	}
+	for _, part := range strings.FieldsFunc(folded, func(r rune) bool { return !unicode.IsLetter(r) && !unicode.IsDigit(r) }) {
 		switch part {
-		case "auth", "authorization", "bearer", "credential", "credentials", "cookie", "apikey", "signature", "sig":
+		case "token", "password", "passwd", "pwd", "secret", "key", "auth", "authorization", "credential", "credentials", "signature", "sig", "session", "cookie", "bearer", "jwt", "apikey", "access", "private":
 			return true
 		}
 	}
 	return false
 }
 
-func EndpointQueryKey(key string) bool {
-	return strings.EqualFold(strings.TrimSpace(key), "key") || CredentialKey(key)
-}
+func RedactEndpoint(raw string) string { return projectEndpoint(raw, 0) }
 
-// RedactEndpoint fails closed because a partial parse cannot establish which bytes are credentials.
-func RedactEndpoint(raw string) string {
+func projectEndpoint(raw string, depth int) string {
 	if strings.TrimSpace(raw) == "" || raw == EndpointRedacted {
 		return raw
 	}
-	u, err := url.Parse(strings.TrimSpace(raw))
-	if err != nil || u.Host == "" || u.Scheme == "" || u.Opaque != "" {
+	if depth >= projectionDepth {
 		return EndpointRedacted
 	}
-	query, err := url.ParseQuery(u.RawQuery)
-	if err != nil {
+	u, err := url.Parse(strings.TrimSpace(raw))
+	if err != nil || u.Host == "" || u.Scheme == "" || u.Opaque != "" {
 		return EndpointRedacted
 	}
 	changed := u.User != nil
 	u.User = nil
 	segments := strings.Split(u.Path, "/")
 	for i, segment := range segments {
-		if EndpointQueryKey(segment) && i+1 < len(segments) {
+		if CredentialKey(segment) && i+1 < len(segments) {
 			u.Path = strings.Join(segments[:i+1], "/") + "/" + EndpointRedacted
 			u.RawPath = ""
 			changed = true
 			break
 		}
 	}
-	if redactEndpointQuery(query) {
-		u.RawQuery = query.Encode()
+	query, ok := projectQuery(u.RawQuery, depth+1)
+	if !ok {
+		return EndpointRedacted
+	}
+	if query != u.RawQuery {
+		u.RawQuery = query
 		changed = true
 	}
 	if u.Fragment != "" {
-		if !strings.Contains(u.Fragment, "=") {
-			u.Fragment, u.RawFragment = EndpointRedacted, ""
-			changed = true
-		} else {
-			fragment, err := url.ParseQuery(u.Fragment)
-			if err != nil {
+		fragment := EndpointRedacted
+		if strings.Contains(u.Fragment, "=") {
+			fragment, ok = projectQuery(u.Fragment, depth+1)
+			if !ok {
 				return EndpointRedacted
 			}
-			if redactEndpointQuery(fragment) {
-				u.Fragment = fragment.Encode()
-				u.RawFragment = ""
-				changed = true
-			}
+		} else if strings.Contains(u.Fragment, "://") {
+			fragment = projectEndpoint(u.Fragment, depth+1)
+		}
+		if fragment != u.Fragment {
+			u.Fragment = fragment
+			u.RawFragment = ""
+			changed = true
 		}
 	}
 	if !changed {
@@ -82,52 +102,105 @@ func RedactEndpoint(raw string) string {
 	return u.String()
 }
 
-func redactEndpointQuery(query url.Values) bool {
+func projectQuery(raw string, depth int) (string, bool) {
+	if raw == "" {
+		return raw, true
+	}
+	if depth >= projectionDepth {
+		return EndpointRedacted, true
+	}
+	query, err := url.ParseQuery(raw)
+	if err != nil {
+		return "", false
+	}
 	changed := false
+	out := make(url.Values, len(query))
 	for key, values := range query {
-		if !EndpointQueryKey(key) {
-			continue
-		}
-		for i, value := range values {
-			if value != "" && value != EndpointRedacted {
-				values[i] = EndpointRedacted
-				changed = true
+		projectedKey := projectValue(key, depth+1)
+		for _, value := range values {
+			projected := EndpointRedacted
+			if !CredentialKey(key) {
+				projected = projectValue(value, depth+1)
 			}
+			if value == "" {
+				projected = ""
+			}
+			changed = changed || projected != value || projectedKey != key
+			out[projectedKey] = append(out[projectedKey], projected)
 		}
 	}
-	return changed
+	if !changed {
+		return raw, true
+	}
+	return out.Encode(), true
 }
 
-func CredentialValue(value string) bool {
-	trimmed := strings.TrimSpace(value)
-	key, _, assignment := strings.Cut(trimmed, "=")
-	header, _, colon := strings.Cut(trimmed, ":")
-	return (assignment && CredentialKey(key)) || (colon && CredentialKey(header)) || strings.HasPrefix(strings.ToLower(trimmed), "bearer ") || strings.HasPrefix(strings.ToLower(trimmed), "basic ")
-}
+func CredentialValue(value string) bool { return RedactConfigValue("", value) != value }
 
 func RedactConfigValue(key, value string) string {
-	if CredentialKey(key) || CredentialValue(value) {
+	if CredentialKey(key) {
 		return EndpointRedacted
 	}
-	if endpointSchemePattern.MatchString(strings.TrimSpace(value)) && !strings.ContainsAny(strings.TrimSpace(value), " \t\n\r\f") {
-		return RedactEndpoint(value)
+	return projectValue(value, 0)
+}
+
+func projectValue(value string, depth int) string {
+	if value == "" || value == EndpointRedacted {
+		return value
 	}
-	projected := endpointPattern.ReplaceAllStringFunc(value, RedactEndpoint)
-	if strings.ContainsAny(projected, " \t\n") {
-		command, err := shellparse.ParseStaticCommand(projected, shellparse.StaticCommandPolicy{})
+	if depth >= projectionDepth {
+		return EndpointRedacted
+	}
+	trimmed := strings.TrimSpace(value)
+	if strings.Contains(trimmed, "://") && !strings.ContainsFunc(trimmed, unicode.IsSpace) && strings.Index(trimmed, "://") < strings.Index(trimmed+"=", "=") {
+		return projectEndpoint(value, depth+1)
+	}
+	if key, nested, ok := strings.Cut(trimmed, ":"); ok {
+		if CredentialKey(key) || projectValue(nested, depth+1) != nested {
+			return EndpointRedacted
+		}
+	}
+	if key, _, ok := strings.Cut(trimmed, "="); ok && CredentialKey(key) && !strings.Contains(key, "://") {
+		return EndpointRedacted
+	}
+	if strings.Contains(trimmed, "=") && !strings.ContainsFunc(trimmed, unicode.IsSpace) {
+		projected, ok := projectQuery(trimmed, depth+1)
+		if !ok {
+			return EndpointRedacted
+		}
+		if projected != trimmed {
+			return projected
+		}
+	}
+	if decoded, err := url.QueryUnescape(value); err != nil {
+		return EndpointRedacted
+	} else if decoded != value && strings.Contains(value, "%") {
+		projected := projectValue(decoded, depth+1)
+		if projected != decoded {
+			return projected
+		}
+	}
+	if strings.ContainsFunc(trimmed, unicode.IsSpace) {
+		normalized := strings.Map(func(r rune) rune {
+			if unicode.IsSpace(r) {
+				return ' '
+			}
+			return r
+		}, trimmed)
+		command, err := shellparse.ParseStaticCommand(normalized, shellparse.StaticCommandPolicy{})
 		if err != nil {
 			return EndpointRedacted
 		}
 		if len(command.Argv) > 1 {
-			args := RedactArgs(command.Argv)
-			for i := range args {
-				if args[i] != command.Argv[i] {
+			projected := projectArgs(command.Argv, depth+1)
+			for i := range projected {
+				if projected[i] != command.Argv[i] {
 					return EndpointRedacted
 				}
 			}
 		}
 	}
-	return projected
+	return value
 }
 
 func RedactConfigMap(fields map[string]string) map[string]string {
@@ -141,27 +214,34 @@ func RedactConfigMap(fields map[string]string) map[string]string {
 	return out
 }
 
-func RedactArgs(args []string) []string {
+func RedactArgs(args []string) []string { return projectArgs(args, 0) }
+
+func projectArgs(args []string, depth int) []string {
 	out := append([]string(nil), args...)
 	for i := 0; i < len(out); i++ {
-		if len(out[i]) > 2 && (strings.HasPrefix(out[i], "-H") || strings.HasPrefix(out[i], "-e")) {
-			out[i] = out[i][:2] + EndpointRedacted
+		if depth >= projectionDepth {
+			out[i] = EndpointRedacted
 			continue
 		}
-		if strings.ContainsAny(out[i], " \t\n") {
-			projected := RedactConfigValue("", out[i])
-			if projected != out[i] {
-				out[i] = projected
-				continue
-			}
-		}
-		if endpointSchemePattern.MatchString(strings.TrimSpace(out[i])) {
-			out[i] = RedactConfigValue("", out[i])
+		arg := out[i]
+		if len(arg) > 2 && (strings.HasPrefix(arg, "-H") || strings.HasPrefix(arg, "-e")) {
+			out[i] = arg[:2] + EndpointRedacted
 			continue
 		}
-		key, value, inline := strings.Cut(out[i], "=")
+		key, _, inline := strings.Cut(arg, "=")
 		carrier := key == "-H" || key == "--header" || key == "--headers" || key == "--env" || key == "-e"
-		if carrier || (strings.HasPrefix(key, "-") && EndpointQueryKey(strings.TrimLeft(key, "-"))) {
+		if header, _, ok := strings.Cut(arg, ":"); ok && CredentialKey(header) && strings.HasSuffix(arg, ":") {
+			for j := i; j < len(out); j++ {
+				out[j] = EndpointRedacted
+			}
+			break
+		}
+		flag := strings.HasPrefix(key, "-") && CredentialKey(strings.TrimLeft(key, "-"))
+		scheme := strings.EqualFold(key, "Basic") || strings.EqualFold(key, "Bearer")
+		if carrier || flag || scheme {
+			if strings.ContainsFunc(arg, unicode.IsSpace) {
+				out[i] = EndpointRedacted
+			}
 			if inline {
 				out[i] = key + "=" + EndpointRedacted
 			} else if i+1 < len(out) {
@@ -170,33 +250,7 @@ func RedactArgs(args []string) []string {
 			}
 			continue
 		}
-		if inline {
-			out[i] = key + "=" + RedactConfigValue(key, value)
-		} else {
-			out[i] = RedactConfigValue("", out[i])
-		}
+		out[i] = projectValue(arg, depth+1)
 	}
 	return out
-}
-
-type diagnosticError struct{ cause error }
-
-func (e diagnosticError) Error() string {
-	var endpoint *url.Error
-	if errors.As(e.cause, &endpoint) {
-		copy := *endpoint
-		copy.URL = RedactEndpoint(endpoint.URL)
-		copy.Err = DiagnosticError(endpoint.Err)
-		return copy.Error()
-	}
-	return RedactCredentials(e.cause.Error())
-}
-func (e diagnosticError) Unwrap() error { return e.cause }
-
-// DiagnosticError preserves error identity while limiting the external display to redacted text.
-func DiagnosticError(err error) error {
-	if err == nil {
-		return nil
-	}
-	return diagnosticError{cause: err}
 }

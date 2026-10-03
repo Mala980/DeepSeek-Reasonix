@@ -66,16 +66,61 @@ var (
 	ErrNotPinnable = errors.New("install_source: source cannot be pinned by content")
 )
 
-// errKind wraps a sentinel with a human-readable detail so logs and the
-// `next` field stay useful.
 type errKind struct {
-	sentinel error
-	detail   string
+	sentinel    error
+	detailBytes int
 }
 
-func (e *errKind) Error() string { return fmt.Sprintf("%s: %s", e.sentinel, e.detail) }
-func (e *errKind) Unwrap() error { return e.sentinel }
+func (e *errKind) Error() string {
+	return fmt.Sprintf("%s (detail omitted; %d bytes)", e.sentinel, e.detailBytes)
+}
+func (e *errKind) Unwrap() error           { return e.sentinel }
+func (e *errKind) DiagnosticFacts() string { return e.Error() }
 
 func newErr(sentinel error, format string, args ...any) error {
-	return &errKind{sentinel: sentinel, detail: fmt.Sprintf(format, args...)}
+	return &errKind{sentinel: sentinel, detailBytes: len(fmt.Sprintf(format, args...))}
 }
+
+type sourceHTTPError struct {
+	sentinel error
+	status   int
+}
+
+func (e *sourceHTTPError) Error() string           { return fmt.Sprintf("%s: HTTP %d", e.sentinel, e.status) }
+func (e *sourceHTTPError) Unwrap() error           { return e.sentinel }
+func (e *sourceHTTPError) DiagnosticFacts() string { return e.Error() }
+
+type sourceBoundaryCode uint8
+
+const (
+	sourceEscape sourceBoundaryCode = iota
+	sourceEntrySize
+	sourceTotalSize
+	sourceFileCount
+)
+
+type sourceBoundaryError struct {
+	code  sourceBoundaryCode
+	limit int64
+}
+
+func (e *sourceBoundaryError) Error() string {
+	switch e.code {
+	case sourceEscape:
+		return "tarball entry escapes the permitted root"
+	case sourceEntrySize:
+		return fmt.Sprintf("tarball entry is larger than %d bytes", e.limit)
+	case sourceTotalSize:
+		return fmt.Sprintf("tarball expands past %d bytes", e.limit)
+	case sourceFileCount:
+		return fmt.Sprintf("tarball holds more than %d files", e.limit)
+	}
+	return "tarball boundary refusal"
+}
+func (e *sourceBoundaryError) Unwrap() error {
+	if e.code == sourceEscape {
+		return ErrUnsupportedKind
+	}
+	return ErrSourceUnreadable
+}
+func (e *sourceBoundaryError) DiagnosticFacts() string { return e.Error() }

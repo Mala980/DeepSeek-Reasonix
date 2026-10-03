@@ -56,6 +56,12 @@ func TestMCPPreviewSeparatesDisplayFromInstallValues(t *testing.T) {
 		}
 	}
 	for _, input := range []string{
+		`{"mcpServers":{"neutral":{"url":"https://host/mcp?client.token=fixturesecret#client.password=fixturesecret"}}}`,
+		`{"mcpServers":{"neutral":{"url":"https://host/mcp?next=https%3A%2F%2Fu%3Afixturesecret%40host%2Fmcp"}}}`,
+		`{"mcpServers":{"neutral":{"url":"https://host/mcp#redirect=https://u:fixturesecret@host/mcp"}}}`,
+		`{"mcpServers":{"neutral":{"url":"https://host/mcp","env":{"ORDINARY":"https://host/mcp Bearer fixturesecret"}}}}`,
+		`{"mcpServers":{"neutral":{"url":"https://host/mcp","env":{"ORDINARY":"https://host/mcp\rTOKEN=fixturesecret"}}}}`,
+		`{"mcpServers":{"neutral":{"url":"https://host/mcp","env":{"ORDINARY":"https://host/mcp\fTOKEN=fixturesecret"}}}}`,
 		"https://host/token/fixturesecret",
 		"https://host/mcp#fixturesecret",
 		"node --header 'Authorization: Bearer fixturesecret'",

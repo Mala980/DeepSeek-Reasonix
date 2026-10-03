@@ -63,6 +63,7 @@ type response struct {
 	// ContentDigest is what a reviewer records to pin this exact material;
 	// empty when the plan's material cannot be pinned.
 	ContentDigest string `json:"contentDigest,omitempty"`
+	failure       error
 }
 
 // kindTally reports per-kind counts. It is a struct (not a map) so the JSON
@@ -135,6 +136,7 @@ type action struct {
 	// actions finish.
 	preparedRoot string
 	cleanup      func()
+	failure      error
 }
 
 // RuntimePlanInfo describes a plugin package's declared runtime process in
@@ -197,7 +199,8 @@ func publicActions(in []action) []action {
 		out[i].Args = secrets.RedactArgs(in[i].Args)
 		out[i].Env = secrets.RedactConfigMap(in[i].Env)
 		out[i].Headers = secrets.RedactConfigMap(in[i].Headers)
-		out[i].Error = secrets.RedactCredentials(in[i].Error)
+		out[i].Error = publicFailure(in[i].failure, in[i].Error)
+		out[i].failure = nil
 		out[i].entry = config.PluginEntry{}
 		out[i].skill = skillCandidate{}
 		out[i].preparedRoot = ""
@@ -209,9 +212,16 @@ func publicActions(in []action) []action {
 func marshalJSON(v any) string {
 	if result, ok := v.(response); ok {
 		result.Source = secrets.RedactConfigValue("", result.Source)
-		result.Error = secrets.RedactCredentials(result.Error)
+		result.Error = publicFailure(result.failure, result.Error)
 		v = result
 	}
 	b, _ := json.Marshal(v)
 	return string(b)
+}
+
+func publicFailure(failure error, text string) string {
+	if failure != nil {
+		return secrets.DiagnosticError(failure).Error()
+	}
+	return secrets.OmittedText(text)
 }

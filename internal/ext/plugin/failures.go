@@ -34,6 +34,8 @@ func (e *launchApprovalError) Error() string {
 	return fmt.Sprintf("project-provided MCP server %q is blocked before process or network startup until the user authorizes it", e.server)
 }
 
+func (e *launchApprovalError) DiagnosticFacts() string { return e.Error() }
+
 func requiresLaunchApproval(err error) bool {
 	var launchTarget *launchApprovalError
 	return errors.As(err, &launchTarget)

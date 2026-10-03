@@ -32,7 +32,7 @@ func TestRevisionAuxiliaryWarningMasksStatusBody(t *testing.T) {
 			writeHTTPRPCResult(w, req.ID, map[string]any{"tools": []any{}})
 		case "prompts/list":
 			w.WriteHeader(http.StatusInternalServerError)
-			_, _ = w.Write([]byte("https://host" + r.URL.String()))
+			_, _ = w.Write([]byte("Bearer rxprobe https://host" + r.URL.String()))
 		default:
 			writeHTTPRPCResult(w, req.ID, map[string]any{})
 		}
@@ -44,7 +44,7 @@ func TestRevisionAuxiliaryWarningMasksStatusBody(t *testing.T) {
 	}
 	defer host.Close()
 	host.fetchPrompts(t.Context(), host.clients[0], nil)
-	if logs.Len() == 0 || strings.Contains(logs.String(), "fixturesecret") {
+	if logs.Len() == 0 || strings.Contains(logs.String(), "fixturesecret") || strings.Contains(logs.String(), "rxprobe") {
 		t.Fatalf("warning leaked: %s", logs.String())
 	}
 }

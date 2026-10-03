@@ -134,17 +134,16 @@ func (t *httpTransport) call(ctx context.Context, method string, params any) (re
 
 	if resp.StatusCode/100 != 2 {
 		b, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
-		msg := strings.TrimSpace(string(b))
 		// The spec's rule, whatever the body says: a 404 to a request that
 		// carried a session id means that session is gone.
 		if resp.StatusCode == http.StatusNotFound && heldSession {
 			t.clearSession()
 			return nil, fmt.Errorf("plugin %q: %s: %w", t.name, method, &httpSessionExpiredError{
-				status: resp.StatusCode,
-				body:   msg,
+				status:    resp.StatusCode,
+				bodyBytes: len(b),
 			})
 		}
-		return nil, fmt.Errorf("plugin %q: %s: %w", t.name, method, &httpStatusError{Status: resp.StatusCode, Detail: msg, RPC: bodyRPCError(b)})
+		return nil, fmt.Errorf("plugin %q: %s: %w", t.name, method, &httpStatusError{Status: resp.StatusCode, BodyBytes: len(b), RPC: bodyRPCError(b)})
 	}
 
 	if strings.HasPrefix(resp.Header.Get("Content-Type"), "text/event-stream") {
@@ -293,8 +292,8 @@ func (t *httpTransport) captureSession(resp *http.Response) {
 // row — was left reading the digits back out of prose an external server had a
 // hand in writing.
 type httpStatusError struct {
-	Status int
-	Detail string
+	Status    int
+	BodyBytes int
 	// RPC is the JSON-RPC error the body carried, when it carried one: a
 	// modern server answers 400 with a typed error a caller has to tell apart.
 	RPC *rpcError
@@ -308,23 +307,21 @@ func (e *httpStatusError) Unwrap() error {
 }
 
 func (e *httpStatusError) Error() string {
-	if e.Detail == "" {
-		return fmt.Sprintf("http %d", e.Status)
-	}
-	return fmt.Sprintf("http %d: %s", e.Status, e.Detail)
+	return fmt.Sprintf("http %d (response body omitted; read %d bytes)", e.Status, e.BodyBytes)
 }
 
+func (e *httpStatusError) DiagnosticFacts() string { return e.Error() }
+
 type httpSessionExpiredError struct {
-	status int
-	body   string
+	status    int
+	bodyBytes int
 }
 
 func (e *httpSessionExpiredError) Error() string {
-	if e.body == "" {
-		return fmt.Sprintf("http %d: MCP session expired", e.status)
-	}
-	return fmt.Sprintf("http %d: %s", e.status, e.body)
+	return fmt.Sprintf("http %d: MCP session expired (response body omitted; read %d bytes)", e.status, e.bodyBytes)
 }
+
+func (e *httpSessionExpiredError) DiagnosticFacts() string { return e.Error() }
 
 // readSSEResponse scans an SSE stream for the JSON-RPC response matching id,
 // skipping server notifications and any other-id messages. Per the SSE spec,

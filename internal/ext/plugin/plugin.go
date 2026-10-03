@@ -106,9 +106,7 @@ type Spec struct {
 	// stdio servers keep inheriting Reasonix's cwd while still receiving the
 	// explicit workspace root when they ask for roots/list.
 	WorkspaceRoot string
-	// Stderr optionally mirrors plugin subprocess stderr output. Stderr is always
-	// captured in a bounded buffer for failure diagnostics; nil keeps it out of
-	// the terminal so child logs cannot corrupt interactive UIs.
+	// Stderr receives byte-count summaries because raw child logs can carry credentials.
 	Stderr io.Writer
 	// LaunchManager owns exact project launch grants and mutable launcher locks.
 	// It never contributes to SchemaCacheKey or provider-visible tool schemas.
@@ -509,14 +507,14 @@ func (h *Host) StartPhaseB(ctx context.Context, sink event.Sink) {
 func (h *Host) fetchPrompts(ctx context.Context, c *Client, sink event.Sink) {
 	aux, err := c.auxiliaryClient(ctx)
 	if err != nil {
-		slog.Warn("plugin: start auxiliary prompt client failed", "server", c.name, "err", err)
+		slog.Warn("plugin: start auxiliary prompt client failed", "server", c.name, "err", secrets.DiagnosticError(err))
 		return
 	}
 	defer aux.close()
 
 	ps, err := aux.listPrompts(ctx)
 	if err != nil {
-		slog.Warn("plugin: listPrompts failed", "server", c.name, "err", err)
+		slog.Warn("plugin: listPrompts failed", "server", c.name, "err", secrets.DiagnosticError(err))
 		return
 	}
 	for i := range ps {
@@ -537,14 +535,14 @@ func (h *Host) fetchPrompts(ctx context.Context, c *Client, sink event.Sink) {
 func (h *Host) fetchResources(ctx context.Context, c *Client, sink event.Sink) {
 	aux, err := c.auxiliaryClient(ctx)
 	if err != nil {
-		slog.Warn("plugin: start auxiliary resource client failed", "server", c.name, "err", err)
+		slog.Warn("plugin: start auxiliary resource client failed", "server", c.name, "err", secrets.DiagnosticError(err))
 		return
 	}
 	defer aux.close()
 
 	rs, err := aux.listResources(ctx)
 	if err != nil {
-		slog.Warn("plugin: listResources failed", "server", c.name, "err", err)
+		slog.Warn("plugin: listResources failed", "server", c.name, "err", secrets.DiagnosticError(err))
 		return
 	}
 	h.mu.Lock()
@@ -728,7 +726,7 @@ func (h *Host) EnsureConnectedInBackground(lifeCtx context.Context, s Spec) <-ch
 		tools, err := h.EnsureConnectedWithLifecycle(lifeCtx, startupCtx, s, generation)
 		cancelStartup()
 		if err != nil {
-			err = newStartupFailure("connect", started, "", err)
+			err = newStartupFailure("connect", started, 0, err)
 			if !errors.Is(err, context.Canceled) && !errors.Is(err, ErrDeferredSpawnCancelled) {
 				h.RecordFailure(s, err)
 			}
@@ -1182,8 +1180,8 @@ var ErrDeferredSpawnCancelled = errors.New("deferred MCP spawn cancelled")
 // the mechanism and not one of the two things it could mean — and those two
 // have different things to do next.
 var (
-	ErrHostClosed    = errors.New("the MCP host shut down (session ended or runtime rebuilt)")
-	ErrServerRemoved = errors.New("this MCP server was removed, disabled, or reconnected")
+	ErrHostClosed    error = hostDiagnosticCause("the MCP host shut down (session ended or runtime rebuilt)")
+	ErrServerRemoved error = hostDiagnosticCause("this MCP server was removed, disabled, or reconnected")
 )
 
 // start opens the transport on lifeCtx (whose cancellation later closes the
@@ -1198,11 +1196,11 @@ func start(lifeCtx, callCtx context.Context, s Spec) (*Client, error) {
 	var err error
 	s, err = applyStoredLauncherLock(s)
 	if err != nil {
-		return nil, newStartupFailure("launch", started, "", err)
+		return nil, newStartupFailure("launch", started, 0, err)
 	}
 	s, err = resolveProjectLaunchAuthorization(callCtx, s)
 	if err != nil {
-		return nil, newStartupFailure("authorization", started, "", err)
+		return nil, newStartupFailure("authorization", started, 0, err)
 	}
 	t, err := newTransport(lifeCtx, s)
 	if err != nil {
@@ -1214,7 +1212,7 @@ func start(lifeCtx, callCtx context.Context, s Spec) (*Client, error) {
 				err = cause
 			}
 		}
-		return nil, newStartupFailure("launch", started, "", err)
+		return nil, newStartupFailure("launch", started, 0, err)
 	}
 	tt := strings.ToLower(strings.TrimSpace(s.Type))
 	if tt == "" {
@@ -1364,7 +1362,7 @@ func (c *Client) listTools(ctx context.Context) ([]tool.Tool, error) {
 		}
 		headers, err := c.toolParamHeaders(t.InputSchema)
 		if err != nil {
-			slog.Warn("plugin: tool left out for its header annotations", "server", c.name, "tool", t.Name, "err", err)
+			slog.Warn("plugin: tool left out for its header annotations", "server", c.name, "tool", t.Name, "err", secrets.DiagnosticError(err))
 			info.SchemaError = err.Error()
 			toolInfos = append(toolInfos, info)
 			continue
@@ -1549,14 +1547,6 @@ type rpcResponse struct {
 	Result  json.RawMessage `json:"result"`
 	Error   *rpcError       `json:"error"`
 }
-
-type rpcError struct {
-	Code    int             `json:"code"`
-	Message string          `json:"message"`
-	Data    json.RawMessage `json:"data,omitempty"`
-}
-
-func (e *rpcError) Error() string { return fmt.Sprintf("rpc error %d: %s", e.Code, e.Message) }
 
 // remote tool adapter
 
