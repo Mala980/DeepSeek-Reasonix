@@ -160,16 +160,16 @@ func stripNode(node any, scope string, required map[string]bool) {
 		return
 	}
 	for key, value := range obj {
-		switch key {
-		case "command":
+		switch {
+		case strings.EqualFold(key, "command"):
 			if command, ok := value.(string); ok {
 				obj[key] = secrets.RedactConfigValue("", command)
 			}
-		case "url":
+		case strings.EqualFold(key, "url"):
 			if endpoint, ok := value.(string); ok {
 				obj[key] = secrets.RedactEndpoint(endpoint)
 			}
-		case "args":
+		case strings.EqualFold(key, "args"):
 			if args, ok := value.([]any); ok {
 				text := make([]string, len(args))
 				for i, arg := range args {
@@ -181,7 +181,7 @@ func stripNode(node any, scope string, required map[string]bool) {
 					}
 				}
 			}
-		case "mcpServers":
+		case strings.EqualFold(key, "mcpServers"):
 			servers, ok := value.(map[string]any)
 			if !ok {
 				continue
@@ -189,7 +189,7 @@ func stripNode(node any, scope string, required map[string]bool) {
 			for serverName, server := range servers {
 				stripNode(server, serverName, required)
 			}
-		case "env", "headers":
+		case strings.EqualFold(key, "env"), strings.EqualFold(key, "headers"):
 			fields, ok := value.(map[string]any)
 			if !ok {
 				continue

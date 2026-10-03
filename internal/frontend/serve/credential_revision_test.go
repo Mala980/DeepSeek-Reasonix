@@ -62,7 +62,8 @@ func TestRevisionInstallRoundTripThroughBoot(t *testing.T) {
 	}))
 	defer remote.Close()
 	endpoint := remote.URL + "/token/fixturesecret?%74oken=fixturesecret#fixturesecret"
-	input, _ := json.Marshal(map[string]any{"mcpServers": map[string]any{"neutral": map[string]any{"url": endpoint, "headers": map[string]string{"Authorization": "Basic fixturesecret"}, "env": map[string]string{"ORDINARY": "Authorization: Basic fixturesecret"}}}})
+	envValue := "https://host/mcp Authorization: Basic fixturesecret"
+	input, _ := json.Marshal(map[string]any{"mcpServers": map[string]any{"neutral": map[string]any{"url": endpoint, "headers": map[string]string{"Authorization": "Basic fixturesecret"}, "env": map[string]string{"ORDINARY": envValue}}}})
 	body, _ := json.Marshal(map[string]string{"input": string(input)})
 	s := New(ctrl, NewBroadcaster(), config.ServeConfig{})
 	w := httptest.NewRecorder()
@@ -89,7 +90,7 @@ func TestRevisionInstallRoundTripThroughBoot(t *testing.T) {
 		t.Fatalf("install: %d %s", w.Code, w.Body.String())
 	}
 	cfg := config.LoadForEdit(filepath.Join(root, "reasonix.toml"))
-	if len(cfg.Plugins) != 1 || cfg.Plugins[0].URL != endpoint || cfg.Plugins[0].Headers["Authorization"] != "Basic fixturesecret" || cfg.Plugins[0].Env["ORDINARY"] != "Authorization: Basic fixturesecret" {
+	if len(cfg.Plugins) != 1 || cfg.Plugins[0].URL != endpoint || cfg.Plugins[0].Headers["Authorization"] != "Basic fixturesecret" || cfg.Plugins[0].Env["ORDINARY"] != envValue {
 		t.Fatalf("persisted credentials changed: %+v", cfg.Plugins)
 	}
 }

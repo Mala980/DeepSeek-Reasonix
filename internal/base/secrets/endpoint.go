@@ -109,7 +109,7 @@ func RedactConfigValue(key, value string) string {
 	if CredentialKey(key) || CredentialValue(value) {
 		return EndpointRedacted
 	}
-	if endpointSchemePattern.MatchString(strings.TrimSpace(value)) {
+	if endpointSchemePattern.MatchString(strings.TrimSpace(value)) && !strings.ContainsAny(strings.TrimSpace(value), " \t\n\r\f") {
 		return RedactEndpoint(value)
 	}
 	projected := endpointPattern.ReplaceAllStringFunc(value, RedactEndpoint)
@@ -144,12 +144,20 @@ func RedactConfigMap(fields map[string]string) map[string]string {
 func RedactArgs(args []string) []string {
 	out := append([]string(nil), args...)
 	for i := 0; i < len(out); i++ {
+		if len(out[i]) > 2 && (strings.HasPrefix(out[i], "-H") || strings.HasPrefix(out[i], "-e")) {
+			out[i] = out[i][:2] + EndpointRedacted
+			continue
+		}
 		if strings.ContainsAny(out[i], " \t\n") {
 			projected := RedactConfigValue("", out[i])
 			if projected != out[i] {
 				out[i] = projected
 				continue
 			}
+		}
+		if endpointSchemePattern.MatchString(strings.TrimSpace(out[i])) {
+			out[i] = RedactConfigValue("", out[i])
+			continue
 		}
 		key, value, inline := strings.Cut(out[i], "=")
 		carrier := key == "-H" || key == "--header" || key == "--headers" || key == "--env" || key == "-e"
@@ -160,10 +168,6 @@ func RedactArgs(args []string) []string {
 				i++
 				out[i] = EndpointRedacted
 			}
-			continue
-		}
-		if endpointSchemePattern.MatchString(strings.TrimSpace(out[i])) {
-			out[i] = RedactEndpoint(out[i])
 			continue
 		}
 		if inline {

@@ -60,6 +60,9 @@ func TestMCPPreviewSeparatesDisplayFromInstallValues(t *testing.T) {
 		"https://host/mcp#fixturesecret",
 		"node --header 'Authorization: Bearer fixturesecret'",
 		"node -e KEY=fixturesecret",
+		"node -eKEY=fixturesecret",
+		"node -HAuthorization:Basicfixturesecret",
+		`{"mcpServers":{"neutral":{"url":"https://host/mcp","env":{"ORDINARY":"https://host/mcp Authorization: Basic fixturesecret"}}}}`,
 		`{"mcpServers":{"neutral":{"command":"node --header 'Authorization: Bearer fixturesecret'"}}}`,
 		"reasonix mcp add neutral --http https://host/mcp --header 'Authorization: Bearer fixturesecret'",
 	} {
@@ -78,7 +81,7 @@ func TestMCPPreviewSeparatesDisplayFromInstallValues(t *testing.T) {
 		}
 		for _, row := range wire["servers"].([]any) {
 			server := row.(map[string]any)
-			operational, _ := json.Marshal([]any{server["url"], server["command"], server["args"]})
+			operational, _ := json.Marshal([]any{server["url"], server["command"], server["args"], server["env"], server["headers"]})
 			if !strings.Contains(string(operational), "fixturesecret") {
 				t.Fatal("operational credential lost")
 			}

@@ -253,7 +253,8 @@ func (t *sseTransport) replyLoop() {
 	}
 }
 
-func (t *sseTransport) call(ctx context.Context, method string, params any) (json.RawMessage, error) {
+func (t *sseTransport) call(ctx context.Context, method string, params any) (result json.RawMessage, err error) {
+	defer func() { err = secrets.DiagnosticError(err) }()
 	if err := t.waitEndpoint(ctx); err != nil {
 		return nil, fmt.Errorf("plugin %q: %s: %w", t.name, method, err)
 	}
