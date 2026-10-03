@@ -103,32 +103,46 @@ complete version. Removal deletes the active copy; retained copies require
 manual cleanup after every process using or watching them has stopped.
 An external lock on the package state file can still prevent publication.
 
-Copy-mode preview parses a bounded, materialized snapshot and includes its
-file-content hashes in `contentDigest` and the approval `planId`. Apply checks
-the copied tree against that snapshot before installing it and again immediately
-before publishing the registry pointer. This covers all copied file bytes,
-including hooks, runtime binaries, prompts, themes and assets. `.git` is excluded;
-internal regular-file links are materialized by the existing copy rules. Link
-mode remains mutable and has no content pin. A failed action carries the typed
-`errorCode` `install.digest_mismatch` or `install.publication_failed` alongside
-its diagnostic text.
+#### Approval snapshot
+
+Copy-mode preview parses a bounded, materialized snapshot. Its file-content
+hashes contribute to `contentDigest` and the approval `planId`.
+
+- Apply checks the copied tree against that snapshot before installation and
+  immediately before entering registry publication.
+- The digest covers all copied bytes: skills, hooks, runtime binaries, prompts,
+  themes and assets. `.git` is excluded.
+- Internal regular-file links are materialized by the existing copy rules.
+  Link mode remains mutable and has no content pin.
+- Failed actions carry a typed `errorCode` (`install.digest_mismatch` or
+  `install.publication_failed`) alongside diagnostic text.
+
+#### Publication and durability
 
 Registry publication uses a synced temporary file and strict rename. Filesystems
 or Windows filter drivers that reject rename with a cross-device error fail
 closed; publication never truncates and copies over the previous registry.
+
 Copied files are synced before publication; directory syncing is best effort.
 Windows directory-entry persistence and power-loss durability are not guaranteed.
 
-On next start the registry is the sole authority: a process exit before its
-rename keeps the old root active; an exit after rename loads the new root.
-Unregistered complete or incomplete siblings and registry temporary files are
-never adopted automatically. A corrupt registry fails closed with a read error;
-an invalid registered root is excluded by the package loader with a repair
-warning. Recovery never guesses which orphan the user approved. Retained copies
-may include user edits; after removal a retained canonical directory can require
-manual cleanup or an explicit replacement for reinstall. Publication-time digest
-checks do not prevent later edits or confine a same-authority external writer
-that can replace directories or alter bytes after the final check.
+#### Restart and recovery
+
+The registry is the sole authority on restart. A process exit before its rename
+keeps the old root active; an exit after rename loads the new root.
+
+- Unregistered complete or incomplete siblings and registry temporary files are
+  never adopted automatically. Recovery never guesses which orphan was approved.
+- A corrupt registry fails closed with a read error. The package loader excludes
+  invalid registered roots and reports a repair warning.
+- Retained copies may include user edits. After removal, a retained canonical
+  directory can require manual cleanup or an explicit replacement for reinstall.
+
+#### Writable generations
+
+Publication-time digest checks do not prevent later edits or confine a
+same-authority external writer that can replace directories or alter bytes after
+the final check, including while registry publication retries a blocked rename.
 
 ### Manage From CLI
 
