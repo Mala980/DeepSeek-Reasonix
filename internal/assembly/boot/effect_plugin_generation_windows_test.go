@@ -2,6 +2,7 @@ package boot
 
 import (
 	"encoding/json"
+	"errors"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -59,6 +60,24 @@ model = "x"
 			}
 			request["planId"] = result.PlanID
 		}
+	}
+	approved := map[string]any{"source": source, "kind": "plugin", "replace": true}
+	previewArgs, _ := json.Marshal(approved)
+	preview, err := installer.Execute(t.Context(), previewArgs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var ticket struct {
+		PlanID string `json:"planId"`
+	}
+	if err := json.Unmarshal([]byte(preview), &ticket); err != nil {
+		t.Fatal(err)
+	}
+	writeFile(t, source, "skills/probe/SKILL.md", "---\nname: probe\ndescription: Neutral probe\n---\nUNAPPROVED BODY")
+	approved["apply"], approved["planId"] = true, ticket.PlanID
+	changedArgs, _ := json.Marshal(approved)
+	if _, err := installer.Execute(t.Context(), changedArgs); !errors.Is(err, installsource.ErrApprovalDenied) {
+		t.Fatalf("changed source passed approval: %v", err)
 	}
 	rec := &effectRecordingProvider{}
 	provider.Register("boot-plugin-generation", func(provider.Config) (provider.Provider, error) { return rec, nil })

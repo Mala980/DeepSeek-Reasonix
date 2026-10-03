@@ -314,6 +314,15 @@ func (t *Tool) pluginSource(ctx context.Context, source, mode string) (string, s
 }
 
 func (t *Tool) pluginPackageAction(req request, pkg pluginpkg.Package, source string) (action, error) {
+	var digest string
+	if modeForPlugin(req.Mode) == "copy" {
+		snapshot, hash, cleanup, err := snapshotPlugin(pkg)
+		if err != nil {
+			return action{}, err
+		}
+		defer cleanup()
+		pkg, digest = snapshot, hash
+	}
 	name := strings.TrimSpace(req.Name)
 	if name == "" {
 		name = pkg.Manifest.Name
@@ -332,6 +341,7 @@ func (t *Tool) pluginPackageAction(req request, pkg pluginpkg.Package, source st
 		agentNames = append(agentNames, agent.Name)
 	}
 	a := action{
+		treeDigest:          digest,
 		Kind:                "plugin",
 		Action:              "install_plugin_package",
 		Name:                name,
@@ -468,7 +478,10 @@ func (t *Tool) applyInstallPluginPackage(ctx context.Context, req request, act *
 			return err
 		}
 	} else {
-		target, discardCopy, err = installPluginCopy(pkg, sourceRoot, target, req.Replace)
+		if act.treeDigest == "" {
+			return newErr(ErrApprovalDenied, "copy installation requires an approved content snapshot")
+		}
+		target, discardCopy, err = installPluginCopy(pkg, sourceRoot, target, req.Replace, act.treeDigest)
 		if err != nil {
 			return err
 		}
@@ -486,8 +499,16 @@ func (t *Tool) applyInstallPluginPackage(ctx context.Context, req request, act *
 	if act.Mode == "link" {
 		installed.Root = sourceRoot
 	}
-	if err := pluginpkg.Upsert(t.reasonixHome, installed); err != nil {
-		return err
+	var publishErr error
+	if act.Mode == "link" {
+		publishErr = pluginpkg.Upsert(t.reasonixHome, installed)
+	} else {
+		publishErr = pluginpkg.UpsertValidated(t.reasonixHome, installed, func() error {
+			return verifyPluginDigest(target, act.treeDigest)
+		})
+	}
+	if publishErr != nil {
+		return publishErr
 	}
 	discardCopy = nil
 	act.Target = target
@@ -647,11 +668,11 @@ func pluginGitCommand(ctx context.Context, args ...string) *exec.Cmd {
 }
 
 // Validation must finish before the previous installation can be displaced.
-func installCopiedPlugin(pkg pluginpkg.Package, sourceRoot, target string, replace bool) error {
+func installCopiedPlugin(pkg pluginpkg.Package, sourceRoot, target string, replace bool, expected ...string) error {
 	if _, err := os.Lstat(target); err == nil && !replace {
 		return newErr(ErrAlreadyExists, "plugin package already exists at %s; retry with replace=true to update it", target)
 	}
-	staging, err := stagePluginCopy(pkg, sourceRoot, target)
+	staging, err := stagePluginCopy(pkg, sourceRoot, target, expected...)
 	if err != nil {
 		return err
 	}

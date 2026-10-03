@@ -59,7 +59,7 @@ func watchedPluginFixture(t *testing.T) (*Tool, string, string) {
 	writeFile(t, filepath.Join(source, ".claude-plugin", "plugin.json"), `{"name":"watch-probe","version":"1.0.0"}`)
 	writeFile(t, filepath.Join(source, "skills", "probe", "SKILL.md"), "---\nname: probe\ndescription: Neutral probe\n---\nOLD BODY")
 	writeFile(t, filepath.Join(source, "skills", "probe", "removed.txt"), "OLD ASSET")
-	act := action{Name: "watch-probe", Source: source, Mode: "copy"}
+	act := plannedPluginCopy(t, tool, source)
 	if err := tool.applyInstallPluginPackage(t.Context(), request{}, &act); err != nil {
 		t.Fatal(err)
 	}
@@ -106,7 +106,7 @@ func TestWindowsPluginWatchedUpdateRollbackOnStateWriteError(t *testing.T) {
 			reachedPublication = true
 		}
 	}
-	act := action{Name: "watch-probe", Source: source, Mode: "copy"}
+	act := plannedPluginCopy(t, tool, source)
 	if err := tool.applyInstallPluginPackage(t.Context(), request{Replace: true}, &act); err == nil {
 		t.Fatal("locked state file must refuse publication")
 	}
@@ -129,7 +129,7 @@ func TestWindowsPluginGenerationRequiresExplicitReplace(t *testing.T) {
 	source := testenv.TempDir(t)
 	writeFile(t, filepath.Join(source, ".claude-plugin", "plugin.json"), `{"name":"generation-probe"}`)
 	writeFile(t, filepath.Join(source, "skills", "probe", "SKILL.md"), "---\nname: probe\ndescription: Neutral probe\n---\nBODY")
-	act := action{Name: "generation-probe", Source: source, Mode: "copy"}
+	act := plannedPluginCopy(t, tool, source)
 	if err := tool.applyInstallPluginPackage(t.Context(), request{Replace: true}, &act); err != nil {
 		t.Fatal(err)
 	}
@@ -143,7 +143,7 @@ func TestWindowsPluginGenerationRequiresExplicitReplace(t *testing.T) {
 
 func TestWindowsPluginUpdateWithExternalDirectoryWatch(t *testing.T) {
 	tool, source, old := watchedPluginFixture(t)
-	act := action{Name: "watch-probe", Source: source, Mode: "copy"}
+	act := plannedPluginCopy(t, tool, source)
 	if err := tool.applyInstallPluginPackage(t.Context(), request{Replace: true}, &act); err != nil {
 		t.Fatalf("update with active external watch: %v", err)
 	}
@@ -186,7 +186,7 @@ func TestWindowsPluginWatchedUpdateRollbackAtPublication(t *testing.T) {
 	var caught any
 	func() {
 		defer func() { caught = recover() }()
-		act := action{Name: "watch-probe", Source: source, Mode: "copy"}
+		act := plannedPluginCopy(t, tool, source)
 		if err := tool.applyInstallPluginPackage(t.Context(), request{Replace: true}, &act); err != nil {
 			t.Fatalf("update did not reach publication fault: %v", err)
 		}
