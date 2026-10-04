@@ -44,6 +44,7 @@ var leaves = []string{
 	"internal/shellparse",
 	"internal/store",
 	"internal/sysproxy",
+	"internal/termux",
 
 	"internal/textutil",
 }

@@ -53,8 +53,8 @@ jobs:
 
       - name: Test Termux runtime package and build script
         run: |
-          go run ./tools/repolint ./...
-          go run ./cmd/signpath-contract
+          go run ./tools/repolint
+          go run ./cmd/signpath-contract validate
           node --test scripts/ci-workflow.test.mjs
           go test -v ./internal/termux/...
           go test ./internal/releaseasset/... ./internal/remote/bootstrap/... ./internal/sandbox/... ./internal/config/... ./internal/control/... ./internal/doctor/... ./internal/bot/feishu/... ./internal/localeenv/... ./internal/notify/... ./internal/evidence/... ./internal/fileutil/...
