@@ -27,13 +27,10 @@ import (
 	"reasonix/internal/bot"
 	"reasonix/internal/config"
 
-	lark "github.com/larksuite/oapi-sdk-go/v3"
 	larkcore "github.com/larksuite/oapi-sdk-go/v3/core"
-	"github.com/larksuite/oapi-sdk-go/v3/event/dispatcher"
 	"github.com/larksuite/oapi-sdk-go/v3/event/dispatcher/callback"
 	larkcontact "github.com/larksuite/oapi-sdk-go/v3/service/contact/v3"
 	larkim "github.com/larksuite/oapi-sdk-go/v3/service/im/v1"
-	larkws "github.com/larksuite/oapi-sdk-go/v3/ws"
 )
 
 // textContent 飞书消息文本内容结构。
@@ -94,14 +91,67 @@ func webhookMentionRefs(mentions []feishuMention) []mentionRef {
 	return refs
 }
 
+const (
+	feishuOpenBaseURL  = "https://open.feishu.cn"
+	larkOpenBaseURL    = "https://open.larksuite.com"
+	feishuOAuthBaseURL = "https://accounts.feishu.cn"
+	larkOAuthBaseURL   = "https://accounts.larksuite.com"
+)
+
+type feishuWSCloser interface {
+	Close()
+}
+
+type feishuSDKClient struct {
+	config  *larkcore.Config
+	Contact *larkcontact.V3
+	Im      *larkim.V1
+}
+
+func newFeishuSDKClient(appID, appSecret, domain string) *feishuSDKClient {
+	cfg := &larkcore.Config{
+		BaseUrl:          feishuOpenBaseURL,
+		OAuthBaseUrl:     feishuOAuthBaseURL,
+		AppId:            appID,
+		AppSecret:        appSecret,
+		ReqTimeout:       15 * time.Second,
+		EnableTokenCache: true,
+		AppType:          larkcore.AppTypeSelfBuilt,
+		LogLevel:         larkcore.LogLevelError,
+		Source:           "reasonix",
+	}
+	if feishuDomain(domain) == "lark" {
+		cfg.BaseUrl = larkOpenBaseURL
+		cfg.OAuthBaseUrl = larkOAuthBaseURL
+	}
+	larkcore.NewLogger(cfg)
+	larkcore.NewCache(cfg)
+	larkcore.NewSerialization(cfg)
+	larkcore.NewHttpClient(cfg)
+	return &feishuSDKClient{
+		config:  cfg,
+		Contact: larkcontact.New(cfg),
+		Im:      larkim.New(cfg),
+	}
+}
+
+func (c *feishuSDKClient) Get(ctx context.Context, httpPath string, body any, accessTokenType larkcore.AccessTokenType, options ...larkcore.RequestOptionFunc) (*larkcore.ApiResp, error) {
+	return larkcore.Request(ctx, &larkcore.ApiReq{
+		HttpMethod:                http.MethodGet,
+		ApiPath:                   httpPath,
+		Body:                      body,
+		SupportedAccessTokenTypes: []larkcore.AccessTokenType{accessTokenType},
+	}, c.config, options...)
+}
+
 // adapter 飞书适配器实现。
 type adapter struct {
 	cfg      config.FeishuBotConfig
 	logger   *slog.Logger
 	msgCh    chan bot.InboundMessage
 	cancel   context.CancelFunc
-	client   *lark.Client
-	wsClient *larkws.Client
+	client   *feishuSDKClient
+	wsClient feishuWSCloser
 
 	// fetchResource 覆盖消息资源下载（测试注入）；nil 时用 sdkFetchResource。
 	fetchResource func(ctx context.Context, messageID, key, typ string) ([]byte, string, error)
@@ -283,67 +333,12 @@ func (a *adapter) appSecret() (string, error) {
 	return secret, nil
 }
 
-// runWebSocket 启动飞书 WebSocket 长连接。
-func (a *adapter) runWebSocket(ctx context.Context) {
-	secret, err := a.appSecret()
-	if err != nil {
-		a.logger.Error("feishu websocket config error", "err", err)
-		return
+func (a *adapter) handleSDKCardAction(event *callback.CardActionTriggerEvent) (*callback.CardActionTriggerResponse, error) {
+	if event == nil || event.EventReq == nil || !a.handleCardAction(event.Body) {
+		a.logger.Warn("feishu card action ignored", "reason", "invalid_payload")
+		return cardActionToast("warning", "操作无效或已过期"), nil
 	}
-	eventHandler := a.newEventDispatcher()
-	bot.RunWithRetry(ctx, a.logger, "feishu sdk websocket", bot.RetryConfig{}, func(ctx context.Context) error {
-		opts := []larkws.ClientOption{
-			larkws.WithEventHandler(eventHandler),
-			larkws.WithLogLevel(larkcore.LogLevelError),
-			larkws.WithAutoReconnect(true),
-			larkws.WithOnReady(func() { a.logger.Info("feishu sdk websocket connected") }),
-			larkws.WithOnReconnecting(func() { a.logger.Warn("feishu sdk websocket reconnecting") }),
-			larkws.WithOnReconnected(func() { a.logger.Info("feishu sdk websocket reconnected") }),
-			larkws.WithOnError(func(err error) { a.logger.Error("feishu sdk websocket error", "err", err) }),
-		}
-		if feishuDomain(a.cfg.Domain) == "lark" {
-			opts = append(opts, larkws.WithDomain(lark.LarkBaseUrl))
-		}
-		client := larkws.NewClient(a.cfg.AppID, secret, opts...)
-		a.wsClient = client
-		// client.Start blocks; run it off-loop so cancellation closes the client
-		// immediately rather than waiting for Start to notice ctx. RunWithRetry
-		// handles the reconnect backoff.
-		errCh := make(chan error, 1)
-		go func() { errCh <- client.Start(ctx) }()
-		select {
-		case <-ctx.Done():
-			client.Close()
-			return nil
-		case err := <-errCh:
-			client.Close()
-			return err
-		}
-	})
-}
-
-func (a *adapter) newEventDispatcher() *dispatcher.EventDispatcher {
-	return dispatcher.NewEventDispatcher(a.cfg.VerificationToken, "").
-		OnP2MessageReceiveV1(func(ctx context.Context, event *larkim.P2MessageReceiveV1) error {
-			a.handleSDKMessage(ctx, event)
-			return nil
-		}).
-		OnP2MessageReadV1(func(ctx context.Context, event *larkim.P2MessageReadV1) error {
-			return nil
-		}).
-		OnP2MessageReactionCreatedV1(func(ctx context.Context, event *larkim.P2MessageReactionCreatedV1) error {
-			return nil
-		}).
-		OnP2MessageReactionDeletedV1(func(ctx context.Context, event *larkim.P2MessageReactionDeletedV1) error {
-			return nil
-		}).
-		OnP2CardActionTrigger(func(ctx context.Context, event *callback.CardActionTriggerEvent) (*callback.CardActionTriggerResponse, error) {
-			if event == nil || event.EventReq == nil || !a.handleCardAction(event.Body) {
-				a.logger.Warn("feishu card action ignored", "reason", "invalid_payload")
-				return cardActionToast("warning", "操作无效或已过期"), nil
-			}
-			return cardActionToast("success", "操作已提交"), nil
-		})
+	return cardActionToast("success", "操作已提交"), nil
 }
 
 func (a *adapter) handleSDKMessage(ctx context.Context, event *larkim.P2MessageReceiveV1) {
@@ -726,7 +721,7 @@ func isReplyFallbackError(err error) bool {
 // the fetchBotOpenID goroutine, per-message resolveUserName, and per-resource
 // downloads all race on first use at startup — so the check-and-build is guarded
 // by clientMu (a bare a.client read/write would data-race, tripping -race).
-func (a *adapter) sdkClient() (*lark.Client, error) {
+func (a *adapter) sdkClient() (*feishuSDKClient, error) {
 	a.clientMu.Lock()
 	defer a.clientMu.Unlock()
 	if a.client != nil {
@@ -736,15 +731,7 @@ func (a *adapter) sdkClient() (*lark.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	opts := []lark.ClientOptionFunc{
-		lark.WithLogLevel(larkcore.LogLevelError),
-		lark.WithReqTimeout(15 * time.Second),
-		lark.WithSource("reasonix"),
-	}
-	if feishuDomain(a.cfg.Domain) == "lark" {
-		opts = append(opts, lark.WithOpenBaseUrl(lark.LarkBaseUrl), lark.WithOAuthBaseUrl(lark.OAuthBaseUrlLark))
-	}
-	a.client = lark.NewClient(a.cfg.AppID, secret, opts...)
+	a.client = newFeishuSDKClient(a.cfg.AppID, secret, a.cfg.Domain)
 	return a.client, nil
 }
 

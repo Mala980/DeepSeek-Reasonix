@@ -30,6 +30,12 @@ func IsAndroidOrTermux() bool {
 	if runtime.GOOS == "android" {
 		return true
 	}
+	return IsTermux()
+}
+
+// IsTermux reports whether the current process is running inside a Termux
+// environment via Termux environment variables or the standard Termux prefix.
+func IsTermux() bool {
 	if IsTermuxEnv(os.Getenv) {
 		return true
 	}
