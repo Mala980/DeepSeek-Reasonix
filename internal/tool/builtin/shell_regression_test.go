@@ -16,16 +16,21 @@ import (
 )
 
 func TestShellTimeoutClampsBeforeDurationConversion(t *testing.T) {
+	maxInt := int(^uint(0) >> 1)
+	overflowMS := maxInt
+	if u := uint64(9223372036855); u <= uint64(maxInt) {
+		overflowMS = int(u)
+	}
 	for _, cap := range []time.Duration{time.Second, 500 * time.Microsecond, 0} {
 		b := bash{timeout: cap}
-		for _, ms := range []int{1, 1500, 9223372036855, int(^uint(0) >> 1)} {
+		for _, ms := range []int{1, 1500, overflowMS, maxInt} {
 			got := b.foregroundTimeoutFor(bashParams{TimeoutMS: ms})
 			if got <= 0 || (cap > 0 && got > cap) {
 				t.Fatalf("cap=%v ms=%d got=%v", cap, ms, got)
 			}
 		}
 	}
-	if got := cappedMilliseconds(9223372036855, jobOutputMaxWait); got != jobOutputMaxWait {
+	if got := cappedMilliseconds(overflowMS, jobOutputMaxWait); got != jobOutputMaxWait {
 		t.Fatalf("job wait overflow: %v", got)
 	}
 }
