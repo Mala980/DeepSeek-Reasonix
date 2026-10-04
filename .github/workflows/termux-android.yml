@@ -53,12 +53,28 @@ jobs:
 
       - name: Test Termux runtime package and build script
         run: |
-          go run ./tools/repolint
-          go run ./cmd/signpath-contract validate
-          node --test scripts/ci-workflow.test.mjs
-          go test -v ./internal/termux/...
-          go test ./internal/releaseasset/... ./internal/remote/bootstrap/... ./internal/sandbox/... ./internal/config/... ./internal/control/... ./internal/doctor/... ./internal/bot/feishu/... ./internal/localeenv/... ./internal/notify/... ./internal/evidence/... ./internal/fileutil/...
-          bash scripts/build-termux-android.test.sh
+          run_check() {
+            local label="$1"
+            shift
+            local out
+            if ! out="$("$@" 2>&1)"; then
+              echo "$out"
+              local summary
+              summary="$(echo "$out" | grep -E "FAIL|Error|budget|ceiling|signpath-contract|repolint|--- FAIL" | tail -n 10 | tr '\n' ' ')"
+              if [ -z "$summary" ]; then
+                summary="$(echo "$out" | tail -n 5 | tr '\n' ' ')"
+              fi
+              echo "::error title=${label}::${summary}"
+              exit 1
+            fi
+            echo "$out"
+          }
+          run_check "repolint" go run ./tools/repolint
+          run_check "signpath-contract" go run ./cmd/signpath-contract validate
+          run_check "ci-workflow-test" node --test scripts/ci-workflow.test.mjs
+          run_check "termux-test" go test -v ./internal/termux/...
+          run_check "pkg-tests" go test ./internal/releaseasset/... ./internal/remote/bootstrap/... ./internal/sandbox/... ./internal/config/... ./internal/control/... ./internal/doctor/... ./internal/bot/feishu/... ./internal/localeenv/... ./internal/notify/... ./internal/evidence/... ./internal/fileutil/...
+          run_check "build-script-test" bash scripts/build-termux-android.test.sh
 
       - name: Vet target (${{ matrix.arch }})
         env:
