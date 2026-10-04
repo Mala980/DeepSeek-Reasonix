@@ -8,7 +8,11 @@
 // OSSandboxSupported). File-writer built-ins are confined in tool/builtin.
 package sandbox
 
-import "runtime"
+import (
+	"runtime"
+
+	"reasonix/internal/termux"
+)
 
 // Spec describes how to confine one command. The zero value (Mode == "") does
 // not enforce, so an unconfigured caller runs commands unchanged.
@@ -57,11 +61,19 @@ type Spec struct {
 func (s Spec) Enforce() bool { return s.Mode == "enforce" }
 
 // OSSandboxSupported reports whether this platform can confine shell commands
-// at the OS level. Windows cannot: its restricted-token backend is retired
-// (same-user ACL denies locked hosts out; the token broke common toolchains).
-func OSSandboxSupported() bool { return osSandboxSupportedForGOOS(runtime.GOOS) }
+// at the OS level. Windows and Android/Termux cannot: Windows retired its
+// restricted-token backend, and Android app sandboxes disallow unprivileged
+// mount/user namespace operations required by bubblewrap.
+func OSSandboxSupported() bool {
+	if termux.IsAndroidOrTermux() {
+		return false
+	}
+	return osSandboxSupportedForGOOS(runtime.GOOS)
+}
 
-func osSandboxSupportedForGOOS(goos string) bool { return goos != "windows" }
+func osSandboxSupportedForGOOS(goos string) bool {
+	return goos != "windows" && goos != "android"
+}
 
 // UnavailableMessage explains why an enforced shell sandbox cannot run and gives
 // the platform-specific remediation.
@@ -72,6 +84,9 @@ func UnavailableMessage() string {
 // UnavailableRemediation is split out so status surfaces can append the same
 // actionable hint without repeating the leading error.
 func UnavailableRemediation() string {
+	if runtime.GOOS == "android" || termux.IsAndroidOrTermux() {
+		return "Android/Termux has no OS-level shell sandbox. Permission presets are enforced by Reasonix file tools and shell commands run as the current Termux user; select Full access only when ordinary approval prompts should also be skipped."
+	}
 	switch runtime.GOOS {
 	case "linux":
 		return "Install bubblewrap (`bwrap`), or explicitly select Full access for an unconfined session."
@@ -87,6 +102,9 @@ func UnavailableRemediation() string {
 // BackendUnavailableReason is safe diagnostic copy for subsystems such as MCP
 // that intentionally continue unconfined when the OS backend is missing.
 func BackendUnavailableReason() string {
+	if runtime.GOOS == "android" || termux.IsAndroidOrTermux() {
+		return "Reasonix does not ship an OS-level sandbox on Android/Termux"
+	}
 	switch runtime.GOOS {
 	case "linux":
 		return "bubblewrap (bwrap) is unavailable on PATH"

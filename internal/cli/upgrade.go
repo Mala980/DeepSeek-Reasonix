@@ -456,7 +456,12 @@ func cliPlatformAssetName(goos, goarch string) string {
 }
 
 func findCLIPlatformAsset(rel *ghRelease, goos, goarch string) *ghAsset {
-	return findCLIReleaseAsset(rel, cliPlatformAssetName(goos, goarch))
+	for _, name := range cliPlatformAssetCandidates(goos, goarch) {
+		if asset := findCLIReleaseAsset(rel, name); asset != nil {
+			return asset
+		}
+	}
+	return nil
 }
 
 func findCLIReleaseAsset(rel *ghRelease, name string) *ghAsset {

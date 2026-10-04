@@ -121,9 +121,21 @@ func AtomicCreateFile(path string, data []byte, perm os.FileMode) error {
 	}
 	defer os.Remove(tmpPath)
 	if err := os.Link(tmpPath, path); err != nil {
+		if !os.IsExist(err) && isHardlinkUnsupported(err) {
+			if rerr := RenameNoReplace(tmpPath, path); rerr == nil {
+				return nil
+			}
+		}
 		return fmt.Errorf("publish new file %s: %w", path, err)
 	}
 	return nil
+}
+
+func isHardlinkUnsupported(err error) bool {
+	return errors.Is(err, syscall.EPERM) ||
+		errors.Is(err, syscall.EOPNOTSUPP) ||
+		errors.Is(err, syscall.ENOTSUP) ||
+		errors.Is(err, syscall.ENOSYS)
 }
 
 // AtomicOverwriteFile replaces an existing file's contents atomically while

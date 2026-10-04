@@ -28,6 +28,9 @@ func startPTY(argv []string, dir string, env []string) (ptyConn, error) {
 	cmd.Env = env
 	file, err := pty.StartWithSize(cmd, &pty.Winsize{Rows: 24, Cols: 80})
 	if err != nil {
+		if pipeConn, pipeErr := startPipe(argv, dir, env); pipeErr == nil {
+			return pipeConn, nil
+		}
 		return nil, err
 	}
 	// Reap the shell without blocking: its exit surfaces to callers as a read

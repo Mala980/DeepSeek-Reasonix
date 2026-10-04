@@ -8,6 +8,7 @@ import (
 
 	"reasonix/internal/proc"
 	"reasonix/internal/secrets"
+	"reasonix/internal/termux"
 )
 
 // discoverGitCapability shares the shell inventory snapshot but remains a
@@ -61,7 +62,7 @@ func discoverGitCapability(snap *shellSnapshot) ExecutableCapability {
 			}
 		}
 	} else {
-		for _, path := range []string{"/opt/homebrew/bin/git", "/usr/local/bin/git", "/usr/bin/git", "/bin/git"} {
+		for _, path := range append([]string{"/opt/homebrew/bin/git", "/usr/local/bin/git", "/usr/bin/git", "/bin/git"}, termux.BinPaths("git")...) {
 			if snap.exists(path) && usable(path) {
 				capability.Available = true
 				capability.Path = path

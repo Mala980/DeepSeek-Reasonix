@@ -19,10 +19,11 @@ func TestDownloadCLIFromBaseVerifiesAndExtracts(t *testing.T) {
 	digest := sha256.Sum256(archive)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/v1.2.3/reasonix-linux-arm64.tar.gz":
+		case "/v1.2.3/reasonix-linux-arm64.tar.gz", "/v1.2.3/reasonix-android-armv7.tar.gz":
 			_, _ = w.Write(archive)
 		case "/v1.2.3/SHA256SUMS":
-			_, _ = fmt.Fprintf(w, "%s  reasonix-linux-arm64.tar.gz\n", hex.EncodeToString(digest[:]))
+			_, _ = fmt.Fprintf(w, "%s  reasonix-linux-arm64.tar.gz\n%s  reasonix-android-armv7.tar.gz\n",
+				hex.EncodeToString(digest[:]), hex.EncodeToString(digest[:]))
 		default:
 			http.NotFound(w, r)
 		}
@@ -35,6 +36,14 @@ func TestDownloadCLIFromBaseVerifiesAndExtracts(t *testing.T) {
 	}
 	if !bytes.Equal(got, binary) {
 		t.Fatalf("binary = %q, want %q", got, binary)
+	}
+
+	gotAndroidArm, err := downloadCLIFromBase(context.Background(), server.Client(), server.URL, "v1.2.3", "android", "arm", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(gotAndroidArm, binary) {
+		t.Fatalf("android arm binary = %q, want %q", gotAndroidArm, binary)
 	}
 }
 

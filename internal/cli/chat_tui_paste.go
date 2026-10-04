@@ -14,7 +14,6 @@ import (
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/atotto/clipboard"
 
 	"reasonix/internal/agent"
 	"reasonix/internal/control"
@@ -434,7 +433,7 @@ func (m chatTUI) handleClipboardTextPaste(msg clipboardTextPasteMsg) (tea.Model,
 	return m.applyComposerPasteCount(tea.PasteMsg{Content: msg.text}, false, count)
 }
 
-var readNativeClipboardText = clipboard.ReadAll
+var readNativeClipboardText = readPlatformClipboardText
 
 // pasteClipboardText backs the captured-mouse right-click path. Keyboard text
 // paste still arrives from the terminal as a bracketed tea.PasteMsg; this read
@@ -535,6 +534,7 @@ func readPrimarySelection() (string, error) {
 		{"wl-paste", "--primary", "--type", "text", "--no-newline"},
 		{"xclip", "-selection", "primary", "-o"},
 		{"xsel", "--output", "--primary"},
+		{"termux-clipboard-get"},
 	} {
 		cmd := newPasteCommand(args[0], args[1:]...)
 		cmd.Env = secrets.ProcessEnv()
@@ -543,7 +543,7 @@ func readPrimarySelection() (string, error) {
 			return string(out), nil
 		}
 	}
-	return "", fmt.Errorf("no primary selection tool found (need wl-paste, xclip, or xsel)")
+	return "", fmt.Errorf("no primary selection tool found (need wl-paste, xclip, xsel, or termux-clipboard-get)")
 }
 
 func (m *chatTUI) attachPastedImages(text string) bool {

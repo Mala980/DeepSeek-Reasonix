@@ -622,6 +622,21 @@ test("Windows desktop Go partitions tests without verbose JSON cache overhead", 
   assert.match(windowsGo, /steps\.conpty-smoke\.outcome == 'failure'/);
 });
 
+test("Termux Android arm64 and armv7 builds run in CI and dedicated workflow", () => {
+  const testJob = job(ci, "test");
+  assert.match(testJob, /name: build \(Termux Android arm64 and armv7\)[\s\S]*?\.\/scripts\/build-termux-android\.sh --out-dir "\$RUNNER_TEMP\/termux-dist" --package all/);
+  const lintCodeJob = job(ci, "lint-code");
+  assert.match(lintCodeJob, /android arm64 \./);
+  assert.match(lintCodeJob, /linux arm \./);
+  const termuxWorkflow = workflow("termux-android");
+  const termuxBuild = job(termuxWorkflow, "build");
+  assert.match(termuxBuild, /arch: arm64[\s\S]*?goos: android[\s\S]*?goarch: arm64/);
+  assert.match(termuxBuild, /arch: armv7[\s\S]*?goos: android[\s\S]*?goarch: arm[\s\S]*?goarm: "7"/);
+  assert.match(termuxBuild, /\.\/scripts\/build-termux-android\.sh/);
+  const termuxPackage = job(termuxWorkflow, "package");
+  assert.match(termuxPackage, /name: reasonix-termux-android-dist/);
+});
+
 test("Windows desktop Go aggregate rejects incomplete matrix results", () => {
   const summary = job(ci, "desktop-windows-go");
   assert.match(summary, /needs: \[changes, desktop-prepare, desktop-windows-go-group\]/);

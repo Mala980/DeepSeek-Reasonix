@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"reasonix/internal/proc"
+	"reasonix/internal/termux"
 )
 
 var hostDefault = sync.OnceValue(discoverUTF8)
@@ -50,15 +51,22 @@ func withDefault(env []string, locale string) []string {
 func discoverUTF8() string {
 	// Probe once, without inheriting credentials or relying on the user's
 	// PATH. Do not invent a locale that a minimal Linux image lacks.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	cmd := proc.CommandContext(ctx, "/usr/bin/locale", "-a")
-	cmd.Env = []string{"LC_ALL=C", "PATH=/usr/bin:/bin"}
-	output, err := cmd.Output()
-	if err != nil {
-		return ""
+	for _, bin := range append([]string{"/usr/bin/locale", "/bin/locale"}, termux.BinPaths("locale")...) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		cmd := proc.CommandContext(ctx, bin, "-a")
+		cmd.Env = []string{"LC_ALL=C", "PATH=/usr/bin:/bin:/data/data/com.termux/files/usr/bin"}
+		output, err := cmd.Output()
+		cancel()
+		if err == nil {
+			if selected := selectUTF8(string(output)); selected != "" {
+				return selected
+			}
+		}
 	}
-	return selectUTF8(string(output))
+	if termux.IsAndroidOrTermux() {
+		return "C.UTF-8"
+	}
+	return ""
 }
 
 func selectUTF8(locales string) string {

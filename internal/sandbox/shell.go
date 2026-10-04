@@ -13,6 +13,7 @@ import (
 
 	"reasonix/internal/proc"
 	"reasonix/internal/secrets"
+	"reasonix/internal/termux"
 )
 
 // psUTF8Prologue makes captured output UTF-8 rather than the console code page
@@ -110,7 +111,7 @@ func resolveShell(prefer, path string, warn io.Writer, goos string, lookPath fun
 			return Shell{Kind: kind, Path: p}, true
 		}
 		if goos != "windows" {
-			for _, p := range []string{"/bin/" + name, "/usr/bin/" + name} {
+			for _, p := range append([]string{"/bin/" + name, "/usr/bin/" + name}, termux.BinPaths(name)...) {
 				if exists(p) && probe(p) {
 					return Shell{Kind: kind, Path: p}, true
 				}
@@ -209,7 +210,7 @@ func autoDetectedShell(goos string, findBash func() (Shell, bool), findPOSIX fun
 	if sh, ok := findBash(); ok {
 		return sh
 	}
-	if goos == "darwin" {
+	if goos == "darwin" || goos == "android" {
 		for _, fallback := range []struct {
 			name string
 			kind ShellKind

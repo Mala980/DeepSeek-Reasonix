@@ -10,12 +10,14 @@ import (
 	"runtime"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	filelock "reasonix/internal/identitylock"
+	"reasonix/internal/termux"
 )
 
 // userEditMu serializes in-process read-modify-write cycles. The public lock
@@ -275,25 +277,36 @@ func configFileEditLockPathResolved(resolved string) (string, error) {
 
 func configEditLockRegistryDir() (string, error) {
 	current, err := osuser.Current()
-	if err != nil {
+	if err != nil && runtime.GOOS == "windows" {
 		return "", fmt.Errorf("lock config edits: resolve OS user: %w", err)
 	}
-	identity := strings.TrimSpace(current.Uid)
-	if identity == "" {
-		identity = strings.TrimSpace(current.Username)
+	var identity string
+	if current != nil {
+		identity = strings.TrimSpace(current.Uid)
+		if identity == "" {
+			identity = strings.TrimSpace(current.Username)
+		}
+		if identity == "" {
+			identity = strings.TrimSpace(current.HomeDir)
+		}
+	}
+	if identity == "" && runtime.GOOS != "windows" {
+		if uid := os.Getuid(); uid >= 0 {
+			identity = strconv.Itoa(uid)
+		}
 	}
 	if identity == "" {
-		identity = strings.TrimSpace(current.HomeDir)
-	}
-	if identity == "" {
+		if err != nil {
+			return "", fmt.Errorf("lock config edits: resolve OS user: %w", err)
+		}
 		return "", fmt.Errorf("lock config edits: OS user identity unavailable")
 	}
 	digest := sha256.Sum256([]byte(identity))
 	if runtime.GOOS != "windows" {
 		// The OS-wide temporary root is invariant across process-specific TMPDIR
-		// overrides. The per-user directory is verified and forced to mode 0700
-		// before the advisory lock file is opened.
-		return filepath.Join(string(filepath.Separator), "tmp", fmt.Sprintf("reasonix-config-locks-%x", digest[:8])), nil
+		// overrides. On Termux/Android where /tmp does not exist, fall back to
+		// the fixed Termux usr/tmp root.
+		return filepath.Join(termux.StableLockRootDir(), fmt.Sprintf("reasonix-config-locks-%x", digest[:8])), nil
 	}
 	home := strings.TrimSpace(current.HomeDir)
 	if home == "" {

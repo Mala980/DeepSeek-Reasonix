@@ -23,6 +23,7 @@ import (
 	"reasonix/internal/sessiontemp"
 	"reasonix/internal/shellparse"
 	"reasonix/internal/shellrun"
+	"reasonix/internal/termux"
 	"reasonix/internal/tool"
 )
 
@@ -655,7 +656,7 @@ func loginShell() string {
 			return p
 		}
 	}
-	for _, shell := range []string{"/bin/zsh", "/bin/bash", "/bin/sh"} {
+	for _, shell := range append([]string{"/bin/zsh", "/bin/bash", "/bin/sh"}, termux.BinPaths("zsh", "bash", "sh")...) {
 		if isExecutableFile(shell) {
 			return shell
 		}

@@ -22,6 +22,7 @@ import (
 	"reasonix/internal/netclient"
 	"reasonix/internal/permissionpreset"
 	"reasonix/internal/provider"
+	"reasonix/internal/termux"
 )
 
 var validSkillName = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$`)
@@ -1218,29 +1219,26 @@ func (c *Config) ForbidReadRootsForRoot(fallbackRoot string) []string {
 
 // BashMode normalises the bash-sandbox mode for the current host.
 func (c *Config) BashMode() string {
+	if runtimeGOOS == "linux" && termux.IsTermux() {
+		return "off"
+	}
 	return c.BashModeForGOOS(runtimeGOOS)
 }
 
 // BashModeForGOOS normalises the bash-sandbox mode for tests and cross-platform
 // rendering. macOS and Linux default to enforcement; backend capability is
 // checked at launch and restricted presets fail closed when it is unavailable.
-// Windows has no OS-level shell sandbox, so every value resolves to "off":
-// an explicit "enforce" stays readable (doctor reports it as ignored) but
-// never turns into a fail-closed launch.
+// Windows and Android/Termux have no OS-level shell sandbox, so every value
+// resolves to "off": an explicit "enforce" stays readable (doctor reports it
+// as ignored) but never turns into a fail-closed launch.
 func (c *Config) BashModeForGOOS(goos string) string {
-	if goos == "windows" {
+	if goos == "windows" || goos == "android" {
 		return "off"
 	}
-	switch strings.TrimSpace(c.Sandbox.Bash) {
-	case "enforce":
-		return "enforce"
-	case "off":
+	if strings.TrimSpace(c.Sandbox.Bash) == "off" {
 		return "off"
-	case "":
-		return "enforce"
-	default:
-		return "enforce"
 	}
+	return "enforce"
 }
 
 // AgentConfig configures the harness loop. PlannerModel is optional: when set

@@ -16,6 +16,7 @@ import (
 	"reasonix/internal/proc"
 	"reasonix/internal/sandbox"
 	"reasonix/internal/secrets"
+	"reasonix/internal/termux"
 )
 
 const (
@@ -431,7 +432,7 @@ func stdioShell() string {
 			return exe
 		}
 	}
-	for _, shell := range []string{"/bin/zsh", "/bin/bash", "/bin/sh"} {
+	for _, shell := range append([]string{"/bin/zsh", "/bin/bash", "/bin/sh"}, termux.BinPaths("zsh", "bash", "sh")...) {
 		if isExecutableFile(shell) {
 			return shell
 		}

@@ -9,7 +9,13 @@ func filesystemRemote(path string) bool {
 	if err := syscall.Statfs(path, &stat); err != nil {
 		return false
 	}
-	switch uint64(stat.Type) {
+	// On 32-bit Linux/Android (GOARCH=arm), Statfs_t.Type is signed int32, so
+	// values >= 0x80000000 (e.g. 0xFF534D42) sign-extend when converted to uint64.
+	fsType := uint64(stat.Type)
+	if stat.Type < 0 {
+		fsType = uint64(uint32(stat.Type))
+	}
+	switch fsType {
 	case 0x6969, 0x517B, 0xFF534D42, 0x6E667364, 0x00C36400, 0x0BD00BD0:
 		return true
 	default:

@@ -23,6 +23,7 @@ import (
 	"reasonix/internal/secrets"
 	"reasonix/internal/skill"
 	"reasonix/internal/store"
+	"reasonix/internal/termux"
 )
 
 type Options struct {
@@ -164,7 +165,7 @@ func Collect(opts Options) Report {
 	// out loud instead of leaving it to be discovered from unconfined commands.
 	bashConfigIgnored := strings.TrimSpace(cfg.Sandbox.Bash) == "enforce" && cfg.BashMode() == "off"
 	if bashConfigIgnored {
-		warnings = append(warnings, `config requests [sandbox] bash = "enforce", but Windows does not provide an OS-level Bash sandbox; the setting is fixed to "off" and bash runs unconfined`)
+		warnings = append(warnings, `config requests [sandbox] bash = "enforce", but `+noOSSandboxPlatformLabel()+` does not provide an OS-level Bash sandbox; the setting is fixed to "off" and bash runs unconfined`)
 	}
 	// Supervised deployments sometimes override HOME onto a service config dir
 	// while Reasonix isolation should use REASONIX_HOME. Do not rewrite
@@ -351,7 +352,7 @@ func RenderText(r Report) string {
 		bashLine += " (unavailable: no OS sandbox on this host; bash execution is refused. " + sandbox.UnavailableRemediation() + ")"
 	}
 	if r.Sandbox.BashConfigIgnored {
-		bashLine += ` (config requests "enforce", ignored: Windows has no OS-level Bash sandbox and fixes this setting to "off")`
+		bashLine += ` (config requests "enforce", ignored: ` + noOSSandboxPlatformLabel() + ` has no OS-level Bash sandbox and fixes this setting to "off")`
 	}
 	fmt.Fprintf(&b, "  bash         %s\n", bashLine)
 	if r.Sandbox.Shell != "" {
@@ -499,6 +500,13 @@ func valueOr(s, fallback string) string {
 	return s
 }
 
+func noOSSandboxPlatformLabel() string {
+	if runtime.GOOS == "android" || termux.IsAndroidOrTermux() {
+		return "Android/Termux"
+	}
+	return "Windows"
+}
+
 // homeIsolationWarning detects a process HOME that differs from the OS account
 // home while REASONIX_HOME is unset. Services should keep the real account HOME
 // and isolate Reasonix state with REASONIX_HOME instead of rewriting HOME.
@@ -520,7 +528,7 @@ func homeIsolationWarning() string {
 	}
 	envClean := filepath.Clean(envHome)
 	acctClean := filepath.Clean(acct.HomeDir)
-	if samePathFold(envClean, acctClean) {
+	if acctClean == "/" || samePathFold(envClean, acctClean) {
 		return ""
 	}
 	// Do not embed either absolute path: when HOME is overridden, redactHome

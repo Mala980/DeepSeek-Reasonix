@@ -203,7 +203,7 @@ func TestCollectFlagsIgnoredEnforceConfig(t *testing.T) {
 func TestHomeIsolationWarningDetectsMismatch(t *testing.T) {
 	// Prefer a synthetic mismatch without requiring root privileges.
 	acct, err := user.Current()
-	if err != nil || acct == nil || strings.TrimSpace(acct.HomeDir) == "" {
+	if err != nil || acct == nil || strings.TrimSpace(acct.HomeDir) == "" || filepath.Clean(acct.HomeDir) == "/" {
 		t.Skip("account home unavailable")
 	}
 	t.Setenv("REASONIX_HOME", "")

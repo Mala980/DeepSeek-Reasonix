@@ -21,6 +21,7 @@ import (
 	"reasonix/internal/attachment"
 	"reasonix/internal/proc"
 	"reasonix/internal/secrets"
+	"reasonix/internal/termux"
 )
 
 const maxImageAttachmentBytes = 64 * 1024 * 1024
@@ -275,8 +276,12 @@ func SaveClipboardImageInRoot(root string) (string, error) {
 		return saveDarwinClipboardImageInRoot(root)
 	case "windows":
 		return saveWindowsClipboardImageInRoot(root)
-	case "linux":
-		return saveLinuxClipboardImageInRoot(root)
+	case "linux", "android":
+		path, err := saveLinuxClipboardImageInRoot(root)
+		if err != nil && termux.IsAndroidOrTermux() && strings.Contains(err.Error(), "needs wl-paste") {
+			return "", ErrNoClipboardImage
+		}
+		return path, err
 	default:
 		return "", fmt.Errorf("clipboard image paste is not supported on %s yet", runtime.GOOS)
 	}

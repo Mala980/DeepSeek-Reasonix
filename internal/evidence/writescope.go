@@ -122,7 +122,10 @@ func resolveScopePath(path string) (string, error) {
 func DefaultScratchRoots() []string {
 	roots := []string{os.TempDir()}
 	if filepath.Separator == '/' {
-		roots = append(roots, "/tmp", "/private/tmp")
+		roots = append(roots, "/tmp", "/private/tmp", "/data/data/com.termux/files/usr/tmp")
+		if prefix := strings.TrimSpace(os.Getenv("PREFIX")); prefix != "" && filepath.IsAbs(prefix) {
+			roots = append(roots, filepath.Join(prefix, "tmp"))
+		}
 	}
 	return uniqueCleanRoots(roots)
 }

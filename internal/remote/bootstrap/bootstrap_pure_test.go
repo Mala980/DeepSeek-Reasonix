@@ -16,6 +16,9 @@ func TestParseUname(t *testing.T) {
 		{"Darwin arm64", "darwin", "arm64", false},
 		{"Darwin x86_64", "darwin", "amd64", false},
 		{"Linux armv7l", "linux", "arm", false},
+		{"Linux armv8l", "linux", "arm", false},
+		{"Android aarch64", "linux", "arm64", false},
+		{"Android armv7l", "linux", "arm", false},
 		{"  Linux   x86_64  \n", "linux", "amd64", false},
 		{"MINGW64_NT-10.0 x86_64", "", "", true}, // Windows shell
 		{"Linux mips", "", "", true},

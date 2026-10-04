@@ -65,7 +65,7 @@ func TestUnavailableMessageIsActionable(t *testing.T) {
 }
 
 func TestOSSandboxSupportedPerPlatform(t *testing.T) {
-	for goos, want := range map[string]bool{"darwin": true, "linux": true, "windows": false, "freebsd": true} {
+	for goos, want := range map[string]bool{"darwin": true, "linux": true, "windows": false, "android": false, "freebsd": true} {
 		if got := osSandboxSupportedForGOOS(goos); got != want {
 			t.Fatalf("osSandboxSupportedForGOOS(%q) = %v, want %v", goos, got, want)
 		}

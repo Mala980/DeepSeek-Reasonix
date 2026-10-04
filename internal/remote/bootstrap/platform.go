@@ -14,7 +14,7 @@ func ParseUname(out string) (goos, goarch string, err error) {
 	}
 	sys, machine := fields[0], fields[1]
 	switch strings.ToLower(sys) {
-	case "linux":
+	case "linux", "android":
 		goos = "linux"
 	case "darwin":
 		goos = "darwin"
@@ -26,7 +26,7 @@ func ParseUname(out string) (goos, goarch string, err error) {
 		goarch = "amd64"
 	case "aarch64", "arm64":
 		goarch = "arm64"
-	case "armv7l", "armv6l", "arm":
+	case "armv8l", "armv7l", "armv7a", "armv6l", "arm":
 		goarch = "arm"
 	default:
 		return "", "", fmt.Errorf("bootstrap: unsupported remote architecture %q", machine)

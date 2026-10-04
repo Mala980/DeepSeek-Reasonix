@@ -180,19 +180,21 @@ func TestPermissionSnapshotAndExactGrantRevocation(t *testing.T) {
 }
 
 func TestWindowsPermissionCapabilitiesKeepPresetsWithoutBackend(t *testing.T) {
-	// The Windows backend is retired: regardless of what the host reports,
-	// no isolation is advertised, yet every preset remains selectable because
-	// the presets are enforced by Reasonix's own tools there.
-	for _, available := range []bool{true, false} {
-		got := permissionCapabilitiesForPlatform("windows", available, "no OS sandbox")
-		if got.Backend != "none" || got.Enforcement != "unavailable" || got.UnavailableReason != "no OS sandbox" {
-			t.Fatalf("available=%v: Windows capability summary = %+v", available, got)
-		}
-		if got.WriteIsolation != "" || got.ReadIsolation != "" || got.NetworkIsolation != "" {
-			t.Fatalf("available=%v: Windows advertised isolation: %+v", available, got)
-		}
-		if len(got.SupportedPresets) != 3 {
-			t.Fatalf("available=%v: supported presets = %v", available, got.SupportedPresets)
+	// The Windows and Android/Termux backends have no OS-level jail: regardless
+	// of what the host reports, no isolation is advertised, yet every preset
+	// remains selectable because the presets are enforced by Reasonix's own tools.
+	for _, goos := range []string{"windows", "android"} {
+		for _, available := range []bool{true, false} {
+			got := permissionCapabilitiesForPlatform(goos, available, "no OS sandbox")
+			if got.Backend != "none" || got.Enforcement != "unavailable" || got.UnavailableReason != "no OS sandbox" {
+				t.Fatalf("goos=%s available=%v: capability summary = %+v", goos, available, got)
+			}
+			if got.WriteIsolation != "" || got.ReadIsolation != "" || got.NetworkIsolation != "" {
+				t.Fatalf("goos=%s available=%v: advertised isolation: %+v", goos, available, got)
+			}
+			if len(got.SupportedPresets) != 3 {
+				t.Fatalf("goos=%s available=%v: supported presets = %v", goos, available, got.SupportedPresets)
+			}
 		}
 	}
 }

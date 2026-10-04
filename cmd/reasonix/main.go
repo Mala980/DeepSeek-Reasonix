@@ -10,6 +10,7 @@ import (
 	"reasonix/internal/crashreport"
 	"reasonix/internal/plugin"
 	"reasonix/internal/skill/skillwatch"
+	"reasonix/internal/termux"
 
 	// Blank imports wire compile-time built-ins into their registries.
 	_ "reasonix/internal/provider/anthropic"
@@ -38,6 +39,7 @@ var runCLI = func(args []string, buildVersion string) int {
 }
 
 func main() {
+	termux.InitRuntimeEnv()
 	// Internal watcher-helper entry: the host-shared skill watch service
 	// re-enters this executable so Windows directory watching never runs
 	// in-process. Dispatch before any application initialization.

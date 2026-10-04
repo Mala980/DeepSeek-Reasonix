@@ -9,11 +9,28 @@ GOEXE := $(shell go env GOEXE)
 # One pin for the Makefile and the CI lint job; see .github/workflows/ci.yml.
 GOLANGCI_VERSION := $(shell cat .golangci-version)
 
-.PHONY: build vet fmt lint lint-go lint-install lint-cross lint-update test desktop-test desktop-test-short desktop-test-times sdk-test sdk-test-race hooks cross clean
+.PHONY: build build-termux build-termux-arm64 build-termux-armv7 package-termux vet fmt lint lint-go lint-install lint-cross lint-update test desktop-test desktop-test-short desktop-test-times sdk-test sdk-test-race hooks cross clean
 
 build:
-	CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o bin/reasonix$(GOEXE) ./cmd/reasonix
-	CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o bin/reasonix-plugin-example$(GOEXE) ./cmd/reasonix-plugin-example
+	@if [ "$$(go env GOOS 2>/dev/null)" = "android" ] && [ "$$(go env GOARCH 2>/dev/null)" = "arm" ]; then \
+		CGO_ENABLED=1 go build -ldflags "$(LDFLAGS)" -o bin/reasonix$(GOEXE) ./cmd/reasonix && \
+		CGO_ENABLED=1 go build -ldflags "$(LDFLAGS)" -o bin/reasonix-plugin-example$(GOEXE) ./cmd/reasonix-plugin-example; \
+	else \
+		CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o bin/reasonix$(GOEXE) ./cmd/reasonix && \
+		CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o bin/reasonix-plugin-example$(GOEXE) ./cmd/reasonix-plugin-example; \
+	fi
+
+build-termux:
+	./scripts/build-termux-android.sh --out-dir bin all
+
+build-termux-arm64:
+	./scripts/build-termux-android.sh --out-dir bin arm64
+
+build-termux-armv7:
+	./scripts/build-termux-android.sh --out-dir bin armv7
+
+package-termux:
+	./scripts/build-termux-android.sh --out-dir dist/termux --package all
 
 vet:
 	go vet ./...
@@ -43,10 +60,10 @@ lint-update:
 
 # Linting one GOOS leaves every //go:build windows and darwin file unchecked.
 lint-cross:
-	@for t in "linux ." "darwin ." "windows ." "linux desktop" "windows desktop"; do \
+	@for t in "linux amd64 ." "darwin amd64 ." "windows amd64 ." "android arm64 ." "linux arm ." "linux amd64 desktop" "windows amd64 desktop"; do \
 		set -- $$t; \
-		echo "== golangci-lint GOOS=$$1 ($$2)"; \
-		(cd $$2 && GOOS=$$1 golangci-lint run --timeout=5m ./...) || exit 1; \
+		echo "== golangci-lint GOOS=$$1 GOARCH=$$2 ($$3)"; \
+		(cd $$3 && GOOS=$$1 GOARCH=$$2 golangci-lint run --timeout=5m ./...) || exit 1; \
 	done
 
 test:
@@ -80,6 +97,7 @@ cross:
 		echo "build $$os/$$arch"; \
 		CGO_ENABLED=0 GOOS=$$os GOARCH=$$arch go build -ldflags "$(LDFLAGS)" -o dist/reasonix-$$os-$$arch$$ext ./cmd/reasonix; \
 	done
+	@./scripts/build-termux-android.sh --out-dir dist all
 
 clean:
 	rm -rf bin dist

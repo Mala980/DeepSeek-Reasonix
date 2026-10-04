@@ -1,0 +1,157 @@
+name: Termux Android
+
+on:
+  push:
+    branches:
+      - main-v2
+      - "arena/**"
+    tags:
+      - "v[0-9]*"
+  pull_request:
+    branches:
+      - main-v2
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Optional version string to embed in the Termux Android binaries"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: termux-android-${{ github.event_name == 'push' && github.sha || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build (android/${{ matrix.arch }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            goos: android
+            goarch: arm64
+            goarm: ""
+            elf_pattern: "ARM aarch64"
+          - arch: armv7
+            goos: android
+            goarch: arm
+            goarm: "7"
+            elf_pattern: "ARM, EABI5"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Test Termux runtime package and build script
+        run: |
+          go test -v ./internal/termux/...
+          bash scripts/build-termux-android.test.sh
+
+      - name: Vet target (${{ matrix.arch }})
+        env:
+          ARCH: ${{ matrix.arch }}
+          TARGET_GOOS: ${{ matrix.goos }}
+          TARGET_GOARCH: ${{ matrix.goarch }}
+          TARGET_GOARM: ${{ matrix.goarm }}
+        run: |
+          if [ "$ARCH" = "arm64" ]; then
+            CGO_ENABLED=0 GOOS="$TARGET_GOOS" GOARCH="$TARGET_GOARCH" go vet ./...
+          else
+            CGO_ENABLED=0 GOOS=linux GOARCH="$TARGET_GOARCH" GOARM="$TARGET_GOARM" go vet ./...
+          fi
+
+      - name: Build and package Termux Android (${{ matrix.arch }})
+        env:
+          ARCH: ${{ matrix.arch }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          version="${INPUT_VERSION:-$(git describe --tags --always 2>/dev/null || echo dev)}"
+          ./scripts/build-termux-android.sh \
+            --out-dir "dist/termux-${ARCH}" \
+            --version "${version}" \
+            --package \
+            "${ARCH}"
+
+      - name: Verify Termux Android binary and archive (${{ matrix.arch }})
+        env:
+          ARCH: ${{ matrix.arch }}
+          ELF_PATTERN: ${{ matrix.elf_pattern }}
+        run: |
+          bin_path="dist/termux-${ARCH}/reasonix-android-${ARCH}"
+          test -x "${bin_path}"
+          file_info="$(file "${bin_path}")"
+          echo "${file_info}"
+          echo "${file_info}" | grep -q "ELF"
+          echo "${file_info}" | grep -q "${ELF_PATTERN}"
+          for archive in \
+            "dist/termux-${ARCH}/reasonix-android-${ARCH}.tar.gz" \
+            "dist/termux-${ARCH}/reasonix-termux-android-${ARCH}.tar.gz"; do
+            test -s "${archive}"
+            tar -tzf "${archive}" | grep -qx "reasonix"
+          done
+          (cd "dist/termux-${ARCH}" && sha256sum -c SHA256SUMS)
+
+      - name: Upload Termux Android (${{ matrix.arch }}) artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: reasonix-termux-android-${{ matrix.arch }}
+          path: |
+            dist/termux-${{ matrix.arch }}/reasonix-android-${{ matrix.arch }}
+            dist/termux-${{ matrix.arch }}/reasonix-android-${{ matrix.arch }}.tar.gz
+            dist/termux-${{ matrix.arch }}/reasonix-termux-android-${{ matrix.arch }}.tar.gz
+            dist/termux-${{ matrix.arch }}/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+
+  package:
+    name: package (android/arm64 + android/armv7)
+    needs: [build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: reasonix-termux-android-arm64
+          path: dist/termux
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: reasonix-termux-android-armv7
+          path: dist/termux
+
+      - name: Generate unified SHA256SUMS
+        run: |
+          cd dist/termux
+          chmod +x reasonix-android-arm64 reasonix-android-armv7
+          sha256sum \
+            reasonix-android-arm64 \
+            reasonix-android-armv7 \
+            reasonix-android-arm64.tar.gz \
+            reasonix-android-armv7.tar.gz \
+            reasonix-termux-android-arm64.tar.gz \
+            reasonix-termux-android-armv7.tar.gz > SHA256SUMS
+          sha256sum -c SHA256SUMS
+
+      - name: Upload unified Termux Android bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: reasonix-termux-android-dist
+          path: |
+            dist/termux/reasonix-android-arm64
+            dist/termux/reasonix-android-armv7
+            dist/termux/reasonix-android-arm64.tar.gz
+            dist/termux/reasonix-android-armv7.tar.gz
+            dist/termux/reasonix-termux-android-arm64.tar.gz
+            dist/termux/reasonix-termux-android-armv7.tar.gz
+            dist/termux/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14

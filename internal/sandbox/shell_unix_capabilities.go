@@ -1,6 +1,10 @@
 package sandbox
 
-import "strings"
+import (
+	"strings"
+
+	"reasonix/internal/termux"
+)
 
 // unixShellCapabilities reports the common POSIX-family interpreters present
 // on macOS and Linux. Linux remains Bash-only for execution; macOS may fall
@@ -8,9 +12,9 @@ import "strings"
 // complete inventory on both platforms.
 func unixShellCapabilities(snap *shellSnapshot) []ShellCapability {
 	return []ShellCapability{
-		unixShellCapability(snap, ShellCapabilityBash, []string{"bash"}, []string{"/bin/bash", "/usr/bin/bash"}),
-		unixShellCapability(snap, ShellCapabilityZsh, []string{"zsh"}, []string{"/bin/zsh", "/usr/bin/zsh"}),
-		unixShellCapability(snap, ShellCapabilitySh, []string{"sh"}, []string{"/bin/sh", "/usr/bin/sh"}),
+		unixShellCapability(snap, ShellCapabilityBash, []string{"bash"}, append([]string{"/bin/bash", "/usr/bin/bash"}, termux.BinPaths("bash")...)),
+		unixShellCapability(snap, ShellCapabilityZsh, []string{"zsh"}, append([]string{"/bin/zsh", "/usr/bin/zsh"}, termux.BinPaths("zsh")...)),
+		unixShellCapability(snap, ShellCapabilitySh, []string{"sh"}, append([]string{"/bin/sh", "/usr/bin/sh"}, termux.BinPaths("sh")...)),
 	}
 }
 

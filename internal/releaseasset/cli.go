@@ -32,35 +32,73 @@ var cliReleaseVersionPattern = regexp.MustCompile(`^v(?:0|[1-9][0-9]*)\.(?:0|[1-
 
 // DownloadCLI downloads the exact official CLI release for version and target,
 // verifies it against SHA256SUMS from the same immutable release, and returns
-// the extracted executable bytes. Remote Serve provisioning supports Linux and
-// macOS hosts.
+// the extracted executable bytes. Remote Serve provisioning supports Linux,
+// Android/Termux, and macOS hosts.
 func DownloadCLI(ctx context.Context, client *http.Client, version, goos, goarch string) ([]byte, error) {
 	if !cliReleaseVersionPattern.MatchString(strings.TrimSpace(version)) {
 		return nil, fmt.Errorf("remote CLI download requires a released version, got %q", version)
 	}
-	if goos != "linux" && goos != "darwin" {
+	if goos != "linux" && goos != "darwin" && goos != "android" {
 		return nil, fmt.Errorf("remote CLI download does not support OS %q", goos)
 	}
-	if goarch != "amd64" && goarch != "arm64" {
+	if goarch != "amd64" && goarch != "arm64" && goarch != "arm" && goarch != "armv7" {
 		return nil, fmt.Errorf("remote CLI download does not support architecture %q", goarch)
 	}
 	return downloadCLIFromBase(ctx, client, cliReleaseBase, version, goos, goarch, true)
+}
+
+func cliAssetCandidates(goos, goarch string) []string {
+	candidates := []string{fmt.Sprintf("reasonix-%s-%s.tar.gz", goos, goarch)}
+	add := func(name string) {
+		for _, c := range candidates {
+			if c == name {
+				return
+			}
+		}
+		candidates = append(candidates, name)
+	}
+	if goarch == "arm" {
+		add(fmt.Sprintf("reasonix-%s-armv7.tar.gz", goos))
+	} else if goarch == "armv7" {
+		add(fmt.Sprintf("reasonix-%s-arm.tar.gz", goos))
+	}
+	if goos == "android" {
+		add(fmt.Sprintf("reasonix-linux-%s.tar.gz", goarch))
+		if goarch == "arm" {
+			add("reasonix-linux-armv7.tar.gz")
+		} else if goarch == "armv7" {
+			add("reasonix-linux-arm.tar.gz")
+		}
+	}
+	return candidates
 }
 
 func downloadCLIFromBase(ctx context.Context, client *http.Client, base, version, goos, goarch string, official bool) ([]byte, error) {
 	if client == nil {
 		return nil, errors.New("remote CLI download requires an HTTP client")
 	}
-	assetName := fmt.Sprintf("reasonix-%s-%s.tar.gz", goos, goarch)
 	releaseBase := strings.TrimRight(base, "/") + "/" + url.PathEscape(version) + "/"
-	archiveURL := releaseBase + assetName
 	checksumURL := releaseBase + "SHA256SUMS"
 
 	copyOfClient := *client
 	if official {
 		copyOfClient.CheckRedirect = validateOfficialRedirect
 	}
-	archive, err := fetchBounded(ctx, &copyOfClient, archiveURL, maxCLIArchiveBytes)
+	var (
+		assetName string
+		archive   []byte
+		err       error
+	)
+	for _, candidate := range cliAssetCandidates(goos, goarch) {
+		archive, err = fetchBounded(ctx, &copyOfClient, releaseBase+candidate, maxCLIArchiveBytes)
+		if err == nil {
+			assetName = candidate
+			break
+		}
+		if assetName == "" {
+			assetName = candidate
+		}
+	}
 	if err != nil {
 		return nil, fmt.Errorf("download %s: %w", assetName, err)
 	}

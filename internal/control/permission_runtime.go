@@ -13,6 +13,7 @@ import (
 	"reasonix/internal/permissionpreset"
 	"reasonix/internal/sandbox"
 	"reasonix/internal/session"
+	"reasonix/internal/termux"
 )
 
 // SessionGrantSummary is a transport-safe description of an in-memory grant.
@@ -72,7 +73,11 @@ func platformPermissionCapabilities() PermissionCapabilities {
 	case presetSandboxPinnedOff:
 		available = false
 	}
-	return permissionCapabilitiesForPlatform(runtime.GOOS, available, sandbox.UnavailableMessage())
+	goos := runtime.GOOS
+	if goos == "linux" && termux.IsTermux() {
+		goos = "android"
+	}
+	return permissionCapabilitiesForPlatform(goos, available, sandbox.UnavailableMessage())
 }
 
 func permissionCapabilitiesForPlatform(goos string, available bool, unavailableReason string) PermissionCapabilities {
@@ -91,7 +96,7 @@ func permissionCapabilitiesForPlatform(goos string, available bool, unavailableR
 		writeIsolation = "bubblewrap-mount-namespace"
 		readIsolation = "bubblewrap-mount-namespace"
 		networkIsolation = "bubblewrap-network-namespace"
-	case "windows":
+	case "windows", "android":
 		// No OS backend, but the presets still apply as tool-layer boundaries
 		// (file writers, approval prompts), so every preset stays selectable.
 		return PermissionCapabilities{

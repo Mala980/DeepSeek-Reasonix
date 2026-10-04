@@ -235,7 +235,12 @@ func copyRegularFileAndRemoveSource(src, dst string, info os.FileInfo) error {
 		return err
 	}
 	if err := os.Link(tmpPath, dst); err != nil {
-		return err
+		if os.IsExist(err) {
+			return err
+		}
+		if rerr := renameFile(tmpPath, dst); rerr != nil {
+			return err
+		}
 	}
 	if err := os.Remove(src); err != nil {
 		return fmt.Errorf("destination committed but source removal failed: %w", err)

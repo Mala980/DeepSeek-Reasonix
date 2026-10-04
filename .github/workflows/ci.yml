@@ -167,6 +167,10 @@ jobs:
         if: env.RUN_STEPS == 'true'
         run: go build ./...
 
+      - name: build (Termux Android arm64 and armv7)
+        if: env.RUN_STEPS == 'true' && runner.os == 'Linux'
+        run: ./scripts/build-termux-android.sh --out-dir "$RUNNER_TEMP/termux-dist" --package all
+
       - name: test
         # Windows full coverage belongs to the disjoint selectors below and
         # the isolated jobs; running ./... here would execute every test twice.
@@ -1609,10 +1613,10 @@ jobs:
         run: |
           set -euo pipefail
           command -v golangci-lint
-          for target in "darwin ." "windows ." "windows desktop"; do
-            read -r target_os target_dir <<< "$target"
-            echo "::group::golangci-lint GOOS=$target_os ($target_dir)"
-            (cd "$target_dir" && GOOS="$target_os" golangci-lint run --timeout=5m ./...)
+          for target in "darwin amd64 ." "windows amd64 ." "android arm64 ." "linux arm ." "windows amd64 desktop"; do
+            read -r target_os target_arch target_dir <<< "$target"
+            echo "::group::golangci-lint GOOS=$target_os GOARCH=$target_arch ($target_dir)"
+            (cd "$target_dir" && GOOS="$target_os" GOARCH="$target_arch" golangci-lint run --timeout=5m ./...)
             echo "::endgroup::"
           done
 
@@ -1647,6 +1651,7 @@ jobs:
             .github/workflows/macos-signing-check.yml \
             .github/workflows/release-verify-issues.yml \
             .github/workflows/docs-impact.yml \
+            .github/workflows/termux-android.yml \
             .github/workflows/ci.yml
           node --test scripts/release-candidate.test.mjs scripts/resolve-release-candidate.test.mjs \
             scripts/verify-release-artifact-archive.test.mjs \
@@ -1656,6 +1661,7 @@ jobs:
             scripts/ci-paths.test.mjs scripts/ci-workflow.test.mjs scripts/macos-go-tests.test.mjs \
             scripts/desktop-windows-go-tests.test.mjs \
             npm/publish.test.mjs
+          bash scripts/build-termux-android.test.sh
           bash scripts/validate-release-candidate-source.test.sh
           bash scripts/validate-release-control-plane.test.sh
           bash scripts/verify-release-push-ci.test.sh
