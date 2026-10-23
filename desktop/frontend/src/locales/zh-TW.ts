@@ -26,6 +26,7 @@ export const zhTW: Record<DictKey, string> = {
   "studio.cardBody": "了解 Studio、安裝方式和資料相容說明。",
   "studio.learnMore": "了解詳情",
   "error.unknown": "操作發生問題，請展開詳情查看原始錯誤。",
+  "error.imageInput": "圖片處理失敗，請檢查圖片理解模型設定，展開詳情查看具體原因。",
   "error.requestSendTimeout": "請求傳送逾時（300 秒），重發一次後仍未完成，本輪已停止。請查看錯誤詳情，匯出工作階段診斷可取得失敗階段及原因。",
   "error.transportEOF": "連線意外結束（EOF）。請查看錯誤詳情，匯出工作階段診斷可取得失敗階段。",
   "error.transportReset": "連線被重設或關閉。請查看錯誤詳情，匯出工作階段診斷可取得失敗階段。",
