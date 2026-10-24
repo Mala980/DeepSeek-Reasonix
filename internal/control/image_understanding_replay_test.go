@@ -94,7 +94,7 @@ func TestImageUnderstandingFailureDoesNotPoisonTextOrToolResults(t *testing.T) {
 				messages := replayFixtureMessages(role)
 				before, _ := json.Marshal(messages)
 				var first []byte
-				for attempt := 0; attempt < 2; attempt++ {
+				for attempt := range 2 {
 					got, err := c.ResolveRequestImagesForModel(t.Context(), messages, "fixture/main", false)
 					if err != nil {
 						t.Fatal(err)
