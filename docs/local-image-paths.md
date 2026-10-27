@@ -28,6 +28,10 @@ user attachments still fail visibly instead of being silently omitted, and
 cancelling the turn still stops processing. A failed image service's own timeout
 does not cancel an otherwise active text turn.
 
+Across tool rounds in one turn, each redacted failure cause produces at most
+one persisted warning. Every request still retries image processing, and a new
+turn can warn again.
+
 Failure details are credential-redacted and bounded before persistence. Reopened
 conversations and diagnostic exports retain the cause, including failures before
 the main model request starts. Older records that never saved a cause explicitly

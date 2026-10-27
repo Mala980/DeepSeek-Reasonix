@@ -155,6 +155,9 @@ func (c *Controller) ResolveRequestImagesForModel(ctx context.Context, msgs []pr
 	if c == nil {
 		return msgs, nil
 	}
+	if _, ok := ctx.Value(imageReplayWarningsKey{}).(*imageReplayWarnings); !ok {
+		ctx = withImageReplayWarnings(ctx)
+	}
 	out := append([]provider.Message(nil), msgs...)
 	currentTurn := lastImageRequestTurn(msgs)
 	for i := range out {

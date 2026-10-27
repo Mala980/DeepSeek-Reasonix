@@ -45,7 +45,7 @@ func (c *Controller) resolveReplayImages(ctx context.Context, inputs []attachmen
 		}
 		if historical {
 			missing = append(missing, i+1)
-			c.emitImageReplayWarning(err)
+			c.emitImageReplayWarning(ctx, err)
 			continue
 		}
 		var item attachment.Error

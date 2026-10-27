@@ -64,15 +64,19 @@ func (c *Controller) omitReplayImageFailure(ctx context.Context, m *provider.Mes
 		noteUnavailableImages(m, positions)
 	}
 	m.ImageInputs, m.Images = nil, nil
-	c.emitImageReplayWarning(err)
+	c.emitImageReplayWarning(ctx, err)
 	return true
 }
 
-func (c *Controller) emitImageReplayWarning(err error) {
+func (c *Controller) emitImageReplayWarning(ctx context.Context, err error) {
 	if c.sink == nil {
+		return
+	}
+	detail := secrets.FailureDetail(&provider.ImageInputError{Err: err})
+	if warnings, ok := ctx.Value(imageReplayWarningsKey{}).(*imageReplayWarnings); ok && !warnings.first(detail) {
 		return
 	}
 	c.sink.Emit(event.Event{Kind: event.Notice, Level: event.LevelWarn, Code: event.NoticeCodeImageReplayUnavailable,
 		MessageID: agent.NewMessageID(), Text: i18n.M.ImageReplayUnavailable,
-		Detail: secrets.FailureDetail(&provider.ImageInputError{Err: err})})
+		Detail: detail})
 }
